@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Chat with Maps Live",
+  "description": "Experience Gemini and Grounding with Google Maps' ability to engage in real-time, voice-driven conversations for trip planning using natural language.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

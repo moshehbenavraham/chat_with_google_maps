@@ -1,0 +1,89 @@
+.popover {
+  position: relative;
+}
+
+.popover-button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--Neutral-90);
+  color: var(--Neutral-60);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.popover-button:hover {
+  background-color: var(--Neutral-80);
+}
+
+.popover-panel {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 8px;
+  min-width: 280px;
+  max-width: 400px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: var(--Neutral-10);
+  border: 1px solid var(--Neutral-30);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  z-index: 50;
+
+  /* Animation properties */
+  transform-origin: bottom;
+  transition: all 200ms ease-out;
+
+  /* Default open state */
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Closed state - this is what Headless UI applies */
+.popover-panel[data-closed] {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.popover-attribution {
+  color: white;
+  font-size: 0.75rem;
+  padding: 4px 12px 8px;
+  opacity: 0.8;
+  border-bottom: 1px solid var(--Neutral-30);
+  margin-bottom: 4px;
+}
+
+.source-link {
+  display: block;
+  padding: 10px 12px;
+  color: var(--Neutral-90);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 400;
+  transition: all 0.15s ease-in-out;
+  border-left: 3px solid transparent;
+}
+
+.source-link:hover {
+  background-color: var(--Neutral-20);
+  border-left-color: var(--accent-blue);
+  color: #fff;
+}
+
+.source-link:focus {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -2px;
+  background-color: var(--Neutral-20);
+}
+
+/* Add divider between links except for last child */
+.source-link + .source-link {
+  border-top: 1px solid var(--Neutral-30);
+}

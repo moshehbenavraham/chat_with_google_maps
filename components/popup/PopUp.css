@@ -1,0 +1,110 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: var(--Neutral-10);
+  color: var(--text);
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-stroke);
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  color: var(--accent-blue-headers);
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.popup-content p {
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.popup-content ol {
+  padding-left: 20px;
+  margin-bottom: 30px;
+}
+
+.popup-content li {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.popup-content .icon {
+  margin-right: 15px;
+  font-size: 24px;
+  color: var(--accent-blue);
+}
+
+.popup-content button {
+  background-color: var(--Blue-500);
+  color: var(--Neutral-5);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  float: right;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.popup-content button:hover {
+  background-color: var(--Blue-400);
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    padding: 20px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* The main container doesn't scroll */
+  }
+
+  .popup-scrollable-content {
+    overflow-y: auto; /* This part scrolls if content is too tall */
+    flex-grow: 1; /* It takes up the available vertical space */
+  }
+
+  .popup-content h2 {
+    font-size: 20px;
+    flex-shrink: 0; /* Prevent the header from shrinking */
+  }
+
+  .popup-content p,
+  .popup-content li {
+    font-size: 14px;
+  }
+
+  .popup-content li {
+    margin-bottom: 12px;
+  }
+
+  .popup-content .icon {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+
+  .popup-content button {
+    width: 100%;
+    float: none;
+    margin-top: 10px;
+    padding: 14px 20px;
+    flex-shrink: 0; /* Prevent the button from shrinking */
+  }
+}
