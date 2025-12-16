@@ -26,23 +26,20 @@ import PopUp from '@/components/popup/PopUp';
 import Sidebar from '@/components/Sidebar';
 import { LiveAPIProvider } from '@/contexts/LiveAPIContext';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { Map3D, Map3DCameraProps} from '@/components/map-3d';
+import { Map3D, type Map3DCameraProps} from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY as string;
-if (typeof GEMINI_API_KEY !== 'string') {
-  throw new Error(
-    'Missing required environment variable: GEMINI_API_KEY'
-  );
+function getRequiredEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
 }
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY as string;
-if (typeof GOOGLE_MAPS_API_KEY !== 'string') {
-  throw new Error(
-    'Missing required environment variable: GOOGLE_MAPS_API_KEY'
-  );
-}
+const GEMINI_API_KEY = getRequiredEnvVar('GEMINI_API_KEY');
+const GOOGLE_MAPS_API_KEY = getRequiredEnvVar('GOOGLE_MAPS_API_KEY');
 
 const INITIAL_VIEW_PROPS = {
   center: {
@@ -82,8 +79,11 @@ function AppComponent() {
   const [padding, setPadding] = useState<[number, number, number, number]>([0.05, 0.05, 0.05, 0.05]);
 
   // Effect: Instantiate the Geocoder once the library is loaded.
+  // This pattern is appropriate because the Geocoder is a class instance
+  // that must be created after the library loads asynchronously.
   useEffect(() => {
     if (geocodingLib) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Geocoder must be instantiated after library loads
       setGeocoder(new geocodingLib.Geocoder());
     }
   }, [geocodingLib]);
@@ -114,7 +114,6 @@ function AppComponent() {
     const calculatePadding = () => {
       const consoleEl = consolePanelRef.current;
       const trayEl = controlTrayRef.current;
-      const vh = window.innerHeight;
       const vw = window.innerWidth;
 
       if (!consoleEl || !trayEl) return;
@@ -123,7 +122,7 @@ function AppComponent() {
 
       const top = 0.05;
       const right = 0.05;
-      let bottom = 0.05;
+      const bottom = 0.05;
       let left = 0.05;
 
       if (!isMobile) {
@@ -159,9 +158,9 @@ function AppComponent() {
 
   useEffect(() => {
     if (map) {
-      const banner = document.querySelector(
+      const banner = document.querySelector<HTMLElement>(
         '.vAygCK-api-load-alpha-banner',
-      ) as HTMLElement;
+      );
       if (banner) {
         banner.style.display = 'none';
       }
@@ -190,7 +189,7 @@ function AppComponent() {
     const allEntities = [...markerPositions].map(p => ({ position: p }));
 
     if (allEntities.length > 0 && !preventAutoFrame) {
-      controller.frameEntities(allEntities, padding);
+      void controller.frameEntities(allEntities, padding);
     }
   }, [markers, padding, preventAutoFrame]); // Re-run when markers or padding change
 
@@ -234,7 +233,7 @@ function AppComponent() {
           </div>
           <div className="map-panel">
               <Map3D
-                ref={element => setMap(element ?? null)}
+                ref={element => { setMap(element ?? null); }}
                 onCameraChange={handleCameraChange}
                 {...viewProps}>
               </Map3D>

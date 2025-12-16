@@ -2,8 +2,8 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { LiveConnectConfig, Modality, LiveServerContent, Part } from '@google/genai';
+import React, { useEffect, useRef, useState } from 'react';
+import { Modality, type LiveServerContent, type Part } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -12,7 +12,7 @@ import {
   useSettings,
   useLogStore,
   useTools,
-  ConversationTurn,
+  type ConversationTurn,
   useUI,
 } from '@/stores';
 import { SourcesPopover } from '@/components/sources-popover/sources-popover';
@@ -29,19 +29,19 @@ const formatTimestamp = (date: Date) => {
 
 // Hook to detect screen size for responsive component rendering
 const useMediaQuery = (query: string) => {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => {
+    return typeof window !== 'undefined' && window.matchMedia(query).matches;
+  });
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
     const listener = () => {
       setMatches(media.matches);
     };
+    listener();
     media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
+    return () => { media.removeEventListener('change', listener); };
+  }, [query]);
 
   return matches;
 };
@@ -112,13 +112,12 @@ export default function StreamingConsole() {
   }, [setConfig, systemPrompt, tools, voice]);
 
   useEffect(() => {
-    const { addTurn, updateLastTurn, mergeIntoLastAgentTurn } =
-      useLogStore.getState();
+    const { addTurn, updateLastTurn } = useLogStore.getState();
 
     const handleInputTranscription = (text: string, isFinal: boolean) => {
       const turns = useLogStore.getState().turns;
       const last = turns[turns.length - 1];
-      if (last && last.role === 'user' && !last.isFinal) {
+      if (last?.role === 'user' && !last.isFinal) {
         updateLastTurn({
           text: last.text + text,
           isFinal,
@@ -133,7 +132,7 @@ export default function StreamingConsole() {
         useLogStore.getState();
       const last = turns[turns.length - 1];
 
-      if (last && last.role === 'agent' && !last.isFinal) {
+      if (last?.role === 'agent' && !last.isFinal) {
         updateLastTurn({
           text: last.text + text,
           isFinal,
@@ -192,7 +191,7 @@ export default function StreamingConsole() {
         };
         if (groundingChunks) {
           updatedTurn.groundingChunks = [
-            ...(last.groundingChunks || []),
+            ...(last.groundingChunks ?? []),
             ...groundingChunks,
           ];
         }
@@ -217,8 +216,8 @@ export default function StreamingConsole() {
         };
         if (heldGroundingChunks) {
           const combinedChunks = [
-            ...(heldGroundingChunks || []),
-            ...(newTurnData.groundingChunks || []),
+            ...heldGroundingChunks,
+            ...(newTurnData.groundingChunks ?? []),
           ];
           newTurnData.groundingChunks = combinedChunks;
           clearHeldGroundingChunks();
@@ -277,7 +276,7 @@ export default function StreamingConsole() {
       }
     }, 350); // A little longer than the transition duration
 
-    return () => clearTimeout(scrollTimeout);
+    return () => { clearTimeout(scrollTimeout); };
   }, [turns, isAwaitingFunctionResponse]);
 
   return (
@@ -314,11 +313,11 @@ export default function StreamingConsole() {
               sources =
                 t.groundingChunks
                   .map(chunk => {
-                    const source = chunk.web || chunk.maps;
-                    if (source && source.uri) {
+                    const source = chunk.web ?? chunk.maps;
+                    if (source?.uri) {
                       return {
                         uri: source.uri,
-                        title: source.title || source.uri,
+                        title: source.title ?? source.uri,
                       };
                     }
                     return null;
@@ -328,13 +327,14 @@ export default function StreamingConsole() {
               if (t.groundingChunks.length === 1) {
                 const chunk = t.groundingChunks[0];
                 if (chunk) {
-                  // The type for `placeAnswerSources` might be missing or incomplete. Use `any` for safety.
-                  const placeAnswerSources = (chunk.maps as { placeAnswerSources?: { reviewSnippets?: unknown[] } })?.placeAnswerSources;
+                  // The type for `placeAnswerSources` might be missing or incomplete. Use type assertion for safety.
+                  const mapsData = chunk.maps as { placeAnswerSources?: { reviewSnippets?: unknown[] } } | undefined;
+                  const placeAnswerSources = mapsData?.placeAnswerSources;
                   if (
                     placeAnswerSources &&
                     Array.isArray(placeAnswerSources.reviewSnippets)
                   ) {
-                    const reviewSources = (placeAnswerSources.reviewSnippets as Array<{ googleMapsUri?: string; title?: string }>)
+                    const reviewSources = (placeAnswerSources.reviewSnippets as { googleMapsUri?: string; title?: string }[])
                       .map((review) => {
                         if (review.googleMapsUri && review.title) {
                           return {

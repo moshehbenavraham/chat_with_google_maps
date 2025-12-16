@@ -12,9 +12,6 @@ const toolsets: Record<Template, FunctionCall[]> = {
 };
 
 import {
-  PROMPTS,
-  PROMPTS_BY_ID,
-  DEFAULT_PROMPT,
   itineraryPlannerPrompt,
   scavengerHuntPrompt,
 } from '@/lib/prompts';
@@ -25,13 +22,13 @@ const systemPrompts: Record<Template, string> = {
 
 import { DEFAULT_LIVE_API_MODEL, DEFAULT_VOICE } from '@/lib/constants';
 import {
-  GenerateContentResponse,
-  FunctionResponse,
-  FunctionResponseScheduling,
-  LiveServerToolCall,
-  GroundingChunk,
+  type GenerateContentResponse,
+  type FunctionResponse,
+  type FunctionResponseScheduling,
+  type LiveServerToolCall,
+  type GroundingChunk,
 } from '@google/genai';
-import { Map3DCameraProps } from '@/components/map-3d';
+import { type Map3DCameraProps } from '@/components/map-3d';
 
 /**
  * Personas
@@ -66,9 +63,9 @@ export const useSettings = create<{
   voice: DEFAULT_VOICE,
   isEasterEggMode: false,
   activePersona: SCAVENGER_HUNT_PERSONA,
-  setSystemPrompt: prompt => set({ systemPrompt: prompt }),
-  setModel: model => set({ model }),
-  setVoice: voice => set({ voice }),
+  setSystemPrompt: prompt => { set({ systemPrompt: prompt }); },
+  setModel: model => { set({ model }); },
+  setVoice: voice => { set({ voice }); },
   setPersona: (persona: string) => {
     if (personas[persona]) {
       set({
@@ -108,10 +105,10 @@ export const useUI = create<{
   toggleShowSystemMessages: () => void;
 }>(set => ({
   isSidebarOpen: false,
-  toggleSidebar: () => set(state => ({ isSidebarOpen: !state.isSidebarOpen })),
+  toggleSidebar: () => { set(state => ({ isSidebarOpen: !state.isSidebarOpen })); },
   showSystemMessages: false,
   toggleShowSystemMessages: () =>
-    set(state => ({ showSystemMessages: !state.showSystemMessages })),
+    { set(state => ({ showSystemMessages: !state.showSystemMessages })); },
 }));
 
 /**
@@ -169,13 +166,13 @@ export const useLogStore = create<{
   ) => void;
   clearTurns: () => void;
   setIsAwaitingFunctionResponse: (isAwaiting: boolean) => void;
-}>((set, get) => ({
+}>((set, _get) => ({
   turns: [],
   isAwaitingFunctionResponse: false,
   addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) =>
-    set(state => ({
+    { set(state => ({
       turns: [...state.turns, { ...turn, timestamp: new Date() }],
-    })),
+    })); },
   updateLastTurn: (update: Partial<Omit<ConversationTurn, 'timestamp'>>) => {
     set(state => {
       if (state.turns.length === 0) {
@@ -214,13 +211,13 @@ export const useLogStore = create<{
 
       const mergedTurn: ConversationTurn = {
         ...lastAgentTurn,
-        text: lastAgentTurn.text + (update.text || ''),
+        text: lastAgentTurn.text + update.text,
         isFinal: update.isFinal,
         groundingChunks: [
-          ...(lastAgentTurn.groundingChunks || []),
-          ...(update.groundingChunks || []),
+          ...(lastAgentTurn.groundingChunks ?? []),
+          ...(update.groundingChunks ?? []),
         ],
-        toolResponse: update.toolResponse || lastAgentTurn.toolResponse,
+        toolResponse: update.toolResponse ?? lastAgentTurn.toolResponse,
       };
 
       // Rebuild the turns array, replacing the old agent turn.
@@ -230,9 +227,9 @@ export const useLogStore = create<{
       return { turns: newTurns };
     });
   },
-  clearTurns: () => set({ turns: [] }),
+  clearTurns: () => { set({ turns: [] }); },
   setIsAwaitingFunctionResponse: isAwaiting =>
-    set({ isAwaitingFunctionResponse: isAwaiting }),
+    { set({ isAwaitingFunctionResponse: isAwaiting }); },
 }));
 
 /**
@@ -260,8 +257,8 @@ export const useMapStore = create<{
   markers: [],
   cameraTarget: null,
   preventAutoFrame: false,
-  setMarkers: markers => set({ markers }),
-  clearMarkers: () => set({ markers: [] }),
-  setCameraTarget: target => set({ cameraTarget: target }),
-  setPreventAutoFrame: prevent => set({ preventAutoFrame: prevent }),
+  setMarkers: markers => { set({ markers }); },
+  clearMarkers: () => { set({ markers: [] }); },
+  setCameraTarget: target => { set({ cameraTarget: target }); },
+  setPreventAutoFrame: prevent => { set({ preventAutoFrame: prevent }); },
 }));

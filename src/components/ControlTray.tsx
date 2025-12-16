@@ -19,33 +19,35 @@
  */
 
 import cn from 'classnames';
-import React, { memo, useEffect, useRef, useState, FormEvent, Ref } from 'react';
+import React, { memo, useEffect, useRef, useState, type FormEvent, type Ref } from 'react';
 import { AudioRecorder } from '@/lib/audio/audio-recorder';
 import { useLogStore, useUI, useSettings } from '@/stores';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 
 // Hook to detect screen size for responsive component rendering
 const useMediaQuery = (query: string) => {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => {
+    // Initialize with actual value to avoid hydration mismatch
+    return typeof window !== 'undefined' && window.matchMedia(query).matches;
+  });
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
     const listener = () => {
       setMatches(media.matches);
     };
+    // Set initial value and listen for changes
+    listener();
     media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
+    return () => { media.removeEventListener('change', listener); };
+  }, [query]);
 
   return matches;
 };
 
-export type ControlTrayProps = {
+export interface ControlTrayProps {
   trayRef?: Ref<HTMLElement>;
-};
+}
 
 function ControlTray({trayRef}: ControlTrayProps) {
   const [speakerMuted, setSpeakerMuted] = useState(false);
@@ -65,9 +67,11 @@ function ControlTray({trayRef}: ControlTrayProps) {
     useLiveAPIContext();
 
   useEffect(() => {
+    /* eslint-disable react-hooks/immutability -- Web Audio API gain.value must be modified directly */
     if (audioStreamer.current) {
       audioStreamer.current.gainNode.gain.value = speakerMuted ? 0 : 1;
     }
+    /* eslint-enable react-hooks/immutability */
   }, [speakerMuted, audioStreamer]);
 
   useEffect(() => {
@@ -86,9 +90,9 @@ function ControlTray({trayRef}: ControlTrayProps) {
       ]);
     };
 
-    if (connected && !muted && audioRecorder) {
+    if (connected && !muted) {
       audioRecorder.on('data', onData);
-      audioRecorder.start();
+      void audioRecorder.start();
     } else {
       audioRecorder.stop();
     }
@@ -101,7 +105,7 @@ function ControlTray({trayRef}: ControlTrayProps) {
     setMuted(!muted);
   };
 
-  const handleTextSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleTextSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!textPrompt.trim()) return;
 
@@ -175,7 +179,7 @@ function ControlTray({trayRef}: ControlTrayProps) {
             'speaker-on': !speakerMuted,
             'speaker-off': speakerMuted,
           })}
-          onClick={() => setSpeakerMuted(!speakerMuted)}
+          onClick={() => { setSpeakerMuted(!speakerMuted); }}
           title={!speakerMuted ? 'Mute audio output' : 'Unmute audio output'}
         >
           <span className="material-symbols-outlined">
@@ -198,7 +202,7 @@ function ControlTray({trayRef}: ControlTrayProps) {
         </button>
         <button
           className={cn('action-button keyboard-toggle-button')}
-          onClick={() => setIsTextEntryVisible(!isTextEntryVisible)}
+          onClick={() => { setIsTextEntryVisible(!isTextEntryVisible); }}
           title="Toggle text input"
         >
           <span className="icon">
@@ -214,7 +218,7 @@ function ControlTray({trayRef}: ControlTrayProps) {
                 connected ? 'Type a message...' : 'Connect to start typing...'
               }
               value={textPrompt}
-              onChange={e => setTextPrompt(e.target.value)}
+              onChange={e => { setTextPrompt(e.target.value); }}
               aria-label="Text prompt"
               disabled={!connected}
             />

@@ -4,16 +4,16 @@
 */
 import {
   GoogleGenAI,
-  LiveCallbacks,
-  LiveClientToolResponse,
-  LiveConnectConfig,
-  LiveServerContent,
-  LiveServerMessage,
-  LiveServerToolCall,
-  LiveServerToolCallCancellation,
-  Part,
-  Session,
-  Blob,
+  type LiveCallbacks,
+  type LiveClientToolResponse,
+  type LiveConnectConfig,
+  type LiveServerContent,
+  type LiveServerMessage,
+  type LiveServerToolCall,
+  type LiveServerToolCallCancellation,
+  type Part,
+  type Session,
+  type Blob,
 } from '@google/genai';
 import EventEmitter from 'eventemitter3';
 import { DEFAULT_LIVE_API_MODEL } from '@/lib/constants';
@@ -130,7 +130,7 @@ export class GenAILiveClient {
     return true;
   }
 
-  public send(parts: Part | Part[], turnComplete: boolean = true) {
+  public send(parts: Part | Part[], turnComplete = true) {
     if (this._status !== 'connected' || !this.session) {
       this.emitter.emit('error', new ErrorEvent('Client is not connected'));
       return;
@@ -149,14 +149,15 @@ export class GenAILiveClient {
     this.log(`client.send`, text);
   }
 
-  public sendRealtimeInput(chunks: Array<Blob>) {
+  public sendRealtimeInput(chunks: Blob[]) {
     if (this._status !== 'connected' || !this.session) {
       this.emitter.emit('error', new ErrorEvent('Client is not connected'));
       return;
     }
 
+    const session = this.session;
     chunks.forEach(chunk => {
-      this.session!.sendRealtimeInput({ media: chunk });
+      session.sendRealtimeInput({ media: chunk });
     });
 
     let hasAudio = false;
@@ -180,11 +181,10 @@ export class GenAILiveClient {
       return;
     }
     if (
-      toolResponse.functionResponses &&
-      toolResponse.functionResponses.length
+      toolResponse.functionResponses?.length
     ) {
       this.session.sendToolResponse({
-        functionResponses: toolResponse.functionResponses!,
+        functionResponses: toolResponse.functionResponses,
       });
     }
 
@@ -236,7 +236,7 @@ export class GenAILiveClient {
       }
 
       if (serverContent.modelTurn) {
-        let parts: Part[] = serverContent.modelTurn.parts || [];
+        const parts: Part[] = serverContent.modelTurn.parts ?? [];
 
         const audioParts = parts.filter(p =>
           p.inlineData?.mimeType?.startsWith('audio/pcm'),
@@ -247,8 +247,8 @@ export class GenAILiveClient {
         base64s.forEach(b64 => {
           if (b64) {
             const data = base64ToArrayBuffer(b64);
-            this.emitter.emit('audio', data as ArrayBuffer);
-            this.log(`server.audio`, `buffer (${data.byteLength})`);
+            this.emitter.emit('audio', data);
+            this.log(`server.audio`, `buffer (${String(data.byteLength)})`);
           }
         });
 
@@ -264,7 +264,7 @@ export class GenAILiveClient {
         this.emitter.emit('turncomplete');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK types don't include generationComplete yet
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access -- SDK types don't include generationComplete yet
       if ((serverContent as any).generationComplete) {
         this.log('server.send', 'generationComplete');
         this.emitter.emit('generationcomplete');

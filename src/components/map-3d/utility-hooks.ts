@@ -21,10 +21,10 @@
  * limitations under the License.
  */
 
-import React, {
-  DependencyList,
-  EffectCallback,
-  Ref,
+import {
+  type DependencyList,
+  type EffectCallback,
+  type Ref,
   useCallback,
   useEffect,
   useRef,
@@ -34,7 +34,7 @@ import isDeepEqual from 'fast-deep-equal';
 
 export function useCallbackRef<T>() {
   const [el, setEl] = useState<T | null>(null);
-  const ref = useCallback((value: T) => setEl(value), [setEl]);
+  const ref = useCallback((value: T) => { setEl(value); }, [setEl]);
 
   return [el, ref as Ref<T>] as const;
 }

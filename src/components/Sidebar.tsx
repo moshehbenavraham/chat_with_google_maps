@@ -99,7 +99,7 @@ export default function Sidebar() {
                   Persona
                   <select
                     value={activePersona}
-                    onChange={e => setPersona(e.target.value)}
+                    onChange={e => { setPersona(e.target.value); }}
                   >
                     {Object.keys(personas).map(personaName => (
                       <option key={personaName} value={personaName}>
@@ -113,7 +113,7 @@ export default function Sidebar() {
                 System Prompt
                 <textarea
                   value={systemPrompt}
-                  onChange={e => setSystemPrompt(e.target.value)}
+                  onChange={e => { setSystemPrompt(e.target.value); }}
                   rows={10}
                   placeholder="Describe the role and personality of the AI..."
                   disabled={isEasterEggMode}
@@ -123,7 +123,7 @@ export default function Sidebar() {
                 Model
                 <select
                   value={model}
-                  onChange={e => setModel(e.target.value)}
+                  onChange={e => { setModel(e.target.value); }}
                 >
                   {AVAILABLE_LIVE_MODELS.map(m => (
                     <option key={m.id} value={m.id} title={m.description}>
@@ -136,7 +136,7 @@ export default function Sidebar() {
                 Voice
                 <select
                   value={voice}
-                  onChange={e => setVoice(e.target.value)}
+                  onChange={e => { setVoice(e.target.value); }}
                 >
                   {availableVoices.map(v => (
                     <option key={v.name} value={v.name}>

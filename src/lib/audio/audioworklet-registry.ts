@@ -22,16 +22,16 @@
  * A registry to map attached worklets by their audio-context
  * Any module using `audioContext.audioWorklet.addModule()` should register the worklet here
  */
-export type WorkletGraph = {
+export interface WorkletGraph {
   node?: AudioWorkletNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Handler return types vary by worklet
-  handlers: Array<(this: MessagePort, ev: MessageEvent) => any>;
-};
+  handlers: ((this: MessagePort, ev: MessageEvent) => any)[];
+}
 
-export const registeredWorklets: Map<
+export const registeredWorklets = new Map<
   AudioContext,
   Record<string, WorkletGraph>
-> = new Map();
+>();
 
 export const createWorketFromSrc = (
   workletName: string,

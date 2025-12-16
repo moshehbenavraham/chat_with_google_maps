@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { FC } from 'react';
+import React from 'react';
 import './PopUp.css';
 
 interface PopUpProps {
@@ -17,7 +17,7 @@ const PopUp: React.FC<PopUpProps> = ({ onClose }) => {
         <h2>Welcome to the Interactive Day Planner</h2>
         <div className="popup-scrollable-content">
           <p>
-            This interactive demo highlights Gemini and Grounding with Google Maps' ability to engage in real-time, voice-driven conversations.
+            This interactive demo highlights Gemini and Grounding with Google Maps&apos; ability to engage in real-time, voice-driven conversations.
 Plan a day trip using natural language and experience how Gemini leverages Google Maps to deliver accurate, up-to-the-minute information.
           </p>
           <p>To get started:</p>
@@ -29,7 +29,7 @@ Plan a day trip using natural language and experience how Gemini leverages Googl
             <li>
               <span className="icon">record_voice_over</span>
               <div><strong>Speak naturally &nbsp;</strong>to plan your trip. Try saying,
-              "Let's plan a trip to Chicago."</div>
+              &quot;Let&apos;s plan a trip to Chicago.&quot;</div>
             </li>
             <li>
               <span className="icon">map</span>
@@ -43,12 +43,12 @@ Plan a day trip using natural language and experience how Gemini leverages Googl
             </li>
             <li>
               <span className="icon">tune</span>
-              <div>Click the <strong>&nbsp; Settings &nbsp;</strong> icon to customize the AI's
+              <div>Click the <strong>&nbsp; Settings &nbsp;</strong> icon to customize the AI&apos;s
               voice and behavior.</div>
             </li>
           </ol>
         </div>
-        <button onClick={onClose}>Got It, Let's Plan!</button>
+        <button onClick={onClose}>Got It, Let&apos;s Plan!</button>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import type React from 'react';
 
 /**
  * Module augmentations for Google Maps types that are not yet available
@@ -47,15 +47,12 @@ declare module '@vis.gl/react-google-maps' {
 
 // Augment google.maps namespace with missing types
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- Required for declaration merging
   namespace google.maps {
     // Augment PlacesLibrary with experimental contextual elements
     interface PlacesLibrary {
-      PlaceContextualElement: {
-        new (): PlaceContextualElement;
-      };
-      PlaceContextualListConfigElement: {
-        new (): PlaceContextualListConfigElement;
-      };
+      PlaceContextualElement: new () => PlaceContextualElement;
+      PlaceContextualListConfigElement: new () => PlaceContextualListConfigElement;
     }
 
     // PlaceContextualElement for grounding widget
@@ -70,11 +67,10 @@ declare global {
 
     // Augment Maps3DLibrary with Marker3DInteractiveElement
     interface Maps3DLibrary {
-      Marker3DInteractiveElement: {
-        new (options: maps3d.Marker3DInteractiveElementOptions): HTMLElement;
-      };
+      Marker3DInteractiveElement: new (options: maps3d.Marker3DInteractiveElementOptions) => HTMLElement;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-namespace -- Required for declaration merging
     namespace maps3d {
       // Options for Marker3DInteractiveElement
       interface Marker3DInteractiveElementOptions {
@@ -120,6 +116,7 @@ declare global {
 
 // Add the <gmp-map-3d> custom element to JSX.IntrinsicElements
 declare module 'react' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- Required for JSX augmentation
   namespace JSX {
     interface IntrinsicElements {
       'gmp-map-3d': GmpMap3DAttributes;

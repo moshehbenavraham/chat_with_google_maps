@@ -19,9 +19,9 @@
  * limitations under the License.
  */
 
-import { GenerateContentResponse, GroundingChunk } from '@google/genai';
+import { type GenerateContentResponse, type GroundingChunk } from '@google/genai';
 import { fetchMapsGroundedResponseREST } from '@/lib/api/maps-grounding';
-import { MapMarker, useLogStore, useMapStore } from '@/stores';
+import { type MapMarker, useLogStore, useMapStore } from '@/stores';
 import { lookAtWithPadding } from '@/lib/map/look-at';
 
 /**
@@ -66,7 +66,7 @@ async function fetchPlaceDetailsFromChunks(
   responseText?: string,
   markerBehavior: 'mentioned' | 'all' | 'none' = 'mentioned',
 ): Promise<MapMarker[]> {
-  if (markerBehavior === 'none' || !groundingChunks?.length) {
+  if (markerBehavior === 'none' || groundingChunks.length === 0) {
     return [];
   }
 
@@ -172,24 +172,24 @@ function updateMapStateWithMarkers(
 const mapsGrounding: ToolImplementation = async (args, context) => {
   const { setHeldGroundedResponse, setHeldGroundingChunks, placesLib } = context;
   const query = args.query as string | undefined;
-  const markerBehavior = (args.markerBehavior as 'mentioned' | 'all' | 'none') ?? 'mentioned';
+  const markerBehavior = (args.markerBehavior as 'mentioned' | 'all' | 'none' | undefined) ?? 'mentioned';
   const systemInstruction = args.systemInstruction as string | undefined;
   const enableWidget = args.enableWidget as boolean | undefined;
 
-  const groundedResponse = await fetchMapsGroundedResponseREST({
-    prompt: query as string,
-    systemInstruction: systemInstruction as string | undefined,
-    enableWidget: enableWidget as boolean | undefined,
-  });
-
-  if (!groundedResponse) {
-    return 'Failed to get a response from maps grounding.';
+  if (!query) {
+    return 'No query provided for maps grounding.';
   }
+
+  const groundedResponse = await fetchMapsGroundedResponseREST({
+    prompt: query,
+    systemInstruction: systemInstruction,
+    enableWidget: enableWidget,
+  });
 
   // Hold response data for display in the chat log
   setHeldGroundedResponse(groundedResponse);
-  const groundingChunks =
-    groundedResponse?.candidates?.[0]?.groundingMetadata?.groundingChunks;
+  const firstCandidate = groundedResponse.candidates?.[0];
+  const groundingChunks = firstCandidate?.groundingMetadata?.groundingChunks;
   if (groundingChunks && groundingChunks.length > 0) {
     setHeldGroundingChunks(groundingChunks);
   } else {
@@ -205,8 +205,8 @@ const mapsGrounding: ToolImplementation = async (args, context) => {
   if (placesLib && markerBehavior !== 'none') {
     (async () => {
       try {
-        const responseText =
-          groundedResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const parts = firstCandidate.content?.parts;
+        const responseText = parts?.[0]?.text;
         const markers = await fetchPlaceDetailsFromChunks(
           groundingChunks,
           placesLib,
@@ -233,7 +233,8 @@ const mapsGrounding: ToolImplementation = async (args, context) => {
  * commands the `MapController` to fly to the new target.
  */
 const frameEstablishingShot: ToolImplementation = async (args, context) => {
-  let { lat, lng, geocode } = args;
+  let { lat, lng } = args;
+  const geocode = args.geocode as string | undefined;
   const { geocoder } = context;
 
   if (geocode && typeof geocode === 'string') {
@@ -248,7 +249,7 @@ const frameEstablishingShot: ToolImplementation = async (args, context) => {
     }
     try {
       const response = await geocoder.geocode({ address: geocode });
-      const firstResult = response.results?.[0];
+      const firstResult = response.results[0];
       if (firstResult) {
         const location = firstResult.geometry.location;
         lat = location.lat();
@@ -291,7 +292,7 @@ const frameEstablishingShot: ToolImplementation = async (args, context) => {
   if (geocode) {
     return `Set camera target to ${geocode}.`;
   }
-  return `Set camera target to latitude ${lat} and longitude ${lng}.`;
+  return `Set camera target to latitude ${String(lat)} and longitude ${String(lng)}.`;
 };
 
 
@@ -314,9 +315,9 @@ const frameLocations: ToolImplementation = async (args, context) => {
   // 1. Collect all locations from explicit coordinates and geocoded addresses.
   if (Array.isArray(explicitLocations)) {
     locationsWithLabels.push(
-      ...(explicitLocations.map((loc: { lat: number; lng: number }) => ({
+      ...explicitLocations.map((loc: { lat: number; lng: number }) => ({
         ...loc,
-      })) || []),
+      })),
     );
   }
 
@@ -329,15 +330,16 @@ const frameLocations: ToolImplementation = async (args, context) => {
       return errorMessage;
     }
 
-    const geocodePromises = geocode.map(address =>
+    const geocodeAddresses = geocode as string[];
+    const geocodePromises = geocodeAddresses.map(address =>
       geocoder.geocode({ address }).then(response => ({ response, address })),
     );
     const geocodeResults = await Promise.allSettled(geocodePromises);
 
-    geocodeResults.forEach(result => {
+    for (const result of geocodeResults) {
       if (result.status === 'fulfilled') {
         const { response, address } = result.value;
-        const firstResult = response.results?.[0];
+        const firstResult = response.results[0];
         if (firstResult) {
           const location = firstResult.geometry.location;
           locationsWithLabels.push({
@@ -352,13 +354,13 @@ const frameLocations: ToolImplementation = async (args, context) => {
             .addTurn({ role: 'system', text: errorMessage, isFinal: true });
         }
       } else {
-        const errorMessage = `Geocoding failed for an address.`;
+        const errorMessage = 'Geocoding failed for an address.';
         console.error(errorMessage, result.reason);
         useLogStore
           .getState()
           .addTurn({ role: 'system', text: errorMessage, isFinal: true });
       }
-    });
+    }
   }
 
   // 2. Check if we have any valid locations.
@@ -372,7 +374,7 @@ const frameLocations: ToolImplementation = async (args, context) => {
     // reactively frame these new markers.
     const markersToSet = locationsWithLabels.map((loc, index) => ({
       position: { lat: loc.lat, lng: loc.lng, altitude: 1 },
-      label: loc.label || `Location ${index + 1}`,
+      label: loc.label ?? `Location ${String(index + 1)}`,
       showLabel: true,
     }));
 
@@ -380,7 +382,7 @@ const frameLocations: ToolImplementation = async (args, context) => {
     setPreventAutoFrame(false); // Ensure auto-framing is enabled
     setMarkers(markersToSet);
 
-    return `Framed and added markers for ${markersToSet.length} locations.`;
+    return `Framed and added markers for ${String(markersToSet.length)} locations.`;
   } else {
     // No markers requested. Clear existing markers and manually fly the camera.
     if (!elevationLib) {
@@ -409,7 +411,7 @@ const frameLocations: ToolImplementation = async (args, context) => {
       roll: 0,
     });
 
-    return `Framed ${locationsWithLabels.length} locations on the map.`;
+    return `Framed ${String(locationsWithLabels.length)} locations on the map.`;
   }
 };
 

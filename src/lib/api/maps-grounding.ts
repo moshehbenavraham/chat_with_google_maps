@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { GoogleGenAI, GenerateContentResponse } from '@google/genai';
+import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
 
-const API_KEY = process.env.API_KEY as string;
+const API_KEY = process.env.API_KEY ?? '';
 const SYS_INSTRUCTIONS = "You are a helpful assistant that provides concise answers based on the user's query. Provide details for the top 3 results, unless the user requests less. Provide the name and a concise one line description that highlights a unique, interesting, or fun aspect about the place. Do not state addresses. "
 
 /**
@@ -15,7 +15,7 @@ const SYS_INSTRUCTIONS = "You are a helpful assistant that provides concise answ
 */
 export async function fetchMapsGroundedResponseSDK({
  prompt,
- enableWidget = true,
+ enableWidget: _enableWidget = true,
  lat,
  lng,
  systemInstruction,
@@ -42,7 +42,7 @@ export async function fetchMapsGroundedResponseSDK({
        thinkingConfig: {
          thinkingBudget: 0,
        },
-       systemInstruction: systemInstruction || SYS_INSTRUCTIONS,
+       systemInstruction: systemInstruction ?? SYS_INSTRUCTIONS,
      },
    };
 
@@ -57,11 +57,11 @@ export async function fetchMapsGroundedResponseSDK({
      };
    }
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK types incomplete for googleMaps tool
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- SDK types incomplete for googleMaps tool
    const response = await ai.models.generateContent(request as any);
    return (response);
  } catch (error) {
-   console.error(`Error calling Google Search grounding: ${error}
+   console.error(`Error calling Google Search grounding: ${String(error)}
    With prompt: ${prompt}`);
    throw error;
  }
@@ -102,7 +102,7 @@ const requestBody: Record<string, any> = {
      },
    ],
    system_instruction: {
-       parts: [ { text: systemInstruction || SYS_INSTRUCTIONS } ]
+       parts: [ { text: systemInstruction ?? SYS_INSTRUCTIONS } ]
    },
    tools: [
      {
@@ -143,14 +143,14 @@ const requestBody: Record<string, any> = {
      const errorBody = await response.text();
      console.error('Error from Generative Language API:', errorBody);
      throw new Error(
-       `API request failed with status ${response.status}: ${errorBody}`,
+       `API request failed with status ${String(response.status)}: ${errorBody}`,
      );
    }
 
-   const data = await response.json();
+   const data: unknown = await response.json();
    return data as GenerateContentResponse;
  } catch (error) {
-   console.error(`Error calling Maps grounding REST API: ${error}`);
+   console.error(`Error calling Maps grounding REST API: ${String(error)}`);
    throw error;
  }
 }

@@ -19,11 +19,11 @@
  * limitations under the License.
  */
 
-type Location = {
+interface Location {
   lat: number;
   lng: number;
   alt?: number;
-};
+}
 
 async function fetchElevation(
   lat: number,
@@ -36,25 +36,25 @@ async function fetchElevation(
 
   try {
     const { results } = await elevator.getElevationForLocations(locationRequest);
-    if (results && results[0]) {
-      return results[0].elevation;
+    const firstResult = results[0];
+    if (firstResult) {
+      return firstResult.elevation;
     }
   } catch (e) {
-    console.error('Elevation service failed due to: ' + e);
+    console.error('Elevation service failed due to: ' + String(e));
   }
   return 0;
 }
 
 export async function lookAt(
-  locations: Array<Location>,
+  locations: Location[],
   elevator: google.maps.ElevationService,
   heading = 0
 ) {
-  if (locations.length === 0) {
+  const firstLocation = locations[0];
+  if (!firstLocation) {
     throw new Error('lookAt requires at least one location');
   }
-
-  const firstLocation = locations[0]!;
 
   // get the general altitude of the area
   const ALTITUDE = await fetchElevation(
@@ -62,7 +62,7 @@ export async function lookAt(
     firstLocation.lng,
     elevator
   );
-  console.log(`lookAt altitude for ${firstLocation.lat}, ${firstLocation.lng}: ${ALTITUDE}`);
+  console.log(`lookAt altitude for ${String(firstLocation.lat)}, ${String(firstLocation.lng)}: ${String(ALTITUDE)}`);
 
   const degToRad = Math.PI / 180;
 
@@ -151,16 +151,15 @@ export async function lookAt(
  * @returns An object with camera parameters (lat, lng, altitude, range, tilt, heading).
  */
 export async function lookAtWithPadding(
-  locations: Array<Location>,
+  locations: Location[],
   elevator: google.maps.ElevationService,
   heading = 0,
   padding: [number, number, number, number] = [0, 0, 0, 0]
 ) {
-  if (locations.length === 0) {
+  const firstLocation = locations[0];
+  if (!firstLocation) {
     throw new Error('lookAtWithPadding requires at least one location');
   }
-
-  const firstLocation = locations[0]!;
 
   // get the general altitude of the area
   const ALTITUDE = await fetchElevation(

@@ -24,7 +24,7 @@ export function GroundingWidget({
 
     const currentElement = elementRef.current;
 
-    async function initializeElement() {
+    function initializeElement() {
       if (currentElement && placesLibrary) {
         const element = new placesLibrary.PlaceContextualElement();
         element.id="widget";

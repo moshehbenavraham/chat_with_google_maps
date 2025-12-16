@@ -19,15 +19,15 @@
  * limitations under the License.
  */
 
-import { Map3DCameraProps } from '@/components/map-3d';
+import { type Map3DCameraProps } from '@/components/map-3d';
 import { lookAtWithPadding } from './look-at';
-import { MapMarker } from '@/stores';
+import { type MapMarker } from '@/stores';
 
-type MapControllerDependencies = {
+interface MapControllerDependencies {
   map: google.maps.maps3d.Map3DElement;
   maps3dLib: google.maps.Maps3DLibrary;
   elevationLib: google.maps.ElevationLibrary;
-};
+}
 
 /**
  * A controller class to centralize all interactions with the Google Maps 3D element.

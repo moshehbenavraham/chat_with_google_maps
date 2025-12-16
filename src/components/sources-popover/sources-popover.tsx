@@ -23,7 +23,7 @@ export function SourcesPopover({
   buttonText = 'Sources',
   className = ''
 }: SourcesPopoverProps) {
-  if (!sources || sources.length === 0) {
+  if (sources.length === 0) {
     return null;
   }
 

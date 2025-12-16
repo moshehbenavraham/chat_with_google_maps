@@ -18,12 +18,12 @@
  * limitations under the License.
  */
 
-import React, { createContext, FC, ReactNode, useContext } from 'react';
-import { useLiveApi, UseLiveApiResults } from '@/hooks/use-live-api';
+import React, { createContext, type FC, type ReactNode, useContext } from 'react';
+import { useLiveApi, type UseLiveApiResults } from '@/hooks/use-live-api';
 
 const LiveAPIContext = createContext<UseLiveApiResults | undefined>(undefined);
 
-export type LiveAPIProviderProps = {
+export interface LiveAPIProviderProps {
   children: ReactNode;
   apiKey: string;
   map: google.maps.maps3d.Map3DElement | null;
@@ -31,7 +31,7 @@ export type LiveAPIProviderProps = {
   elevationLib: google.maps.ElevationLibrary | null;
   geocoder: google.maps.Geocoder | null;
   padding: [number, number, number, number];
-};
+}
 
 export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
   apiKey,

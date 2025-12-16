@@ -23,7 +23,7 @@
 
 import {useMapsLibrary} from '@vis.gl/react-google-maps';
 import React, {
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -38,13 +38,13 @@ export type Map3DProps = google.maps.maps3d.Map3DElementOptions & {
   onCameraChange?: (cameraProps: Map3DCameraProps) => void;
 };
 
-export type Map3DCameraProps = {
+export interface Map3DCameraProps {
   center: google.maps.LatLngAltitudeLiteral;
   range: number;
   heading: number;
   tilt: number;
   roll: number;
-};
+}
 
 export const Map3D = forwardRef(
   (
@@ -64,7 +64,7 @@ export const Map3D = forwardRef(
 
     const [customElementsReady, setCustomElementsReady] = useState(false);
     useEffect(() => {
-      customElements.whenDefined('gmp-map-3d').then(() => {
+      void customElements.whenDefined('gmp-map-3d').then(() => {
         setCustomElementsReady(true);
       });
     }, []);

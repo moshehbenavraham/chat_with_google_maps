@@ -22,7 +22,7 @@
  */
 
 import {useEffect, useRef} from 'react';
-import {Map3DCameraProps} from './map-3d';
+import {type Map3DCameraProps} from './map-3d';
 
 const cameraPropNames = ['center', 'range', 'heading', 'tilt', 'roll'] as const;
 

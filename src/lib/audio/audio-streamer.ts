@@ -24,21 +24,22 @@ import {
 } from './audioworklet-registry';
 
 export class AudioStreamer {
-  private sampleRate: number = 24000;
-  private bufferSize: number = 7680;
+  private sampleRate = 24000;
+  private bufferSize = 7680;
   // A queue of audio buffers to be played. Each buffer is a Float32Array.
   private audioQueue: Float32Array[] = [];
-  private isPlaying: boolean = false;
+  private isPlaying = false;
   // Indicates if the stream has finished playing, e.g., interrupted.
-  private isStreamComplete: boolean = false;
+  private isStreamComplete = false;
   private checkInterval: number | null = null;
-  private scheduledTime: number = 0;
-  private initialBufferTime: number = 0.1; //0.1 // 100ms initial buffer
+  private scheduledTime = 0;
+  private initialBufferTime = 0.1; //0.1 // 100ms initial buffer
   // Web Audio API nodes. source => gain => destination
   public gainNode: GainNode;
   public source: AudioBufferSourceNode;
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function -- Placeholder callback for stream completion
   public onComplete = () => {};
 
   constructor(public context: AudioContext) {
@@ -48,13 +49,13 @@ export class AudioStreamer {
     this.addPCM16 = this.addPCM16.bind(this);
   }
 
-  async addWorklet<T extends (d: MessageEvent) => void>(
+  async addWorklet(
     workletName: string,
     workletSrc: string,
-    handler: T
+    handler: (d: MessageEvent) => void
   ): Promise<this> {
     let workletsRecord = registeredWorklets.get(this.context);
-    if (workletsRecord && workletsRecord[workletName]) {
+    if (workletsRecord?.[workletName]) {
       // the worklet already exists on this context
       // add the new handler to it
       workletsRecord[workletName].handlers.push(handler);
@@ -62,8 +63,8 @@ export class AudioStreamer {
     }
 
     if (!workletsRecord) {
-      registeredWorklets.set(this.context, {});
-      workletsRecord = registeredWorklets.get(this.context)!;
+      workletsRecord = {};
+      registeredWorklets.set(this.context, workletsRecord);
     }
 
     // create new record to fill in as becomes available
@@ -95,8 +96,8 @@ export class AudioStreamer {
       try {
         const int16 = dataView.getInt16(i * 2, true);
         float32Array[i] = int16 / 32768;
-      } catch (e) {
-        console.error(e);
+      } catch (_e) {
+        // Error processing PCM chunk - continue with other samples
       }
     }
     return float32Array;
@@ -144,7 +145,8 @@ export class AudioStreamer {
       this.audioQueue.length > 0 &&
       this.scheduledTime < this.context.currentTime + SCHEDULE_AHEAD_TIME
     ) {
-      const audioData = this.audioQueue.shift()!;
+      const audioData = this.audioQueue.shift();
+      if (!audioData) break;
       const audioBuffer = this.createAudioBuffer(audioData);
       const source = this.context.createBufferSource();
 
@@ -170,7 +172,7 @@ export class AudioStreamer {
       const worklets = registeredWorklets.get(this.context);
 
       if (worklets) {
-        Object.entries(worklets).forEach(([workletName, graph]) => {
+        Object.entries(worklets).forEach(([_workletName, graph]) => {
           const { node, handlers } = graph;
           if (node) {
             source.connect(node);
@@ -197,19 +199,17 @@ export class AudioStreamer {
           this.checkInterval = null;
         }
       } else {
-        if (!this.checkInterval) {
-          this.checkInterval = window.setInterval(() => {
-            if (this.audioQueue.length > 0) {
-              this.scheduleNextBuffer();
-            }
-          }, 100) as unknown as number;
-        }
+        this.checkInterval ??= window.setInterval(() => {
+          if (this.audioQueue.length > 0) {
+            this.scheduleNextBuffer();
+          }
+        }, 100) as unknown as number;
       }
     } else {
       const nextCheckTime =
         (this.scheduledTime - this.context.currentTime) * 1000;
       setTimeout(
-        () => this.scheduleNextBuffer(),
+        () => { this.scheduleNextBuffer(); },
         Math.max(0, nextCheckTime - 50)
       );
     }

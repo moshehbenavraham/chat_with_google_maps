@@ -24,22 +24,22 @@
 */
 
 
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GenAILiveClient } from '@/lib/api/genai-live-client';
-import { LiveConnectConfig, Modality, LiveServerToolCall } from '@google/genai';
+import { type LiveConnectConfig, type LiveServerToolCall } from '@google/genai';
 import { AudioStreamer } from '@/lib/audio/audio-streamer';
 import { audioContext } from '@/lib/utils';
 import VolMeterWorket from '@/lib/worklets/vol-meter';
 import { useLogStore, useMapStore, useSettings } from '@/stores';
-import { GenerateContentResponse, GroundingChunk, FunctionResponse } from '@google/genai';
-import { ToolContext, toolRegistry } from '@/lib/tools/tool-registry';
+import { type GenerateContentResponse, type GroundingChunk, type FunctionResponse } from '@google/genai';
+import { type ToolContext, toolRegistry } from '@/lib/tools/tool-registry';
 
 
-export type UseLiveApiResults = {
+export interface UseLiveApiResults {
  client: GenAILiveClient;
  setConfig: (config: LiveConnectConfig) => void;
  config: LiveConnectConfig;
- audioStreamer: MutableRefObject<AudioStreamer | null>;
+ audioStreamer: RefObject<AudioStreamer | null>;
 
 
  connect: () => Promise<void>;
@@ -52,7 +52,7 @@ export type UseLiveApiResults = {
  clearHeldGroundingChunks: () => void;
  heldGroundedResponse: GenerateContentResponse | undefined;
  clearHeldGroundedResponse: () => void;
-};
+}
 
 
 export function useLiveApi({
@@ -79,7 +79,6 @@ export function useLiveApi({
 
  const [volume, setVolume] = useState(0);
  const [connected, setConnected] = useState(false);
- const [streamerReady, setStreamerReady] = useState(false);
  const [config, setConfig] = useState<LiveConnectConfig>({});
  const [heldGroundingChunks, setHeldGroundingChunks] = useState<
     GroundingChunk[] | undefined
@@ -99,14 +98,13 @@ export function useLiveApi({
  // register audio for streaming server -> speakers
  useEffect(() => {
    if (!audioStreamerRef.current) {
-     audioContext({ id: 'audio-out' }).then((audioCtx: AudioContext) => {
+     void audioContext({ id: 'audio-out' }).then((audioCtx: AudioContext) => {
        audioStreamerRef.current = new AudioStreamer(audioCtx);
-       setStreamerReady(true);
        audioStreamerRef.current
          .addWorklet('vumeter-out', VolMeterWorket, (ev: MessageEvent<{ volume: number }>) => {
            setVolume(ev.data.volume);
          })
-         .catch(err => {
+         .catch((err: unknown) => {
            console.error('Error adding worklet:', err);
          });
      });
@@ -127,7 +125,7 @@ export function useLiveApi({
    const onClose = (event: CloseEvent) => {
      setConnected(false);
      stopAudioStreamer();
-     let reason = "Session ended. Press 'Play' to start a new session. "+ event.reason;
+     const reason = "Session ended. Press 'Play' to start a new session. "+ event.reason;
      useLogStore.getState().addTurn({
          role: 'agent',
          text: reason,
@@ -157,8 +155,8 @@ export function useLiveApi({
      }
    };
 
-   const onGenerationComplete = () => {
-   };
+   // eslint-disable-next-line @typescript-eslint/no-empty-function -- Placeholder for future implementation
+   const onGenerationComplete = () => {};
 
 
    // Bind event listeners
@@ -275,7 +273,11 @@ export function useLiveApi({
    };
 
 
-   client.on('toolcall', onToolCall);
+   // Wrap the async handler to handle promise properly
+   const onToolCallWrapper = (toolCall: LiveServerToolCall) => {
+     void onToolCall(toolCall);
+   };
+   client.on('toolcall', onToolCallWrapper);
 
 
    return () => {
@@ -285,16 +287,13 @@ export function useLiveApi({
      client.off('close', onClose);
      client.off('interrupted', onInterrupted);
      client.off('audio', onAudio);
-     client.off('toolcall', onToolCall);
+     client.off('toolcall', onToolCallWrapper);
      client.off('generationcomplete', onGenerationComplete);
    };
  }, [client, map, placesLib, elevationLib, geocoder, padding, setHeldGroundedResponse, setHeldGroundingChunks]);
 
 
  const connect = useCallback(async () => {
-   if (!config) {
-     throw new Error('config has not been set');
-   }
    useLogStore.getState().clearTurns();
    useMapStore.getState().clearMarkers();
    client.disconnect();
@@ -302,7 +301,7 @@ export function useLiveApi({
  }, [client, config]);
 
 
- const disconnect = useCallback(async () => {
+ const disconnect = useCallback(() => {
    client.disconnect();
    setConnected(false);
  }, [setConnected, client]);
