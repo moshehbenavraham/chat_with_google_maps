@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import React, { useEffect, useState } from 'react';
 

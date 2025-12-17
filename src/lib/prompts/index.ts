@@ -29,10 +29,7 @@ import type { PromptDefinition } from './types';
  * Array of all available prompts for use in UI dropdowns.
  * Prompts are ordered with the default/recommended option first.
  */
-export const PROMPTS: PromptDefinition[] = [
-  itineraryPlannerPrompt,
-  scavengerHuntPrompt,
-];
+export const PROMPTS: PromptDefinition[] = [itineraryPlannerPrompt, scavengerHuntPrompt];
 
 /**
  * Map of prompts by ID for quick lookup.

@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 /**
  * Copyright 2025 Google LLC
@@ -57,12 +57,10 @@ export async function lookAt(
   }
 
   // get the general altitude of the area
-  const ALTITUDE = await fetchElevation(
-    firstLocation.lat,
-    firstLocation.lng,
-    elevator
+  const ALTITUDE = await fetchElevation(firstLocation.lat, firstLocation.lng, elevator);
+  console.log(
+    `lookAt altitude for ${String(firstLocation.lat)}, ${String(firstLocation.lng)}: ${String(ALTITUDE)}`
   );
-  console.log(`lookAt altitude for ${String(firstLocation.lat)}, ${String(firstLocation.lng)}: ${String(ALTITUDE)}`);
 
   const degToRad = Math.PI / 180;
 
@@ -99,16 +97,13 @@ export async function lookAt(
     const dLng = (lng2 - lng1) * degToRad;
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(lat1 * degToRad) *
-        Math.cos(lat2 * degToRad) *
-        Math.sin(dLng / 2) ** 2;
+      Math.cos(lat1 * degToRad) * Math.cos(lat2 * degToRad) * Math.sin(dLng / 2) ** 2;
     return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
   // Find the maximum angular distance (in radians) from the center to any location
   let maxAngularDistance = 0;
   locations.forEach(loc => {
-
     const d = haversine(centerLat, centerLng, loc.lat, loc.lng);
     if (d > maxAngularDistance) maxAngularDistance = d;
   });
@@ -121,8 +116,7 @@ export async function lookAt(
   const horizontalDistance = maxDistance * 2;
 
   const targetTiltDeg = 60;
-  const verticalDistance =
-    horizontalDistance / Math.tan(targetTiltDeg * degToRad);
+  const verticalDistance = horizontalDistance / Math.tan(targetTiltDeg * degToRad);
 
   // Compute the slant range (straight-line distance from camera to look-at point)
   const slantRange = Math.sqrt(horizontalDistance ** 2 + verticalDistance ** 2);
@@ -134,7 +128,7 @@ export async function lookAt(
     altitude: lookAtAltitude,
     range: slantRange,
     tilt: targetTiltDeg,
-    heading
+    heading,
   };
 }
 
@@ -162,11 +156,7 @@ export async function lookAtWithPadding(
   }
 
   // get the general altitude of the area
-  const ALTITUDE = await fetchElevation(
-    firstLocation.lat,
-    firstLocation.lng,
-    elevator
-  );
+  const ALTITUDE = await fetchElevation(firstLocation.lat, firstLocation.lng, elevator);
 
   const degToRad = Math.PI / 180;
   const earthRadius = 6371000; // meters
@@ -203,9 +193,7 @@ export async function lookAtWithPadding(
     const dLng = (lng2 - lng1) * degToRad;
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(lat1 * degToRad) *
-        Math.cos(lat2 * degToRad) *
-        Math.sin(dLng / 2) ** 2;
+      Math.cos(lat1 * degToRad) * Math.cos(lat2 * degToRad) * Math.sin(dLng / 2) ** 2;
     return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
@@ -225,10 +213,7 @@ export async function lookAtWithPadding(
   const visibleHeightFraction = 1 - padTop - padBottom;
 
   // Determine the zoom-out scale factor
-  const scale = Math.max(
-    1 / visibleWidthFraction,
-    1 / visibleHeightFraction
-  );
+  const scale = Math.max(1 / visibleWidthFraction, 1 / visibleHeightFraction);
 
   // Convert angular distance to a ground distance (meters) for the content
   const maxDistance = maxAngularDistance * earthRadius;
@@ -250,7 +235,7 @@ export async function lookAtWithPadding(
   // To move content down (positive offsetY), camera moves up (positive north)
   const shiftVectorScreenMeters = {
     x: -offsetGeoScreenX,
-    y: offsetGeoScreenY
+    y: offsetGeoScreenY,
   };
 
   // Rotate the shift vector to align with map coordinates (North-East)
@@ -258,15 +243,12 @@ export async function lookAtWithPadding(
   const cosH = Math.cos(headingRad);
   const sinH = Math.sin(headingRad);
 
-  const shiftEastMeters =
-    shiftVectorScreenMeters.x * cosH - shiftVectorScreenMeters.y * sinH;
-  const shiftNorthMeters =
-    shiftVectorScreenMeters.x * sinH + shiftVectorScreenMeters.y * cosH;
+  const shiftEastMeters = shiftVectorScreenMeters.x * cosH - shiftVectorScreenMeters.y * sinH;
+  const shiftNorthMeters = shiftVectorScreenMeters.x * sinH + shiftVectorScreenMeters.y * cosH;
 
   // Convert meter shifts to latitude/longitude degrees
   const shiftLatDeg = shiftNorthMeters / 111000;
-  const shiftLngDeg =
-    shiftEastMeters / (111000 * Math.cos(centerLat * degToRad));
+  const shiftLngDeg = shiftEastMeters / (111000 * Math.cos(centerLat * degToRad));
 
   // Calculate the new padded center for the camera
   const newCenterLat = centerLat + shiftLatDeg;
@@ -275,13 +257,10 @@ export async function lookAtWithPadding(
   // --- Final camera parameter calculation ---
 
   const targetTiltDeg = 60;
-  const verticalDistance =
-    fullHorizontalDistance / Math.tan(targetTiltDeg * degToRad);
+  const verticalDistance = fullHorizontalDistance / Math.tan(targetTiltDeg * degToRad);
 
   // Compute the slant range for the scaled and padded view
-  const slantRange = Math.sqrt(
-    fullHorizontalDistance ** 2 + verticalDistance ** 2
-  );
+  const slantRange = Math.sqrt(fullHorizontalDistance ** 2 + verticalDistance ** 2);
 
   return {
     lat: newCenterLat,
@@ -289,6 +268,6 @@ export async function lookAtWithPadding(
     altitude: lookAtAltitude,
     range: slantRange,
     tilt: targetTiltDeg,
-    heading
+    heading,
   };
 }

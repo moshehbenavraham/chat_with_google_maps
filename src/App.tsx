@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, {useCallback, useState, useEffect, useRef} from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 
 import ControlTray from '@/components/ControlTray';
 import ErrorScreen from '@/components/ErrorScreen';
@@ -26,7 +26,7 @@ import PopUp from '@/components/popup/PopUp';
 import Sidebar from '@/components/Sidebar';
 import { LiveAPIProvider } from '@/contexts/LiveAPIContext';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { Map3D, type Map3DCameraProps} from '@/components/map-3d';
+import { Map3D, type Map3DCameraProps } from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
 
@@ -45,12 +45,12 @@ const INITIAL_VIEW_PROPS = {
   center: {
     lat: 41.8739368,
     lng: -87.6372648,
-    altitude: 1000
+    altitude: 1000,
   },
   range: 3000,
   heading: 0,
   tilt: 30,
-  roll: 0
+  roll: 0,
 };
 
 /**
@@ -76,7 +76,9 @@ function AppComponent() {
   const consolePanelRef = useRef<HTMLDivElement>(null);
   const controlTrayRef = useRef<HTMLElement>(null);
   // Padding state is used to ensure map content isn't hidden by UI elements.
-  const [padding, setPadding] = useState<[number, number, number, number]>([0.05, 0.05, 0.05, 0.05]);
+  const [padding, setPadding] = useState<[number, number, number, number]>([
+    0.05, 0.05, 0.05, 0.05,
+  ]);
 
   // Effect: Instantiate the Geocoder once the library is loaded.
   // This pattern is appropriate because the Geocoder is a class instance
@@ -126,9 +128,9 @@ function AppComponent() {
       let left = 0.05;
 
       if (!isMobile) {
-          // On desktop, console is on the left. The tray is now inside it.
-          left = Math.max(left, (consoleEl.offsetWidth / vw) + 0.02); // add 2% buffer
-          // The tray no longer covers the bottom of the map on desktop.
+        // On desktop, console is on the left. The tray is now inside it.
+        left = Math.max(left, consoleEl.offsetWidth / vw + 0.02); // add 2% buffer
+        // The tray no longer covers the bottom of the map on desktop.
       }
 
       setPadding([top, right, bottom, left]);
@@ -146,9 +148,9 @@ function AppComponent() {
     const timeoutId = setTimeout(calculatePadding, 100);
 
     return () => {
-        window.removeEventListener('resize', calculatePadding);
-        observer.disconnect();
-        clearTimeout(timeoutId);
+      window.removeEventListener('resize', calculatePadding);
+      observer.disconnect();
+      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -158,15 +160,12 @@ function AppComponent() {
 
   useEffect(() => {
     if (map) {
-      const banner = document.querySelector<HTMLElement>(
-        '.vAygCK-api-load-alpha-banner',
-      );
+      const banner = document.querySelector<HTMLElement>('.vAygCK-api-load-alpha-banner');
       if (banner) {
         banner.style.display = 'none';
       }
     }
   }, [map]);
-
 
   // Effect: Reactively render markers and routes on the map.
   // This is the core of the component's "reactive" nature. It listens for
@@ -193,7 +192,6 @@ function AppComponent() {
     }
   }, [markers, padding, preventAutoFrame]); // Re-run when markers or padding change
 
-
   // Effect: Reactively handle direct camera movement requests.
   // This effect listens for changes to `cameraTarget`. Tools can set this state
   // to request a direct camera flight to a specific location or view. Once the
@@ -209,10 +207,9 @@ function AppComponent() {
     }
   }, [cameraTarget, setCameraTarget]);
 
-
   const handleCameraChange = useCallback((props: Map3DCameraProps) => {
-      setViewProps(oldProps => ({...oldProps, ...props}));
-    }, []);
+    setViewProps(oldProps => ({ ...oldProps, ...props }));
+  }, []);
 
   return (
     <LiveAPIProvider
@@ -223,26 +220,27 @@ function AppComponent() {
       geocoder={geocoder}
       padding={padding}
     >
-        <ErrorScreen />
-        <Sidebar />
-         {showPopUp && <PopUp onClose={handleClosePopUp} />}
-        <div className="streaming-console">
-          <div className="console-panel" ref={consolePanelRef}>
-            <StreamingConsole />
-            <ControlTray trayRef={controlTrayRef} />
-          </div>
-          <div className="map-panel">
-              <Map3D
-                ref={element => { setMap(element ?? null); }}
-                onCameraChange={handleCameraChange}
-                {...viewProps}>
-              </Map3D>
-          </div>
+      <ErrorScreen />
+      <Sidebar />
+      {showPopUp && <PopUp onClose={handleClosePopUp} />}
+      <div className="streaming-console">
+        <div className="console-panel" ref={consolePanelRef}>
+          <StreamingConsole />
+          <ControlTray trayRef={controlTrayRef} />
         </div>
+        <div className="map-panel">
+          <Map3D
+            ref={element => {
+              setMap(element ?? null);
+            }}
+            onCameraChange={handleCameraChange}
+            {...viewProps}
+          ></Map3D>
+        </div>
+      </div>
     </LiveAPIProvider>
   );
 }
-
 
 /**
  * Main application component that provides a streaming interface for Live API.
@@ -251,13 +249,13 @@ function AppComponent() {
 function App() {
   return (
     <div className="App">
-    <APIProvider
-                version={'alpha'}
-                apiKey={GOOGLE_MAPS_API_KEY}
-                solutionChannel={"gmp_aistudio_itineraryapplet_v1.0.0"}>
-      <AppComponent />
-    </APIProvider>
-
+      <APIProvider
+        version={'alpha'}
+        apiKey={GOOGLE_MAPS_API_KEY}
+        solutionChannel={'gmp_aistudio_itineraryapplet_v1.0.0'}
+      >
+        <AppComponent />
+      </APIProvider>
     </div>
   );
 }

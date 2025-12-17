@@ -21,22 +21,26 @@ vercel --version  # Verify installation
 The fastest way to deploy using the Vercel CLI:
 
 1. **Login to Vercel**:
+
    ```bash
    vercel login
    ```
 
 2. **Deploy to production**:
+
    ```bash
    vercel --prod --yes
    ```
 
 3. **Add environment variables** (required for the app to function):
+
    ```bash
    echo "YOUR_GEMINI_API_KEY" | vercel env add GEMINI_API_KEY production --force
    echo "YOUR_GOOGLE_MAPS_API_KEY" | vercel env add GOOGLE_MAPS_API_KEY production --force
    ```
 
 4. **Redeploy** to apply environment variables:
+
    ```bash
    vercel --prod --yes
    ```
@@ -57,12 +61,12 @@ The fastest way to deploy using the Vercel CLI:
 
 Vercel auto-detects Vite projects, but verify these settings:
 
-| Setting | Value |
-|---------|-------|
-| Framework Preset | Vite |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Install Command | `npm install` |
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Framework Preset | Vite            |
+| Build Command    | `npm run build` |
+| Output Directory | `dist`          |
+| Install Command  | `npm install`   |
 
 ### Step 3: Add Environment Variables
 
@@ -71,9 +75,9 @@ Before deploying, add the required environment variables:
 1. Expand the **"Environment Variables"** section
 2. Add each variable:
 
-| Name | Value | Environment |
-|------|-------|-------------|
-| `GEMINI_API_KEY` | Your Gemini API key | Production, Preview, Development |
+| Name                  | Value                    | Environment                      |
+| --------------------- | ------------------------ | -------------------------------- |
+| `GEMINI_API_KEY`      | Your Gemini API key      | Production, Preview, Development |
 | `GOOGLE_MAPS_API_KEY` | Your Google Maps API key | Production, Preview, Development |
 
 3. Click **Deploy**
@@ -81,6 +85,7 @@ Before deploying, add the required environment variables:
 ### Step 4: Verify Deployment
 
 Once deployed:
+
 1. Click the generated URL to open your app
 2. Verify the map loads correctly
 3. Test the voice conversation feature
@@ -88,14 +93,17 @@ Once deployed:
 ## Required API Keys
 
 ### Gemini API Key
+
 - **Purpose**: Powers the real-time voice conversation feature
 - **Get it from**: [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ### Google Maps API Key
+
 - **Purpose**: Map rendering, Places API, Geocoding, Elevation, and Grounding
 - **Get it from**: [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/credentials)
 
 **Required Google Maps APIs to enable:**
+
 - Maps JavaScript API
 - Places API (New)
 - Geocoding API
@@ -113,20 +121,18 @@ The repository includes a `vercel.json` configuration file:
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
 ### Configuration Explained
 
-| Property | Purpose |
-|----------|---------|
-| `framework` | Tells Vercel this is a Vite project for optimized builds |
-| `buildCommand` | Command to build the production bundle |
-| `outputDirectory` | Where Vite outputs the built files |
-| `rewrites` | SPA routing - all routes serve `index.html` for client-side routing |
+| Property          | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `framework`       | Tells Vercel this is a Vite project for optimized builds            |
+| `buildCommand`    | Command to build the production bundle                              |
+| `outputDirectory` | Where Vite outputs the built files                                  |
+| `rewrites`        | SPA routing - all routes serve `index.html` for client-side routing |
 
 ## Auto-Deployment from GitHub
 
@@ -189,29 +195,31 @@ Vercel automatically provisions and renews SSL certificates for all domains, inc
 
 ## Useful CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `vercel` | Deploy to preview environment |
-| `vercel --prod` | Deploy to production |
-| `vercel --prod --yes` | Deploy to production (skip prompts) |
-| `vercel ls` | List all deployments |
-| `vercel logs <url>` | View deployment logs |
-| `vercel inspect <url>` | View deployment details |
-| `vercel env ls` | List environment variables |
-| `vercel domains ls` | List configured domains |
-| `vercel rm <project>` | Remove a project |
-| `vercel redeploy <url>` | Redeploy a specific deployment |
+| Command                 | Description                         |
+| ----------------------- | ----------------------------------- |
+| `vercel`                | Deploy to preview environment       |
+| `vercel --prod`         | Deploy to production                |
+| `vercel --prod --yes`   | Deploy to production (skip prompts) |
+| `vercel ls`             | List all deployments                |
+| `vercel logs <url>`     | View deployment logs                |
+| `vercel inspect <url>`  | View deployment details             |
+| `vercel env ls`         | List environment variables          |
+| `vercel domains ls`     | List configured domains             |
+| `vercel rm <project>`   | Remove a project                    |
+| `vercel redeploy <url>` | Redeploy a specific deployment      |
 
 ## Troubleshooting
 
 ### Build Fails
 
 **Check build logs:**
+
 ```bash
 vercel logs <deployment-url>
 ```
 
 **Common causes:**
+
 - Missing environment variables (build-time)
 - TypeScript errors
 - Missing dependencies
@@ -223,6 +231,7 @@ vercel logs <deployment-url>
 **Cause:** Missing or invalid `GOOGLE_MAPS_API_KEY` environment variable.
 
 **Solution:**
+
 1. Verify the environment variable is set:
    ```bash
    vercel env ls
@@ -235,6 +244,7 @@ vercel logs <deployment-url>
 **Cause:** Missing or invalid `GEMINI_API_KEY` environment variable.
 
 **Solution:**
+
 1. Verify the environment variable is set
 2. Check the API key is valid at [Google AI Studio](https://aistudio.google.com)
 3. Ensure the browser has microphone permissions
@@ -244,6 +254,7 @@ vercel logs <deployment-url>
 **Cause:** Environment variables are injected at build time for Vite apps.
 
 **Solution:** Redeploy after changing environment variables:
+
 ```bash
 vercel --prod --yes
 ```
@@ -253,37 +264,41 @@ vercel --prod --yes
 **Cause:** Missing rewrite rules for client-side routing.
 
 **Solution:** Ensure `vercel.json` includes the rewrite rule:
+
 ```json
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
 ### Deployment Stuck or Slow
 
 **Possible causes:**
+
 - Large `node_modules` being uploaded
 - Build cache issues
 
 **Solutions:**
+
 1. Ensure `.vercelignore` or `.gitignore` excludes `node_modules`
 2. Clear build cache in Vercel Dashboard: **Settings** > **General** > **Build Cache** > **Clear**
 
 ## Removing a Deployment
 
 ### Remove Specific Deployment
+
 ```bash
 vercel rm <deployment-url>
 ```
 
 ### Remove Entire Project
+
 ```bash
 vercel rm <project-name>
 ```
 
 Or via Dashboard:
+
 1. Go to your project
 2. Navigate to **Settings** > **General**
 3. Scroll to **Delete Project**
@@ -299,11 +314,13 @@ Or via Dashboard:
 ## Cost Considerations
 
 ### Vercel
+
 - **Hobby (Free)**: Suitable for personal projects
 - **Pro ($20/month)**: For teams and commercial projects
 - See [Vercel Pricing](https://vercel.com/pricing) for details
 
 ### Google Cloud
+
 - **Gemini API**: Pay-per-use, see [pricing](https://ai.google.dev/pricing)
 - **Google Maps Platform**: $200/month free credit, then pay-per-use, see [pricing](https://developers.google.com/maps/billing-and-pricing/pricing)
 

@@ -128,7 +128,8 @@ When making suggestions, don't suggest a question that would result in having to
 export const itineraryPlannerPrompt: PromptDefinition = {
   id: 'itinerary-planner',
   name: 'Itinerary Planner',
-  description: 'A friendly agent that helps plan afternoon itineraries (City -> Restaurant -> Activity) using Google Maps grounding.',
+  description:
+    'A friendly agent that helps plan afternoon itineraries (City -> Restaurant -> Activity) using Google Maps grounding.',
   content: SYSTEM_INSTRUCTIONS,
   defaultVoice: DEFAULT_VOICE,
 };

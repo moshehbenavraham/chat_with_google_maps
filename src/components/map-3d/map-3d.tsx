@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 'use client';
 
@@ -21,16 +21,16 @@
  * limitations under the License.
  */
 
-import {useMapsLibrary} from '@vis.gl/react-google-maps';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import React, {
   type ForwardedRef,
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useState
+  useState,
 } from 'react';
-import {useMap3DCameraEvents} from './use-map-3d-camera-events';
-import {useCallbackRef, useDeepCompareEffect} from './utility-hooks';
+import { useMap3DCameraEvents } from './use-map-3d-camera-events';
+import { useCallbackRef, useDeepCompareEffect } from './utility-hooks';
 
 import './map-3d-types';
 
@@ -47,14 +47,10 @@ export interface Map3DCameraProps {
 }
 
 export const Map3D = forwardRef(
-  (
-    props: Map3DProps,
-    forwardedRef: ForwardedRef<google.maps.maps3d.Map3DElement | null>
-  ) => {
+  (props: Map3DProps, forwardedRef: ForwardedRef<google.maps.maps3d.Map3DElement | null>) => {
     useMapsLibrary('maps3d');
 
-    const [map3DElement, map3dRef] =
-      useCallbackRef<google.maps.maps3d.Map3DElement>();
+    const [map3DElement, map3dRef] = useCallbackRef<google.maps.maps3d.Map3DElement>();
 
     useMap3DCameraEvents(map3DElement, p => {
       if (!props.onCameraChange) return;
@@ -69,7 +65,7 @@ export const Map3D = forwardRef(
       });
     }, []);
 
-    const {center, heading, tilt, range, roll, ...map3dOptions} = props;
+    const { center, heading, tilt, range, roll, ...map3dOptions } = props;
 
     useDeepCompareEffect(() => {
       if (!map3DElement) return;
@@ -94,7 +90,8 @@ export const Map3D = forwardRef(
         tilt={tilt}
         roll={roll}
         defaultUIHidden={true}
-        mode="SATELLITE"></gmp-map-3d>
+        mode="SATELLITE"
+      ></gmp-map-3d>
     );
   }
 );

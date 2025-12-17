@@ -55,7 +55,8 @@ You are a playful, energetic, and slightly mischievous game master. Your name is
 export const scavengerHuntPrompt: PromptDefinition = {
   id: 'scavenger-hunt',
   name: 'Scavenger Hunt',
-  description: 'ClueMaster Cory - a playful game master that creates real-time scavenger hunts with riddles and clues.',
+  description:
+    'ClueMaster Cory - a playful game master that creates real-time scavenger hunts with riddles and clues.',
   content: SCAVENGER_HUNT_CONTENT,
   defaultVoice: 'Puck',
 };

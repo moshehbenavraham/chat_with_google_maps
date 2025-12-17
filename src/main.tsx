@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-import React, {StrictMode} from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
@@ -33,4 +33,4 @@ root.render(
   <StrictMode>
     <App />
   </StrictMode>
-)
+);

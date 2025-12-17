@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import { type FunctionCall } from '@/stores';
 import { FunctionResponseScheduling } from '@google/genai';
@@ -57,21 +57,23 @@ export const itineraryPlannerTools: FunctionCall[] = [
   },
   {
     name: 'frameEstablishingShot',
-    description: 'Call this function to display a city or location on the map. Provide either a location name to geocode, or a specific latitude and longitude. This provides a wide, establishing shot of the area.',
+    description:
+      'Call this function to display a city or location on the map. Provide either a location name to geocode, or a specific latitude and longitude. This provides a wide, establishing shot of the area.',
     parameters: {
       type: 'OBJECT',
       properties: {
         geocode: {
           type: 'STRING',
-          description: 'The name of the location to look up (e.g., "Paris, France"). You **MUST be as precise as possible**, include as much location data that you can such as city, state and/or country to reduce ambiguous results.'
+          description:
+            'The name of the location to look up (e.g., "Paris, France"). You **MUST be as precise as possible**, include as much location data that you can such as city, state and/or country to reduce ambiguous results.',
         },
         lat: {
           type: 'NUMBER',
-          description: 'The latitude of the location.'
+          description: 'The latitude of the location.',
         },
         lng: {
           type: 'NUMBER',
-          description: 'The longitude of the location.'
+          description: 'The longitude of the location.',
         },
       },
     },
@@ -80,7 +82,8 @@ export const itineraryPlannerTools: FunctionCall[] = [
   },
   {
     name: 'frameLocations',
-    description: 'Frames multiple locations on the map, ensuring all are visible. Provide either an array of location names to geocode, or an array of specific latitude/longitude points. Can optionally add markers for these locations. When relying on geocoding you **MUST be as precise as possible**, include as much location data that you can such as city, state and/or country to reduce ambiguous results.',
+    description:
+      'Frames multiple locations on the map, ensuring all are visible. Provide either an array of location names to geocode, or an array of specific latitude/longitude points. Can optionally add markers for these locations. When relying on geocoding you **MUST be as precise as possible**, include as much location data that you can such as city, state and/or country to reduce ambiguous results.',
     parameters: {
       type: 'OBJECT',
       properties: {
@@ -97,15 +100,16 @@ export const itineraryPlannerTools: FunctionCall[] = [
         },
         geocode: {
           type: 'ARRAY',
-          description: 'An array of location names to look up (e.g., ["Eiffel Tower", "Louvre Museum"]).',
+          description:
+            'An array of location names to look up (e.g., ["Eiffel Tower", "Louvre Museum"]).',
           items: {
             type: 'STRING',
           },
         },
         markers: {
           type: 'BOOLEAN',
-          description: 'If true, adds markers to the map for each location being framed.'
-        }
+          description: 'If true, adds markers to the map for each location being framed.',
+        },
       },
     },
     isEnabled: true,

@@ -1,20 +1,14 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 import React, { useEffect, useRef, useState } from 'react';
 import { Modality, type LiveServerContent, type Part } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
-import {
-  useSettings,
-  useLogStore,
-  useTools,
-  type ConversationTurn,
-  useUI,
-} from '@/stores';
+import { useSettings, useLogStore, useTools, type ConversationTurn, useUI } from '@/stores';
 import { SourcesPopover } from '@/components/sources-popover/sources-popover';
 import { GroundingWidget } from '@/components/GroundingWidget';
 
@@ -40,12 +34,13 @@ const useMediaQuery = (query: string) => {
     };
     listener();
     media.addEventListener('change', listener);
-    return () => { media.removeEventListener('change', listener); };
+    return () => {
+      media.removeEventListener('change', listener);
+    };
   }, [query]);
 
   return matches;
 };
-
 
 export default function StreamingConsole() {
   const {
@@ -60,15 +55,11 @@ export default function StreamingConsole() {
   const { tools } = useTools();
   const turns = useLogStore(state => state.turns);
   const { showSystemMessages } = useUI();
-  const isAwaitingFunctionResponse = useLogStore(
-    state => state.isAwaitingFunctionResponse,
-  );
+  const isAwaitingFunctionResponse = useLogStore(state => state.isAwaitingFunctionResponse);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const displayedTurns = showSystemMessages
-    ? turns
-    : turns.filter(turn => turn.role !== 'system');
+  const displayedTurns = showSystemMessages ? turns : turns.filter(turn => turn.role !== 'system');
 
   // Set the configuration for the Live API
   useEffect(() => {
@@ -104,7 +95,7 @@ export default function StreamingConsole() {
       },
       tools: enabledTools,
       thinkingConfig: {
-        thinkingBudget: 0
+        thinkingBudget: 0,
       },
     };
 
@@ -128,8 +119,7 @@ export default function StreamingConsole() {
     };
 
     const handleOutputTranscription = (text: string, isFinal: boolean) => {
-      const { turns, updateLastTurn, addTurn, mergeIntoLastAgentTurn } =
-        useLogStore.getState();
+      const { turns, updateLastTurn, addTurn, mergeIntoLastAgentTurn } = useLogStore.getState();
       const last = turns[turns.length - 1];
 
       if (last?.role === 'agent' && !last.isFinal) {
@@ -142,10 +132,7 @@ export default function StreamingConsole() {
         let shouldMerge = false;
         if (lastAgentTurnIndex !== -1) {
           const subsequentTurns = turns.slice(lastAgentTurnIndex + 1);
-          if (
-            subsequentTurns.length > 0 &&
-            subsequentTurns.every(t => t.role === 'system')
-          ) {
+          if (subsequentTurns.length > 0 && subsequentTurns.every(t => t.role === 'system')) {
             shouldMerge = true;
           }
         }
@@ -172,8 +159,7 @@ export default function StreamingConsole() {
     };
 
     const handleContent = (serverContent: LiveServerContent) => {
-      const { turns, updateLastTurn, addTurn, mergeIntoLastAgentTurn } =
-        useLogStore.getState();
+      const { turns, updateLastTurn, addTurn, mergeIntoLastAgentTurn } = useLogStore.getState();
       const text =
         serverContent.modelTurn?.parts
           ?.map((p: Part) => p.text)
@@ -190,10 +176,7 @@ export default function StreamingConsole() {
           text: last.text + text,
         };
         if (groundingChunks) {
-          updatedTurn.groundingChunks = [
-            ...(last.groundingChunks ?? []),
-            ...groundingChunks,
-          ];
+          updatedTurn.groundingChunks = [...(last.groundingChunks ?? []), ...groundingChunks];
         }
         updateLastTurn(updatedTurn);
       } else {
@@ -201,10 +184,7 @@ export default function StreamingConsole() {
         let shouldMerge = false;
         if (lastAgentTurnIndex !== -1) {
           const subsequentTurns = turns.slice(lastAgentTurnIndex + 1);
-          if (
-            subsequentTurns.length > 0 &&
-            subsequentTurns.every(t => t.role === 'system')
-          ) {
+          if (subsequentTurns.length > 0 && subsequentTurns.every(t => t.role === 'system')) {
             shouldMerge = true;
           }
         }
@@ -215,10 +195,7 @@ export default function StreamingConsole() {
           groundingChunks,
         };
         if (heldGroundingChunks) {
-          const combinedChunks = [
-            ...heldGroundingChunks,
-            ...(newTurnData.groundingChunks ?? []),
-          ];
+          const combinedChunks = [...heldGroundingChunks, ...(newTurnData.groundingChunks ?? [])];
           newTurnData.groundingChunks = combinedChunks;
           clearHeldGroundingChunks();
         }
@@ -276,7 +253,9 @@ export default function StreamingConsole() {
       }
     }, 350); // A little longer than the transition duration
 
-    return () => { clearTimeout(scrollTimeout); };
+    return () => {
+      clearTimeout(scrollTimeout);
+    };
   }, [turns, isAwaitingFunctionResponse]);
 
   return (
@@ -285,57 +264,54 @@ export default function StreamingConsole() {
         <div></div>
       ) : (
         <div className="transcription-view" ref={scrollRef}>
-          {displayedTurns.map((t) => {
+          {displayedTurns.map(t => {
             if (t.role === 'system') {
               return (
-                <div
-                  key={t.timestamp.toISOString()}
-                  className={`transcription-entry system`}
-                >
+                <div key={t.timestamp.toISOString()} className={`transcription-entry system`}>
                   <div className="transcription-header">
                     <div className="transcription-source">System</div>
-                    <div className="transcription-timestamp">
-                      {formatTimestamp(t.timestamp)}
-                    </div>
+                    <div className="transcription-timestamp">{formatTimestamp(t.timestamp)}</div>
                   </div>
                   <div className="transcription-text-content">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.text}</ReactMarkdown>
                   </div>
                 </div>
-              )
+              );
             }
             const widgetToken =
-              t.toolResponse?.candidates?.[0]?.groundingMetadata
-                ?.googleMapsWidgetContextToken;
+              t.toolResponse?.candidates?.[0]?.groundingMetadata?.googleMapsWidgetContextToken;
 
             let sources: { uri: string; title: string }[] = [];
             if (t.groundingChunks) {
-              sources =
-                t.groundingChunks
-                  .map(chunk => {
-                    const source = chunk.web ?? chunk.maps;
-                    if (source?.uri) {
-                      return {
-                        uri: source.uri,
-                        title: source.title ?? source.uri,
-                      };
-                    }
-                    return null;
-                  })
-                  .filter((s): s is { uri: string; title: string } => s !== null);
+              sources = t.groundingChunks
+                .map(chunk => {
+                  const source = chunk.web ?? chunk.maps;
+                  if (source?.uri) {
+                    return {
+                      uri: source.uri,
+                      title: source.title ?? source.uri,
+                    };
+                  }
+                  return null;
+                })
+                .filter((s): s is { uri: string; title: string } => s !== null);
 
               if (t.groundingChunks.length === 1) {
                 const chunk = t.groundingChunks[0];
                 if (chunk) {
                   // The type for `placeAnswerSources` might be missing or incomplete. Use type assertion for safety.
-                  const mapsData = chunk.maps as { placeAnswerSources?: { reviewSnippets?: unknown[] } } | undefined;
+                  const mapsData = chunk.maps as
+                    | { placeAnswerSources?: { reviewSnippets?: unknown[] } }
+                    | undefined;
                   const placeAnswerSources = mapsData?.placeAnswerSources;
-                  if (
-                    placeAnswerSources &&
-                    Array.isArray(placeAnswerSources.reviewSnippets)
-                  ) {
-                    const reviewSources = (placeAnswerSources.reviewSnippets as { googleMapsUri?: string; title?: string }[])
-                      .map((review) => {
+                  if (placeAnswerSources && Array.isArray(placeAnswerSources.reviewSnippets)) {
+                    const reviewSources = (
+                      placeAnswerSources.reviewSnippets as {
+                        googleMapsUri?: string;
+                        title?: string;
+                      }[]
+                    )
+                      .map(review => {
                         if (review.googleMapsUri && review.title) {
                           return {
                             uri: review.googleMapsUri,
@@ -356,34 +332,23 @@ export default function StreamingConsole() {
             return (
               <div
                 key={t.timestamp.toISOString()}
-                className={`transcription-entry ${t.role} ${!t.isFinal ? 'interim' : ''
-                  }`}
+                className={`transcription-entry ${t.role} ${!t.isFinal ? 'interim' : ''}`}
               >
                 <div className="avatar">
                   <span className="icon">{t.role === 'user' ? 'person' : 'auto_awesome'}</span>
                 </div>
                 <div className="message-bubble">
                   <div className="transcription-text-content">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {t.text}
-                    </ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.text}</ReactMarkdown>
                   </div>
-                  {hasSources && (
-                    <SourcesPopover
-                      className="grounding-chunks"
-                      sources={sources}
-                    />
-                  )}
+                  {hasSources && <SourcesPopover className="grounding-chunks" sources={sources} />}
                   {widgetToken && !isMobile && (
                     <div
                       style={{
                         marginTop: '12px',
                       }}
                     >
-                      <GroundingWidget
-                        contextToken={widgetToken}
-                        mapHidden={true}
-                      />
+                      <GroundingWidget contextToken={widgetToken} mapHidden={true} />
                     </div>
                   )}
                 </div>

@@ -1,10 +1,10 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React from 'react';
-import {Popover, PopoverButton, PopoverPanel} from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import './sources-popover.css';
 
 interface SourceLink {
@@ -21,7 +21,7 @@ interface SourcesPopoverProps {
 export function SourcesPopover({
   sources,
   buttonText = 'Sources',
-  className = ''
+  className = '',
 }: SourcesPopoverProps) {
   if (sources.length === 0) {
     return null;
@@ -29,18 +29,17 @@ export function SourcesPopover({
 
   return (
     <Popover className={`popover ${className}`}>
-      <PopoverButton className="popover-button">
-        {buttonText}
-      </PopoverButton>
+      <PopoverButton className="popover-button">{buttonText}</PopoverButton>
       <PopoverPanel transition className="popover-panel">
         <div className="GMP-attribution">Google Maps Grounded Result</div>
-        {sources.map((source) => (
+        {sources.map(source => (
           <a
             key={source.uri}
             href={source.uri}
             target="_blank"
             rel="noopener noreferrer"
-            className="source-link">
+            className="source-link"
+          >
             {source.title}
           </a>
         ))}

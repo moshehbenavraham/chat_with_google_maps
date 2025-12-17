@@ -1,0 +1,6 @@
+dist/
+build/
+node_modules/
+coverage/
+*.min.js
+.spec_system/

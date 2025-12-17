@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -74,12 +74,11 @@ export class AudioRecorder {
     const src = createWorketFromSrc(workletName, AudioRecordingWorklet);
 
     await this.audioContext.audioWorklet.addModule(src);
-    this.recordingWorklet = new AudioWorkletNode(
-      this.audioContext,
-      workletName
-    );
+    this.recordingWorklet = new AudioWorkletNode(this.audioContext, workletName);
 
-    this.recordingWorklet.port.onmessage = (ev: MessageEvent<{ data: { int16arrayBuffer?: ArrayBuffer } }>) => {
+    this.recordingWorklet.port.onmessage = (
+      ev: MessageEvent<{ data: { int16arrayBuffer?: ArrayBuffer } }>
+    ) => {
       // Worklet processes recording floats and messages converted buffer
       const arrayBuffer = ev.data.data.int16arrayBuffer;
 
@@ -110,7 +109,9 @@ export class AudioRecorder {
     // such as if the Websocket immediately hangs up
     const handleStop = () => {
       this.source?.disconnect();
-      this.stream?.getTracks().forEach(track => { track.stop(); });
+      this.stream?.getTracks().forEach(track => {
+        track.stop();
+      });
       this.stream = undefined;
       this.recordingWorklet = undefined;
       this.vuWorklet = undefined;

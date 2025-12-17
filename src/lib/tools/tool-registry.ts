@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 /**
  * Copyright 2024 Google LLC
@@ -34,9 +34,7 @@ export interface ToolContext {
   elevationLib: google.maps.ElevationLibrary | null;
   geocoder: google.maps.Geocoder | null;
   padding: [number, number, number, number];
-  setHeldGroundedResponse: (
-    response: GenerateContentResponse | undefined,
-  ) => void;
+  setHeldGroundedResponse: (response: GenerateContentResponse | undefined) => void;
   setHeldGroundingChunks: (chunks: GroundingChunk[] | undefined) => void;
 }
 
@@ -49,7 +47,7 @@ export interface ToolContext {
  */
 export type ToolImplementation = (
   args: Record<string, unknown>,
-  context: ToolContext,
+  context: ToolContext
 ) => Promise<GenerateContentResponse | string>;
 
 /**
@@ -64,7 +62,7 @@ async function fetchPlaceDetailsFromChunks(
   groundingChunks: GroundingChunk[],
   placesLib: google.maps.PlacesLibrary,
   responseText?: string,
-  markerBehavior: 'mentioned' | 'all' | 'none' = 'mentioned',
+  markerBehavior: 'mentioned' | 'all' | 'none' = 'mentioned'
 ): Promise<MapMarker[]> {
   if (markerBehavior === 'none' || groundingChunks.length === 0) {
     return [];
@@ -74,8 +72,7 @@ async function fetchPlaceDetailsFromChunks(
   if (markerBehavior === 'mentioned' && responseText) {
     // Filter the marker list to only what was mentioned in the grounding text.
     chunksToProcess = chunksToProcess.filter(
-      chunk =>
-        chunk.maps?.title && responseText.includes(chunk.maps.title),
+      chunk => chunk.maps?.title && responseText.includes(chunk.maps.title)
     );
   }
 
@@ -107,7 +104,11 @@ async function fetchPlaceDetailsFromChunks(
 
       let showLabel = true; // Default for 'mentioned'
       if (markerBehavior === 'all' && originalChunk) {
-        showLabel = !!(responseText && originalChunk.maps?.title && responseText.includes(originalChunk.maps.title));
+        showLabel = !!(
+          responseText &&
+          originalChunk.maps?.title &&
+          responseText.includes(originalChunk.maps.title)
+        );
       }
 
       return {
@@ -131,19 +132,13 @@ async function fetchPlaceDetailsFromChunks(
  * @param markers - An array of markers to display on the map.
  * @param groundingChunks - The original grounding chunks to check for metadata.
  */
-function updateMapStateWithMarkers(
-  markers: MapMarker[],
-  groundingChunks: GroundingChunk[],
-) {
-  const hasPlaceAnswerSources = groundingChunks.some(
-    chunk => chunk.maps?.placeAnswerSources,
-  );
+function updateMapStateWithMarkers(markers: MapMarker[], groundingChunks: GroundingChunk[]) {
+  const hasPlaceAnswerSources = groundingChunks.some(chunk => chunk.maps?.placeAnswerSources);
 
   const firstMarker = markers[0];
   if (hasPlaceAnswerSources && markers.length === 1 && firstMarker) {
     // Special close-up zoom: prevent auto-framing and set a direct camera target.
-    const { setPreventAutoFrame, setMarkers, setCameraTarget } =
-      useMapStore.getState();
+    const { setPreventAutoFrame, setMarkers, setCameraTarget } = useMapStore.getState();
 
     setPreventAutoFrame(true);
     setMarkers(markers);
@@ -162,7 +157,6 @@ function updateMapStateWithMarkers(
   }
 }
 
-
 /**
  * Tool implementation for grounding queries with Google Maps.
  *
@@ -172,7 +166,8 @@ function updateMapStateWithMarkers(
 const mapsGrounding: ToolImplementation = async (args, context) => {
   const { setHeldGroundedResponse, setHeldGroundingChunks, placesLib } = context;
   const query = args.query as string | undefined;
-  const markerBehavior = (args.markerBehavior as 'mentioned' | 'all' | 'none' | undefined) ?? 'mentioned';
+  const markerBehavior =
+    (args.markerBehavior as 'mentioned' | 'all' | 'none' | undefined) ?? 'mentioned';
   const systemInstruction = args.systemInstruction as string | undefined;
   const enableWidget = args.enableWidget as boolean | undefined;
 
@@ -211,7 +206,7 @@ const mapsGrounding: ToolImplementation = async (args, context) => {
           groundingChunks,
           placesLib,
           responseText,
-          markerBehavior,
+          markerBehavior
         );
         updateMapStateWithMarkers(markers, groundingChunks);
       } catch (e) {
@@ -295,44 +290,36 @@ const frameEstablishingShot: ToolImplementation = async (args, context) => {
   return `Set camera target to latitude ${String(lat)} and longitude ${String(lng)}.`;
 };
 
-
 /**
  * Tool implementation for framing a list of locations on the map. It can either
  * fly the camera to view the locations or add markers for them, letting the
  * main app's reactive state handle the camera framing.
  */
 const frameLocations: ToolImplementation = async (args, context) => {
-  const {
-    locations: explicitLocations,
-    geocode,
-    markers: shouldCreateMarkers,
-  } = args;
+  const { locations: explicitLocations, geocode, markers: shouldCreateMarkers } = args;
   const { elevationLib, padding, geocoder } = context;
 
-  const locationsWithLabels: { lat: number; lng: number; label?: string }[] =
-    [];
+  const locationsWithLabels: { lat: number; lng: number; label?: string }[] = [];
 
   // 1. Collect all locations from explicit coordinates and geocoded addresses.
   if (Array.isArray(explicitLocations)) {
     locationsWithLabels.push(
       ...explicitLocations.map((loc: { lat: number; lng: number }) => ({
         ...loc,
-      })),
+      }))
     );
   }
 
   if (Array.isArray(geocode) && geocode.length > 0) {
     if (!geocoder) {
       const errorMessage = 'Geocoding service is not available.';
-      useLogStore
-        .getState()
-        .addTurn({ role: 'system', text: errorMessage, isFinal: true });
+      useLogStore.getState().addTurn({ role: 'system', text: errorMessage, isFinal: true });
       return errorMessage;
     }
 
     const geocodeAddresses = geocode as string[];
     const geocodePromises = geocodeAddresses.map(address =>
-      geocoder.geocode({ address }).then(response => ({ response, address })),
+      geocoder.geocode({ address }).then(response => ({ response, address }))
     );
     const geocodeResults = await Promise.allSettled(geocodePromises);
 
@@ -349,16 +336,12 @@ const frameLocations: ToolImplementation = async (args, context) => {
           });
         } else {
           const errorMessage = `Could not find a location for "${address}".`;
-          useLogStore
-            .getState()
-            .addTurn({ role: 'system', text: errorMessage, isFinal: true });
+          useLogStore.getState().addTurn({ role: 'system', text: errorMessage, isFinal: true });
         }
       } else {
         const errorMessage = 'Geocoding failed for an address.';
         console.error(errorMessage, result.reason);
-        useLogStore
-          .getState()
-          .addTurn({ role: 'system', text: errorMessage, isFinal: true });
+        useLogStore.getState().addTurn({ role: 'system', text: errorMessage, isFinal: true });
       }
     }
   }
@@ -392,12 +375,7 @@ const frameLocations: ToolImplementation = async (args, context) => {
     useMapStore.getState().clearMarkers();
 
     const elevator = new elevationLib.ElevationService();
-    const cameraProps = await lookAtWithPadding(
-      locationsWithLabels,
-      elevator,
-      0,
-      padding,
-    );
+    const cameraProps = await lookAtWithPadding(locationsWithLabels, elevator, 0, padding);
 
     useMapStore.getState().setCameraTarget({
       center: {

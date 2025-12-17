@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -18,10 +18,7 @@
  * limitations under the License.
  */
 
-import {
-  createWorketFromSrc,
-  registeredWorklets,
-} from './audioworklet-registry';
+import { createWorketFromSrc, registeredWorklets } from './audioworklet-registry';
 
 export class AudioStreamer {
   private sampleRate = 24000;
@@ -129,11 +126,7 @@ export class AudioStreamer {
   }
 
   private createAudioBuffer(audioData: Float32Array): AudioBuffer {
-    const audioBuffer = this.context.createBuffer(
-      1,
-      audioData.length,
-      this.sampleRate
-    );
+    const audioBuffer = this.context.createBuffer(1, audioData.length, this.sampleRate);
     audioBuffer.getChannelData(0).set(audioData);
     return audioBuffer;
   }
@@ -156,10 +149,7 @@ export class AudioStreamer {
         }
         this.endOfQueueAudioSource = source;
         source.onended = () => {
-          if (
-            !this.audioQueue.length &&
-            this.endOfQueueAudioSource === source
-          ) {
+          if (!this.audioQueue.length && this.endOfQueueAudioSource === source) {
             this.endOfQueueAudioSource = null;
             this.onComplete();
           }
@@ -206,10 +196,11 @@ export class AudioStreamer {
         }, 100) as unknown as number;
       }
     } else {
-      const nextCheckTime =
-        (this.scheduledTime - this.context.currentTime) * 1000;
+      const nextCheckTime = (this.scheduledTime - this.context.currentTime) * 1000;
       setTimeout(
-        () => { this.scheduleNextBuffer(); },
+        () => {
+          this.scheduleNextBuffer();
+        },
         Math.max(0, nextCheckTime - 50)
       );
     }
@@ -226,10 +217,7 @@ export class AudioStreamer {
       this.checkInterval = null;
     }
 
-    this.gainNode.gain.linearRampToValueAtTime(
-      0,
-      this.context.currentTime + 0.1
-    );
+    this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.1);
 
     setTimeout(() => {
       this.gainNode.disconnect();

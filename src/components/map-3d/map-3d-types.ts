@@ -31,18 +31,10 @@ import type React from 'react';
 
 // Augment @vis.gl/react-google-maps with additional library overloads
 declare module '@vis.gl/react-google-maps' {
-  export function useMapsLibrary(
-    name: 'maps3d'
-  ): google.maps.Maps3DLibrary | null;
-  export function useMapsLibrary(
-    name: 'elevation'
-  ): google.maps.ElevationLibrary | null;
-  export function useMapsLibrary(
-    name: 'places'
-  ): google.maps.PlacesLibrary | null;
-  export function useMapsLibrary(
-    name: 'geocoding'
-  ): google.maps.GeocodingLibrary | null;
+  export function useMapsLibrary(name: 'maps3d'): google.maps.Maps3DLibrary | null;
+  export function useMapsLibrary(name: 'elevation'): google.maps.ElevationLibrary | null;
+  export function useMapsLibrary(name: 'places'): google.maps.PlacesLibrary | null;
+  export function useMapsLibrary(name: 'geocoding'): google.maps.GeocodingLibrary | null;
 }
 
 // Augment google.maps namespace with missing types
@@ -67,7 +59,9 @@ declare global {
 
     // Augment Maps3DLibrary with Marker3DInteractiveElement
     interface Maps3DLibrary {
-      Marker3DInteractiveElement: new (options: maps3d.Marker3DInteractiveElementOptions) => HTMLElement;
+      Marker3DInteractiveElement: new (
+        options: maps3d.Marker3DInteractiveElementOptions
+      ) => HTMLElement;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-namespace -- Required for declaration merging
@@ -126,7 +120,8 @@ declare module 'react' {
 
 // Attributes for the gmp-map-3d custom element
 interface GmpMap3DAttributes
-  extends Partial<google.maps.maps3d.Map3DElementOptions>,
+  extends
+    Partial<google.maps.maps3d.Map3DElementOptions>,
     React.DOMAttributes<google.maps.maps3d.Map3DElement>,
     React.RefAttributes<google.maps.maps3d.Map3DElement> {
   children?: React.ReactNode;

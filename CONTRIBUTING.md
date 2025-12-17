@@ -11,16 +11,17 @@
 
 Use conventional commits:
 
-| Prefix | Purpose |
-|--------|---------|
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `docs:` | Documentation |
-| `refactor:` | Code refactoring |
-| `test:` | Adding tests |
-| `chore:` | Maintenance tasks |
+| Prefix      | Purpose           |
+| ----------- | ----------------- |
+| `feat:`     | New feature       |
+| `fix:`      | Bug fix           |
+| `docs:`     | Documentation     |
+| `refactor:` | Code refactoring  |
+| `test:`     | Adding tests      |
+| `chore:`    | Maintenance tasks |
 
 Example:
+
 ```
 feat: add dark mode toggle to settings panel
 ```
@@ -91,5 +92,6 @@ See [Customization Guide](./docs/CUSTOMIZATION.md) for adding function-calling t
 ## Questions
 
 For questions about the codebase, refer to:
+
 - [Architecture](./docs/ARCHITECTURE.md) - System design
 - [Customization](./docs/CUSTOMIZATION.md) - Extending functionality

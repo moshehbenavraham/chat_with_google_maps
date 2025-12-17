@@ -21,24 +21,15 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 /**
  * Check if a value has a specific property.
  */
-export function hasProperty<K extends string>(
-  value: unknown,
-  key: K
-): value is Record<K, unknown> {
+export function hasProperty<K extends string>(value: unknown, key: K): value is Record<K, unknown> {
   return isObject(value) && key in value;
 }
 
 /**
  * Type guard for google.maps.LatLngLiteral.
  */
-export function isLatLngLiteral(
-  value: unknown
-): value is google.maps.LatLngLiteral {
-  return (
-    isObject(value) &&
-    typeof value.lat === 'number' &&
-    typeof value.lng === 'number'
-  );
+export function isLatLngLiteral(value: unknown): value is google.maps.LatLngLiteral {
+  return isObject(value) && typeof value.lat === 'number' && typeof value.lng === 'number';
 }
 
 /**
@@ -99,9 +90,6 @@ export function assertDefined<T>(
  * Safely get a value or return a default.
  * Useful for handling optional values in strict mode.
  */
-export function getOrDefault<T>(
-  value: T | null | undefined,
-  defaultValue: T
-): T {
+export function getOrDefault<T>(value: T | null | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }

@@ -2,7 +2,6 @@
 
 ## Link: https://console.cloud.google.com/google/maps-apis/home
 
-
 ## Sample Usage
 
 <!DOCTYPE html>
@@ -66,6 +65,7 @@
         padding: 20px;
       }
     </style>
+
   </head>
   <body>
     <gmpx-api-loader key="AIzaSyDSndJHTzrTtqmgN6n-2J1eiwPN6yOuvpo" solution-channel="GMP_GE_mapsandplacesautocomplete_v2">

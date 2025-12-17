@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 import {
   GoogleGenAI,
   type LiveCallbacks,
@@ -46,9 +46,7 @@ export interface LiveClientEventTypes {
   open: () => void;
   setupcomplete: () => void;
   toolcall: (toolCall: LiveServerToolCall) => void;
-  toolcallcancellation: (
-    toolcallCancellation: LiveServerToolCallCancellation
-  ) => void;
+  toolcallcancellation: (toolcallCancellation: LiveServerToolCallCancellation) => void;
   turncomplete: () => void;
   generationcomplete: () => void;
   inputTranscription: (text: string, isFinal: boolean) => void;
@@ -142,7 +140,7 @@ export class GenAILiveClient {
   public sendRealtimeText(text: string) {
     if (this._status !== 'connected' || !this.session) {
       this.emitter.emit('error', new ErrorEvent('Client is not connected'));
-      console.error(`sendRealtimeText: Client is not connected, for message: ${text}`)
+      console.error(`sendRealtimeText: Client is not connected, for message: ${text}`);
       return;
     }
     this.session.sendRealtimeInput({ text });
@@ -172,7 +170,6 @@ export class GenAILiveClient {
     else if (hasAudio) message = 'audio';
     else if (hasVideo) message = 'video';
     this.log(`client.realtimeInput`, message);
-
   }
 
   public sendToolResponse(toolResponse: LiveClientToolResponse) {
@@ -180,9 +177,7 @@ export class GenAILiveClient {
       this.emitter.emit('error', new ErrorEvent('Client is not connected'));
       return;
     }
-    if (
-      toolResponse.functionResponses?.length
-    ) {
+    if (toolResponse.functionResponses?.length) {
       this.session.sendToolResponse({
         functionResponses: toolResponse.functionResponses,
       });
@@ -220,7 +215,7 @@ export class GenAILiveClient {
         this.emitter.emit(
           'inputTranscription',
           text,
-          (serverContent.inputTranscription as { isFinal?: boolean }).isFinal ?? false,
+          (serverContent.inputTranscription as { isFinal?: boolean }).isFinal ?? false
         );
         this.log('server.inputTranscription', text);
       }
@@ -230,7 +225,7 @@ export class GenAILiveClient {
         this.emitter.emit(
           'outputTranscription',
           text,
-          (serverContent.outputTranscription as { isFinal?: boolean }).isFinal ?? false,
+          (serverContent.outputTranscription as { isFinal?: boolean }).isFinal ?? false
         );
         this.log('server.outputTranscription', text);
       }
@@ -238,9 +233,7 @@ export class GenAILiveClient {
       if (serverContent.modelTurn) {
         const parts: Part[] = serverContent.modelTurn.parts ?? [];
 
-        const audioParts = parts.filter(p =>
-          p.inlineData?.mimeType?.startsWith('audio/pcm'),
-        );
+        const audioParts = parts.filter(p => p.inlineData?.mimeType?.startsWith('audio/pcm'));
         const base64s = audioParts.map(p => p.inlineData?.data);
         const otherParts = difference(parts, audioParts);
 
@@ -297,10 +290,7 @@ export class GenAILiveClient {
       }
     }
 
-    this.log(
-      `server.${e.type}`,
-      `disconnected ${reason ? `with reason: ${reason}` : ``}`
-    );
+    this.log(`server.${e.type}`, `disconnected ${reason ? `with reason: ${reason}` : ``}`);
     this.emitter.emit('close', e);
   }
 

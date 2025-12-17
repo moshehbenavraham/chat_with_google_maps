@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 import React, { useEffect, useMemo } from 'react';
 import { useSettings, useUI, useLogStore, useTools, useMapStore, personas } from '@/stores';
 import c from 'classnames';
@@ -15,12 +15,7 @@ import {
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 
 export default function Sidebar() {
-  const {
-    isSidebarOpen,
-    toggleSidebar,
-    showSystemMessages,
-    toggleShowSystemMessages,
-  } = useUI();
+  const { isSidebarOpen, toggleSidebar, showSystemMessages, toggleShowSystemMessages } = useUI();
   const {
     systemPrompt,
     model,
@@ -99,7 +94,9 @@ export default function Sidebar() {
                   Persona
                   <select
                     value={activePersona}
-                    onChange={e => { setPersona(e.target.value); }}
+                    onChange={e => {
+                      setPersona(e.target.value);
+                    }}
                   >
                     {Object.keys(personas).map(personaName => (
                       <option key={personaName} value={personaName}>
@@ -113,7 +110,9 @@ export default function Sidebar() {
                 System Prompt
                 <textarea
                   value={systemPrompt}
-                  onChange={e => { setSystemPrompt(e.target.value); }}
+                  onChange={e => {
+                    setSystemPrompt(e.target.value);
+                  }}
                   rows={10}
                   placeholder="Describe the role and personality of the AI..."
                   disabled={isEasterEggMode}
@@ -123,7 +122,9 @@ export default function Sidebar() {
                 Model
                 <select
                   value={model}
-                  onChange={e => { setModel(e.target.value); }}
+                  onChange={e => {
+                    setModel(e.target.value);
+                  }}
                 >
                   {AVAILABLE_LIVE_MODELS.map(m => (
                     <option key={m.id} value={m.id} title={m.description}>
@@ -136,7 +137,9 @@ export default function Sidebar() {
                 Voice
                 <select
                   value={voice}
-                  onChange={e => { setVoice(e.target.value); }}
+                  onChange={e => {
+                    setVoice(e.target.value);
+                  }}
                 >
                   {availableVoices.map(v => (
                     <option key={v.name} value={v.name}>
@@ -156,10 +159,7 @@ export default function Sidebar() {
                 />
                 <span className="checkbox-visual"></span>
               </label>
-              <label
-                htmlFor="system-message-toggle"
-                className="settings-toggle-label"
-              >
+              <label htmlFor="system-message-toggle" className="settings-toggle-label">
                 Show system messages
               </label>
             </div>
@@ -169,10 +169,7 @@ export default function Sidebar() {
               <span className="icon">download</span>
               Export Logs
             </button>
-            <button
-              onClick={handleResetSession}
-              title="Reset session logs"
-            >
+            <button onClick={handleResetSession} title="Reset session logs">
               <span className="icon">refresh</span>
               Reset Session
             </button>

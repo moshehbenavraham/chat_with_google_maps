@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 'use client';
 
@@ -28,21 +28,23 @@ import {
   useCallback,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
 import isDeepEqual from 'fast-deep-equal';
 
 export function useCallbackRef<T>() {
   const [el, setEl] = useState<T | null>(null);
-  const ref = useCallback((value: T) => { setEl(value); }, [setEl]);
+  const ref = useCallback(
+    (value: T) => {
+      setEl(value);
+    },
+    [setEl]
+  );
 
   return [el, ref as Ref<T>] as const;
 }
 
-export function useDeepCompareEffect(
-  effect: EffectCallback,
-  deps: DependencyList
-) {
+export function useDeepCompareEffect(effect: EffectCallback, deps: DependencyList) {
   const ref = useRef<DependencyList | undefined>(undefined);
 
   if (!ref.current || !isDeepEqual(deps, ref.current)) {
@@ -53,11 +55,7 @@ export function useDeepCompareEffect(
   useEffect(effect, ref.current);
 }
 
-export function useDebouncedEffect(
-  effect: EffectCallback,
-  timeout: number,
-  deps: DependencyList
-) {
+export function useDebouncedEffect(effect: EffectCallback, timeout: number, deps: DependencyList) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(

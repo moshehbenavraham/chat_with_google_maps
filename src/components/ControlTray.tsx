@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -39,7 +39,9 @@ const useMediaQuery = (query: string) => {
     // Set initial value and listen for changes
     listener();
     media.addEventListener('change', listener);
-    return () => { media.removeEventListener('change', listener); };
+    return () => {
+      media.removeEventListener('change', listener);
+    };
   }, [query]);
 
   return matches;
@@ -49,7 +51,7 @@ export interface ControlTrayProps {
   trayRef?: Ref<HTMLElement>;
 }
 
-function ControlTray({trayRef}: ControlTrayProps) {
+function ControlTray({ trayRef }: ControlTrayProps) {
   const [speakerMuted, setSpeakerMuted] = useState(false);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(true);
@@ -58,13 +60,13 @@ function ControlTray({trayRef}: ControlTrayProps) {
   const { toggleSidebar } = useUI();
   const { activateEasterEggMode } = useSettings();
   const settingsClickTimestamps = useRef<number[]>([]);
-  const isMobile = useMediaQuery('(max-width: 768px), (orientation: landscape) and (max-height: 768px)');
+  const isMobile = useMediaQuery(
+    '(max-width: 768px), (orientation: landscape) and (max-height: 768px)'
+  );
   const [isTextEntryVisible, setIsTextEntryVisible] = useState(false);
   const isLandscape = useMediaQuery('(orientation: landscape) and (max-height: 768px)');
 
-
-  const { client, connected, connect, disconnect, audioStreamer } =
-    useLiveAPIContext();
+  const { client, connected, connect, disconnect, audioStreamer } = useLiveAPIContext();
 
   useEffect(() => {
     /* eslint-disable react-hooks/immutability -- Web Audio API gain.value must be modified directly */
@@ -118,7 +120,7 @@ function ControlTray({trayRef}: ControlTrayProps) {
     setTextPrompt(''); // Clear input immediately
 
     if (!connected) {
-      console.warn("Cannot send text message: not connected to live stream.");
+      console.warn('Cannot send text message: not connected to live stream.');
       useLogStore.getState().addTurn({
         role: 'system',
         text: `Cannot send message. Please connect to the stream first.`,
@@ -137,19 +139,19 @@ function ControlTray({trayRef}: ControlTrayProps) {
 
     // Filter out clicks older than 3 seconds
     settingsClickTimestamps.current = settingsClickTimestamps.current.filter(
-        timestamp => now - timestamp < 3000
+      timestamp => now - timestamp < 3000
     );
 
     if (settingsClickTimestamps.current.length >= 6) {
-        activateEasterEggMode();
-        useLogStore.getState().addTurn({
-            role: 'system',
-            text: "You've unlocked Scavenger Hunt mode!.",
-            isFinal: true,
-        });
+      activateEasterEggMode();
+      useLogStore.getState().addTurn({
+        role: 'system',
+        text: "You've unlocked Scavenger Hunt mode!.",
+        isFinal: true,
+      });
 
-        // Reset after triggering
-        settingsClickTimestamps.current = [];
+      // Reset after triggering
+      settingsClickTimestamps.current = [];
     }
   };
 
@@ -159,7 +161,11 @@ function ControlTray({trayRef}: ControlTrayProps) {
 
   return (
     <section className="control-tray" ref={trayRef}>
-      <nav className={cn('actions-nav', { 'text-entry-visible-landscape': isLandscape && isTextEntryVisible })}>
+      <nav
+        className={cn('actions-nav', {
+          'text-entry-visible-landscape': isLandscape && isTextEntryVisible,
+        })}
+      >
         <button
           ref={connectButtonRef}
           className={cn('action-button connect-toggle', { connected })}
@@ -172,14 +178,14 @@ function ControlTray({trayRef}: ControlTrayProps) {
         </button>
         <button
           type="button"
-          aria-label={
-            !speakerMuted ? 'Audio output on' : 'Audio output off'
-          }
+          aria-label={!speakerMuted ? 'Audio output on' : 'Audio output off'}
           className={cn('action-button', {
             'speaker-on': !speakerMuted,
             'speaker-off': speakerMuted,
           })}
-          onClick={() => { setSpeakerMuted(!speakerMuted); }}
+          onClick={() => {
+            setSpeakerMuted(!speakerMuted);
+          }}
           title={!speakerMuted ? 'Mute audio output' : 'Unmute audio output'}
         >
           <span className="material-symbols-outlined">
@@ -202,23 +208,23 @@ function ControlTray({trayRef}: ControlTrayProps) {
         </button>
         <button
           className={cn('action-button keyboard-toggle-button')}
-          onClick={() => { setIsTextEntryVisible(!isTextEntryVisible); }}
+          onClick={() => {
+            setIsTextEntryVisible(!isTextEntryVisible);
+          }}
           title="Toggle text input"
         >
-          <span className="icon">
-            {isTextEntryVisible ? 'keyboard_hide' : 'keyboard'}
-          </span>
+          <span className="icon">{isTextEntryVisible ? 'keyboard_hide' : 'keyboard'}</span>
         </button>
         {(!isMobile || isTextEntryVisible) && (
           <form className="prompt-form" onSubmit={handleTextSubmit}>
             <input
               type="text"
               className="prompt-input"
-              placeholder={
-                connected ? 'Type a message...' : 'Connect to start typing...'
-              }
+              placeholder={connected ? 'Type a message...' : 'Connect to start typing...'}
               value={textPrompt}
-              onChange={e => { setTextPrompt(e.target.value); }}
+              onChange={e => {
+                setTextPrompt(e.target.value);
+              }}
               aria-label="Text prompt"
               disabled={!connected}
             />

@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 /**
  * Copyright 2024 Google LLC
@@ -95,7 +95,7 @@ export class MapController {
    */
   async frameEntities(
     entities: { position: { lat: number; lng: number } }[],
-    padding: [number, number, number, number],
+    padding: [number, number, number, number]
   ) {
     if (entities.length === 0) return;
 
@@ -104,7 +104,7 @@ export class MapController {
       entities.map(e => e.position),
       elevator,
       0, // heading
-      padding,
+      padding
     );
 
     this.flyTo({

@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 /**
  * Global TypeScript type definitions
@@ -12,12 +12,7 @@
  */
 
 // Re-export types from stores for convenience
-export type {
-  ConversationTurn,
-  FunctionCall,
-  LiveClientToolResponse,
-  MapMarker,
-} from '@/stores';
+export type { ConversationTurn, FunctionCall, LiveClientToolResponse, MapMarker } from '@/stores';
 
 // Re-export types from components
 export type { Map3DCameraProps, Map3DProps } from '@/components/map-3d';

@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -44,11 +44,7 @@ export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
 }) => {
   const liveAPI = useLiveApi({ apiKey, map, placesLib, elevationLib, geocoder, padding });
 
-  return (
-    <LiveAPIContext.Provider value={liveAPI}>
-      {children}
-    </LiveAPIContext.Provider>
-  );
+  return <LiveAPIContext.Provider value={liveAPI}>{children}</LiveAPIContext.Provider>;
 };
 
 export const useLiveAPIContext = (): UseLiveApiResults => {

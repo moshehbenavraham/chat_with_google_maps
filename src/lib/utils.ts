@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -24,9 +24,7 @@ type GetAudioContextOptions = AudioContextOptions & {
 
 const map = new Map<string, AudioContext>();
 
-export const audioContext: (
-  options?: GetAudioContextOptions
-) => Promise<AudioContext> = (() => {
+export const audioContext: (options?: GetAudioContextOptions) => Promise<AudioContext> = (() => {
   const didInteract = new Promise(res => {
     window.addEventListener('pointerdown', res, { once: true });
     window.addEventListener('keydown', res, { once: true });

@@ -1,15 +1,14 @@
 body {
   margin: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 :root {
@@ -104,7 +103,7 @@ li {
   font-size: 1rem;
   letter-spacing: normal;
   white-space: nowrap;
-color: #5e5e5e;
+  color: #5e5e5e;
 }
 
 .tool-checkbox-wrapper {
@@ -273,7 +272,7 @@ button .icon {
 }
 
 gmp-place-details-compact {
-      color-scheme: light;
+  color-scheme: light;
 }
 
 .map-panel {
@@ -286,7 +285,6 @@ gmp-place-details-compact {
   background: white;
 }
 
-
 .streaming-console a,
 .streaming-console a:visited,
 .streaming-console a:active {
@@ -297,7 +295,7 @@ gmp-place-details-compact {
   pointer-events: none;
 }
 
-.streaming-console .disabled>* {
+.streaming-console .disabled > * {
   pointer-events: none;
 }
 
@@ -468,7 +466,7 @@ gmp-place-details-compact {
   transition: all 0.6s ease-in;
 }
 
-.actions-nav>* {
+.actions-nav > * {
   display: flex;
   align-items: center;
 }
@@ -720,14 +718,13 @@ gmp-place-details-compact {
   color: var(--Blue-500);
 }
 
-
 .transcription-entry.interim .transcription-text-content {
   opacity: 0.6;
 }
 
 .transcription-entry strong {
   font-weight: bold;
-  color: var(--Blue-500);;
+  color: var(--Blue-500);
 }
 
 .transcription-entry pre {
@@ -983,8 +980,12 @@ gmp-place-details-compact {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Desktop Overrides --- */
@@ -998,7 +999,6 @@ gmp-place-details-compact {
     height: fit-content;
   }
 }
-
 
 /* --- Mobile Responsive Styles --- */
 @media (max-width: 768px) {
@@ -1049,7 +1049,8 @@ gmp-place-details-compact {
     border-left: none;
   }
 
-  .transcription-entry.agent, .transcription-entry.user {
+  .transcription-entry.agent,
+  .transcription-entry.user {
     max-width: 95%;
   }
 

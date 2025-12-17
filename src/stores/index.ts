@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 import { create } from 'zustand';
 import { itineraryPlannerTools } from '@/lib/tools/itinerary-planner';
 
@@ -11,10 +11,7 @@ const toolsets: Record<Template, FunctionCall[]> = {
   'itinerary-planner': itineraryPlannerTools,
 };
 
-import {
-  itineraryPlannerPrompt,
-  scavengerHuntPrompt,
-} from '@/lib/prompts';
+import { itineraryPlannerPrompt, scavengerHuntPrompt } from '@/lib/prompts';
 
 const systemPrompts: Record<Template, string> = {
   'itinerary-planner': itineraryPlannerPrompt.content,
@@ -33,8 +30,7 @@ import { type Map3DCameraProps } from '@/components/map-3d';
 /**
  * Personas
  */
-export const SCAVENGER_HUNT_PERSONA =
-  'ClueMaster Cory, the Scavenger Hunt Creator';
+export const SCAVENGER_HUNT_PERSONA = 'ClueMaster Cory, the Scavenger Hunt Creator';
 
 export const personas: Record<string, { prompt: string; voice: string }> = {
   [SCAVENGER_HUNT_PERSONA]: {
@@ -63,9 +59,15 @@ export const useSettings = create<{
   voice: DEFAULT_VOICE,
   isEasterEggMode: false,
   activePersona: SCAVENGER_HUNT_PERSONA,
-  setSystemPrompt: prompt => { set({ systemPrompt: prompt }); },
-  setModel: model => { set({ model }); },
-  setVoice: voice => { set({ voice }); },
+  setSystemPrompt: prompt => {
+    set({ systemPrompt: prompt });
+  },
+  setModel: model => {
+    set({ model });
+  },
+  setVoice: voice => {
+    set({ voice });
+  },
   setPersona: (persona: string) => {
     if (personas[persona]) {
       set({
@@ -105,10 +107,13 @@ export const useUI = create<{
   toggleShowSystemMessages: () => void;
 }>(set => ({
   isSidebarOpen: false,
-  toggleSidebar: () => { set(state => ({ isSidebarOpen: !state.isSidebarOpen })); },
+  toggleSidebar: () => {
+    set(state => ({ isSidebarOpen: !state.isSidebarOpen }));
+  },
   showSystemMessages: false,
-  toggleShowSystemMessages: () =>
-    { set(state => ({ showSystemMessages: !state.showSystemMessages })); },
+  toggleShowSystemMessages: () => {
+    set(state => ({ showSystemMessages: !state.showSystemMessages }));
+  },
 }));
 
 /**
@@ -122,8 +127,6 @@ export interface FunctionCall {
   isEnabled: boolean;
   scheduling?: FunctionResponseScheduling;
 }
-
-
 
 export const useTools = create<{
   tools: FunctionCall[];
@@ -161,18 +164,17 @@ export const useLogStore = create<{
   isAwaitingFunctionResponse: boolean;
   addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) => void;
   updateLastTurn: (update: Partial<ConversationTurn>) => void;
-  mergeIntoLastAgentTurn: (
-    update: Omit<ConversationTurn, 'timestamp' | 'role'>,
-  ) => void;
+  mergeIntoLastAgentTurn: (update: Omit<ConversationTurn, 'timestamp' | 'role'>) => void;
   clearTurns: () => void;
   setIsAwaitingFunctionResponse: (isAwaiting: boolean) => void;
 }>((set, _get) => ({
   turns: [],
   isAwaitingFunctionResponse: false,
-  addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) =>
-    { set(state => ({
+  addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) => {
+    set(state => ({
       turns: [...state.turns, { ...turn, timestamp: new Date() }],
-    })); },
+    }));
+  },
   updateLastTurn: (update: Partial<Omit<ConversationTurn, 'timestamp'>>) => {
     set(state => {
       if (state.turns.length === 0) {
@@ -187,9 +189,7 @@ export const useLogStore = create<{
       return { turns: newTurns };
     });
   },
-  mergeIntoLastAgentTurn: (
-    update: Omit<ConversationTurn, 'timestamp' | 'role'>,
-  ) => {
+  mergeIntoLastAgentTurn: (update: Omit<ConversationTurn, 'timestamp' | 'role'>) => {
     set(state => {
       const turns = state.turns;
       const lastAgentTurnIndex = turns.map(t => t.role).lastIndexOf('agent');
@@ -197,10 +197,7 @@ export const useLogStore = create<{
       if (lastAgentTurnIndex === -1) {
         // Fallback: add a new turn.
         return {
-          turns: [
-            ...turns,
-            { ...update, role: 'agent' as const, timestamp: new Date() },
-          ],
+          turns: [...turns, { ...update, role: 'agent' as const, timestamp: new Date() }],
         };
       }
 
@@ -227,9 +224,12 @@ export const useLogStore = create<{
       return { turns: newTurns };
     });
   },
-  clearTurns: () => { set({ turns: [] }); },
-  setIsAwaitingFunctionResponse: isAwaiting =>
-    { set({ isAwaitingFunctionResponse: isAwaiting }); },
+  clearTurns: () => {
+    set({ turns: [] });
+  },
+  setIsAwaitingFunctionResponse: isAwaiting => {
+    set({ isAwaitingFunctionResponse: isAwaiting });
+  },
 }));
 
 /**
@@ -257,8 +257,16 @@ export const useMapStore = create<{
   markers: [],
   cameraTarget: null,
   preventAutoFrame: false,
-  setMarkers: markers => { set({ markers }); },
-  clearMarkers: () => { set({ markers: [] }); },
-  setCameraTarget: target => { set({ cameraTarget: target }); },
-  setPreventAutoFrame: prevent => { set({ preventAutoFrame: prevent }); },
+  setMarkers: markers => {
+    set({ markers });
+  },
+  clearMarkers: () => {
+    set({ markers: [] });
+  },
+  setCameraTarget: target => {
+    set({ cameraTarget: target });
+  },
+  setPreventAutoFrame: prevent => {
+    set({ preventAutoFrame: prevent });
+  },
 }));

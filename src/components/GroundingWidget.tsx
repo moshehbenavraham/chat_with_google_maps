@@ -1,17 +1,17 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 'use client';
 
 import React from 'react';
-import {useMapsLibrary} from '@vis.gl/react-google-maps';
-import {useEffect, useRef} from 'react';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
+import { useEffect, useRef } from 'react';
 
 export function GroundingWidget({
   contextToken,
-  mapHidden = false
+  mapHidden = false,
 }: {
   contextToken: string;
   mapHidden?: boolean;
@@ -27,7 +27,7 @@ export function GroundingWidget({
     function initializeElement() {
       if (currentElement && placesLibrary) {
         const element = new placesLibrary.PlaceContextualElement();
-        element.id="widget";
+        element.id = 'widget';
         element.contextToken = contextToken;
 
         // Create and append the list config element

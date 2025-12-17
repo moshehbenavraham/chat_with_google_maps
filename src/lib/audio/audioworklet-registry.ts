@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 /**
  * Copyright 2024 Google LLC
  *
@@ -28,21 +28,12 @@ export interface WorkletGraph {
   handlers: ((this: MessagePort, ev: MessageEvent) => any)[];
 }
 
-export const registeredWorklets = new Map<
-  AudioContext,
-  Record<string, WorkletGraph>
->();
+export const registeredWorklets = new Map<AudioContext, Record<string, WorkletGraph>>();
 
-export const createWorketFromSrc = (
-  workletName: string,
-  workletSrc: string
-) => {
-  const script = new Blob(
-    [`registerProcessor("${workletName}", ${workletSrc})`],
-    {
-      type: 'application/javascript',
-    }
-  );
+export const createWorketFromSrc = (workletName: string, workletSrc: string) => {
+  const script = new Blob([`registerProcessor("${workletName}", ${workletSrc})`], {
+    type: 'application/javascript',
+  });
 
   return URL.createObjectURL(script);
 };
