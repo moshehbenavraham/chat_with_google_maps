@@ -60,6 +60,8 @@ See [.env.example](.env.example) for detailed configuration.
 
 | Guide                                            | Description                            |
 | ------------------------------------------------ | -------------------------------------- |
+| [Onboarding](./docs/onboarding.md)               | Getting started checklist              |
+| [Development](./docs/development.md)             | Dev scripts and workflow               |
 | [Local Deployment](./docs/LOCAL_DEPLOYMENT.md)   | Development setup and troubleshooting  |
 | [Vercel Deployment](./docs/VERCEL_DEPLOYMENT.md) | Production hosting on Vercel           |
 | [Architecture](./docs/ARCHITECTURE.md)           | Application structure and key concepts |
@@ -73,11 +75,20 @@ See [PRD](.spec_system/PRD/PRD.md) for current progress and roadmap.
 
 ## Scripts
 
-| Command           | Description              |
-| ----------------- | ------------------------ |
-| `npm run dev`     | Start development server |
-| `npm run build`   | Build for production     |
-| `npm run preview` | Preview production build |
+| Command                 | Description                    |
+| ----------------------- | ------------------------------ |
+| `npm run dev`           | Start development server       |
+| `npm run build`         | Build for production           |
+| `npm run preview`       | Preview production build       |
+| `npm run lint`          | Run ESLint                     |
+| `npm run lint:fix`      | Run ESLint with auto-fix       |
+| `npm run format`        | Format code with Prettier      |
+| `npm run format:check`  | Check code formatting          |
+| `npm run typecheck`     | Run TypeScript type checking   |
+| `npm run test`          | Run tests                      |
+| `npm run test:watch`    | Run tests in watch mode        |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run quality`       | Run all quality checks         |
 
 ## Tech Stack
 

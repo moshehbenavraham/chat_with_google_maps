@@ -15,8 +15,8 @@ A voice-driven conversational interface for exploring locations using Gemini Liv
 
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
-| 00 | Developer Tooling & Quality Foundation | 5 | Not Started |
-| 01 | Backend API Layer (Hono) | TBD | Not Started |
+| 00 | Developer Tooling & Quality Foundation | 5 | Complete |
+| 01 | Backend API Layer (Hono) | 3 | Not Started |
 | 02 | Database Layer (PostgreSQL + Drizzle) | TBD | Not Started |
 | 03 | Authentication (Better Auth) | TBD | Not Started |
 

@@ -30,11 +30,23 @@ feat: add dark mode toggle to settings panel
 
 1. Create feature branch from `main`
 2. Make changes with clear commits
-3. Run `npm run build` to verify no errors
+3. Run quality checks before pushing:
+   ```bash
+   npm run quality  # Runs typecheck, lint, format:check, test
+   ```
 4. Update documentation if needed
 5. Open PR with description
 6. Address review feedback
 7. Squash and merge
+
+## Pre-commit Hooks
+
+This project uses Husky and lint-staged to run quality checks on staged files:
+
+- **TypeScript/TSX files**: ESLint + Prettier
+- **JSON/MD/CSS/HTML files**: Prettier
+
+Hooks run automatically on `git commit`. If checks fail, fix the issues before committing.
 
 ## Development Setup
 
@@ -56,10 +68,26 @@ See [Local Deployment](./docs/LOCAL_DEPLOYMENT.md) for detailed setup instructio
 
 ## Code Style
 
-- TypeScript strict mode enabled
+- TypeScript strict mode enabled (`noUncheckedIndexedAccess`, `noImplicitReturns`)
+- ESLint with `strictTypeChecked` and `stylisticTypeChecked` presets
+- Prettier for consistent formatting
 - Use meaningful variable and function names
 - Add comments for complex logic only
 - Keep components focused and small
+
+## Quality Scripts
+
+| Command                 | Description                    |
+| ----------------------- | ------------------------------ |
+| `npm run lint`          | Run ESLint                     |
+| `npm run lint:fix`      | Run ESLint with auto-fix       |
+| `npm run format`        | Format code with Prettier      |
+| `npm run format:check`  | Check code formatting          |
+| `npm run typecheck`     | Run TypeScript type checking   |
+| `npm run test`          | Run tests                      |
+| `npm run test:watch`    | Run tests in watch mode        |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run quality`       | Run all quality checks         |
 
 ## Project Structure
 

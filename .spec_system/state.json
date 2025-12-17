@@ -10,6 +10,12 @@
       "description": "Establish a solid foundation of developer tooling and quality gates including TypeScript strict mode, ESLint, Prettier, Vitest, and pre-commit hooks",
       "status": "complete",
       "session_count": 5
+    },
+    "1": {
+      "name": "Backend API Layer (Hono)",
+      "description": "Add a lightweight backend API layer using Hono for server-side API key protection, future authentication, and database access while remaining vendor-neutral",
+      "status": "not_started",
+      "session_count": 3
     }
   },
   "completed_sessions": [
