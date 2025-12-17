@@ -28,7 +28,7 @@ Install and configure Hono as the backend API framework with Vite development pr
 ### Out of Scope
 - API key protection (Session 02)
 - Gemini/Maps proxy routes (Session 02)
-- Vercel deployment configuration (Session 03)
+- Docker production configuration (Session 03)
 - Database connections (Phase 02)
 - Authentication (Phase 03)
 

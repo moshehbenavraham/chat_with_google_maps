@@ -11,12 +11,57 @@ A voice-driven conversational interface for exploring locations using Gemini Liv
 3. Create an intuitive 3D map exploration experience with location grounding
 4. Enable interactive itinerary planning through natural conversation
 
+## Deployment Philosophy
+
+**This project is deployment-agnostic by design.** The codebase should work on multiple platforms without modification, with self-hosting as the long-term goal.
+
+### Core Principles
+
+1. **No Platform Lock-in**: All code uses standard Web APIs and runs on any JavaScript runtime
+2. **Multiple Deployment Options**: Vercel works now, self-hosting available when needed
+3. **Zero Proprietary Dependencies**: No reliance on vendor-specific APIs or runtime features
+4. **Self-Hosting Ready**: Docker configuration provided for when you want full control
+
+### Why Deployment Agnostic?
+
+| Benefit | Details |
+|---------|---------|
+| **Flexibility** | Switch platforms without code changes |
+| **Cost Control** | Move to self-hosting when scale demands it |
+| **Data Sovereignty** | Option to self-host for full data control |
+| **No Lock-in** | Never trapped by a single vendor |
+
+### Supported Deployment Targets
+
+```
+All deployment options supported with same codebase:
+┌─────────────────────────────────────────────────────────────┐
+│ Serverless (Quick Setup)                                    │
+│   - Vercel (current, works out of box)                      │
+│   - Cloudflare Workers                                      │
+│   - AWS Lambda                                              │
+├─────────────────────────────────────────────────────────────┤
+│ Self-Hosted (Long-term Target)                              │
+│   - Docker Compose                                          │
+│   - VPS (Hetzner, DigitalOcean, Linode)                     │
+│   - Kubernetes                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Implementation Requirements
+
+Every backend component must:
+- Use standard Web APIs (Request/Response)
+- Work on Vercel AND be self-hostable via Docker
+- Avoid vendor-specific features that prevent portability
+- Be testable locally without cloud services
+
 ## Phases
 
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
 | 00 | Developer Tooling & Quality Foundation | 5 | Complete |
-| 01 | Backend API Layer (Hono) | 3 | Not Started |
+| 01 | Backend API Layer (Hono) | 4 | In Progress |
 | 02 | Database Layer (PostgreSQL + Drizzle) | TBD | Not Started |
 | 03 | Authentication (Better Auth) | TBD | Not Started |
 
@@ -38,7 +83,7 @@ Use `/nextsession` to get recommendations for sessions to implement.
 
 ### Overview
 
-Add a lightweight backend API layer using Hono. This enables server-side API key protection, future authentication, and database access while remaining **vendor-neutral** (not locked to Vercel).
+Add a lightweight backend API layer using Hono. This enables server-side API key protection, future authentication, and database access while remaining **vendor-neutral** (works on Vercel, Cloudflare, AWS, or self-hosted).
 
 ### Why Hono (Research Summary)
 
@@ -52,7 +97,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 **Hono Advantages:**
 - **Vendor Neutral**: Runs on Vercel, Cloudflare Workers, AWS Lambda, Deno Deploy, Bun, Node.js
 - **Web Standards**: Uses standard Request/Response objects (portable code)
-- **Zero Config on Vercel**: Native support since Aug 2025, Fluid Compute benefits
+- **Zero Config on Vercel**: Native support, Fluid Compute benefits
 - **Lightweight**: ~14KB, minimal overhead
 - **TypeScript First**: Excellent type inference and RPC support
 - **Better Auth Integration**: Official example in Hono docs
@@ -63,7 +108,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 2. Configure Vite to proxy API requests in development
 3. Move sensitive API keys to server-side environment
 4. Create API routes for Gemini and Maps proxying
-5. Verify deployment works on Vercel (and document alternatives)
+5. Verify deployment works on Vercel and document alternatives
 
 ### Deployment Portability
 
@@ -74,7 +119,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 │   Vercel    │ Cloudflare  │ AWS Lambda  │   Self-Hosted    │
 │  (current)  │   Workers   │             │   (Node/Bun)     │
 ├─────────────┼─────────────┼─────────────┼──────────────────┤
-│ Zero config │ wrangler    │ SST/Serverless│ node/bun serve │
+│ Zero config │ wrangler    │ SST/Serverless│ docker compose │
 └─────────────┴─────────────┴─────────────┴──────────────────┘
 ```
 
@@ -120,6 +165,7 @@ Use `/nextsession` to get recommendations for sessions to implement.
 - [Hono on Vercel](https://vercel.com/docs/frameworks/backend/hono)
 - [Hono Getting Started](https://hono.dev/docs/getting-started/vercel)
 - [Hono + Cloudflare Workers](https://hono.dev/docs/getting-started/cloudflare-workers)
+- [Hono + Node.js](https://hono.dev/docs/getting-started/nodejs)
 
 ---
 

@@ -84,12 +84,14 @@ function ControlTray({ trayRef }: ControlTrayProps) {
 
   useEffect(() => {
     const onData = (base64: string) => {
-      client.sendRealtimeInput([
-        {
-          mimeType: 'audio/pcm;rate=16000',
-          data: base64,
-        },
-      ]);
+      if (client) {
+        client.sendRealtimeInput([
+          {
+            mimeType: 'audio/pcm;rate=16000',
+            data: base64,
+          },
+        ]);
+      }
     };
 
     if (connected && !muted) {
@@ -119,7 +121,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
     const currentPrompt = textPrompt;
     setTextPrompt(''); // Clear input immediately
 
-    if (!connected) {
+    if (!connected || !client) {
       console.warn('Cannot send text message: not connected to live stream.');
       useLogStore.getState().addTurn({
         role: 'system',

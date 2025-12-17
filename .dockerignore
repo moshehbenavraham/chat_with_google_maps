@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Development files
+*.log
+npm-debug.log*
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test and coverage
+coverage
+*.test.ts
+__tests__
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Vercel
+.vercel
+
+# Spec system (development)
+.spec_system
+
+# OS files
+.DS_Store
+Thumbs.db

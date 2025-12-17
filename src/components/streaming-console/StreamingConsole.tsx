@@ -103,6 +103,8 @@ export default function StreamingConsole() {
   }, [setConfig, systemPrompt, tools, voice]);
 
   useEffect(() => {
+    if (!client) return;
+
     const { addTurn, updateLastTurn } = useLogStore.getState();
 
     const handleInputTranscription = (text: string, isFinal: boolean) => {

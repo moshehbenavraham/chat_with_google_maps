@@ -25,7 +25,6 @@ const LiveAPIContext = createContext<UseLiveApiResults | undefined>(undefined);
 
 export interface LiveAPIProviderProps {
   children: ReactNode;
-  apiKey: string;
   map: google.maps.maps3d.Map3DElement | null;
   placesLib: google.maps.PlacesLibrary | null;
   elevationLib: google.maps.ElevationLibrary | null;
@@ -34,7 +33,6 @@ export interface LiveAPIProviderProps {
 }
 
 export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
-  apiKey,
   children,
   map,
   placesLib,
@@ -42,7 +40,8 @@ export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
   geocoder,
   padding,
 }) => {
-  const liveAPI = useLiveApi({ apiKey, map, placesLib, elevationLib, geocoder, padding });
+  // Note: apiKey is no longer needed here - ephemeral tokens are fetched on-demand
+  const liveAPI = useLiveApi({ map, placesLib, elevationLib, geocoder, padding });
 
   return <LiveAPIContext.Provider value={liveAPI}>{children}</LiveAPIContext.Provider>;
 };

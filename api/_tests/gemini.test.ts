@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Hono } from 'hono';
-import { gemini } from '../routes/gemini.js';
-import { errorHandler } from '../middleware/error-handler.js';
+import { gemini } from '../_routes/gemini.js';
+import { errorHandler } from '../_middleware/error-handler.js';
 
 // Create test app with error handler
 const createTestApp = () => {

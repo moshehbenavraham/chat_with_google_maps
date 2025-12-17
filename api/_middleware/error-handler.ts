@@ -6,8 +6,8 @@
 
 import type { Context, ErrorHandler } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import { type ApiError, isApiError } from '../lib/errors.js';
-import type { ApiErrorResponse } from '../lib/types.js';
+import { type ApiError, isApiError } from '../_lib/errors.js';
+import type { ApiErrorResponse } from '../_lib/types.js';
 
 /**
  * Format an error into a consistent API error response.

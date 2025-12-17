@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { health } from '../routes/health.js';
-import type { HealthResponse } from '../lib/types.js';
+import { health } from '../_routes/health.js';
+import type { HealthResponse } from '../_lib/types.js';
 
 describe('Health Endpoint', () => {
   it('returns 200 status code', async () => {

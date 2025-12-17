@@ -29,7 +29,7 @@ Move sensitive API keys (Gemini, Google Maps) to server-side environment and cre
 - WebSocket/streaming support for Gemini Live (future enhancement)
 - Caching layer (future enhancement)
 - User-specific API quotas (requires auth - Phase 03)
-- Deployment configuration (Session 03)
+- Docker production configuration (Session 03)
 
 ---
 

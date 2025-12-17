@@ -1,16 +1,18 @@
 # PRD Phase 01: Backend API Layer (Hono)
 
 **Status**: In Progress
-**Sessions**: 3 (initial estimate)
+**Sessions**: 4
 **Estimated Duration**: 2-3 days
 
-**Progress**: 2/3 sessions (67%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
 ## Overview
 
-Add a lightweight backend API layer using Hono. This enables server-side API key protection, future authentication, and database access while remaining **vendor-neutral** (not locked to Vercel). Hono is a modern, ultrafast web framework that runs on any JavaScript runtime including Vercel, Cloudflare Workers, AWS Lambda, Deno Deploy, Bun, and Node.js.
+Add a lightweight backend API layer using Hono. This enables server-side API key protection, future authentication, and database access while remaining **fully deployment-agnostic**. The backend is designed to run identically in development (local Node.js) and production (self-hosted Docker).
+
+**Deployment Philosophy**: This phase prioritizes self-hosting capability. Vercel/Cloudflare may be used for development convenience only—the production target is self-hosted infrastructure (Docker, VPS, bare metal).
 
 ---
 
@@ -20,7 +22,8 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 |---------|------|--------|------------|-----------|
 | 01 | Hono Setup & Configuration | Complete | 22 | 2025-12-17 |
 | 02 | API Key Protection | Complete | 22 | 2025-12-17 |
-| 03 | Deployment Verification | Not Started | ~15 | - |
+| 03 | Deployment Verification | In Progress | 24 | - |
+| 04 | PRD Deployment Philosophy | Complete | 18 | 2025-12-17 |
 
 ---
 
@@ -28,12 +31,13 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 
 - Session 01: Hono Setup & Configuration (2025-12-17)
 - Session 02: API Key Protection (2025-12-17)
+- Session 04: PRD Deployment Philosophy (2025-12-17)
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Deployment Verification
+- Session 03: Deployment Verification (In Progress)
 
 ---
 
@@ -43,7 +47,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 2. **Development Proxy**: Configure Vite to proxy API requests in development for seamless local development
 3. **API Key Security**: Move sensitive API keys (Gemini, Maps) to server-side environment
 4. **API Proxying**: Create API routes for Gemini and Maps that proxy requests securely
-5. **Deployment Portability**: Verify deployment works on Vercel and document alternatives
+5. **Deployment Portability**: Verify deployment works on Vercel AND provide Docker for self-hosting
 
 ---
 
@@ -60,15 +64,18 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Deployment (Vercel/etc)                   │
+│                    Deployment (Any Platform)                 │
 ├─────────────────────────┬───────────────────────────────────┤
-│   Static Assets (CDN)   │   Serverless Functions            │
+│   Static Assets (CDN)   │   API Server (Hono)               │
 │                         │                                   │
 │   React + Vite App      │   /api/* → Hono                   │
 │   (no API keys)         │     ├── /api/health               │
 │                         │     ├── /api/gemini/* → Gemini    │
 │                         │     └── /api/maps/* → Google Maps │
 └─────────────────────────┴───────────────────────────────────┘
+
+Development: Vite dev server with proxy
+Production:  Vercel (convenience) OR Docker (self-hosted)
 ```
 
 ### Why Hono
@@ -77,7 +84,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 |---------|---------|
 | **Vendor Neutral** | Runs on Vercel, Cloudflare Workers, AWS Lambda, Deno Deploy, Bun, Node.js |
 | **Web Standards** | Uses standard Request/Response objects (portable code) |
-| **Zero Config on Vercel** | Native support since Aug 2024, Fluid Compute benefits |
+| **Zero Config on Vercel** | Native support, works out of the box |
 | **Lightweight** | ~14KB, minimal overhead |
 | **TypeScript First** | Excellent type inference and RPC support |
 | **Better Auth Integration** | Official example in Hono docs (needed for Phase 03) |
@@ -89,16 +96,16 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 │                     Same Hono Code                          │
 ├─────────────┬─────────────┬─────────────┬──────────────────┤
 │   Vercel    │ Cloudflare  │ AWS Lambda  │   Self-Hosted    │
-│  (current)  │   Workers   │             │   (Node/Bun)     │
+│             │   Workers   │             │   (Node/Bun)     │
 ├─────────────┼─────────────┼─────────────┼──────────────────┤
-│ Zero config │ wrangler    │ SST/Serverless│ node/bun serve │
+│ Zero config │ wrangler    │ SST/Serverless│ docker compose │
 └─────────────┴─────────────┴─────────────┴──────────────────┘
 ```
 
 ### Technologies
 - Hono 4.x (web framework)
 - Vite proxy configuration (development)
-- Vercel serverless functions (deployment)
+- Vercel serverless functions OR Docker (deployment options)
 
 ### Risks
 - **Proxy Configuration**: Vite proxy may need careful configuration for WebSocket/streaming
@@ -120,6 +127,7 @@ Phase complete when:
 - [ ] Gemini API calls proxied through backend
 - [ ] Maps API calls proxied through backend
 - [ ] Works on Vercel deployment
+- [ ] Docker configuration available for self-hosting
 - [ ] Documentation for deploying to alternative platforms
 - [ ] All quality gates still passing (TypeScript, ESLint, Prettier, tests)
 

@@ -35,9 +35,15 @@ The fastest way to deploy using the Vercel CLI:
 3. **Add environment variables** (required for the app to function):
 
    ```bash
+   # Server-side keys (for API routes - ephemeral token generation and grounding)
    echo "YOUR_GEMINI_API_KEY" | vercel env add GEMINI_API_KEY production --force
    echo "YOUR_GOOGLE_MAPS_API_KEY" | vercel env add GOOGLE_MAPS_API_KEY production --force
+
+   # Client-side key (VITE_ prefix required for frontend Maps SDK)
+   echo "YOUR_GOOGLE_MAPS_API_KEY" | vercel env add VITE_GOOGLE_MAPS_API_KEY production --force
    ```
+
+   > **Note**: `VITE_GEMINI_API_KEY` is NOT needed. The app uses ephemeral tokens for secure Gemini Live API authentication - the API key never leaves the server.
 
 4. **Redeploy** to apply environment variables:
 
@@ -75,10 +81,13 @@ Before deploying, add the required environment variables:
 1. Expand the **"Environment Variables"** section
 2. Add each variable:
 
-| Name                  | Value                    | Environment                      |
-| --------------------- | ------------------------ | -------------------------------- |
-| `GEMINI_API_KEY`      | Your Gemini API key      | Production, Preview, Development |
-| `GOOGLE_MAPS_API_KEY` | Your Google Maps API key | Production, Preview, Development |
+| Name                       | Value                    | Environment                      | Purpose                                  |
+| -------------------------- | ------------------------ | -------------------------------- | ---------------------------------------- |
+| `GEMINI_API_KEY`           | Your Gemini API key      | Production, Preview, Development | Server: ephemeral tokens + grounding API |
+| `GOOGLE_MAPS_API_KEY`      | Your Google Maps API key | Production, Preview, Development | Server: Maps grounding API proxy         |
+| `VITE_GOOGLE_MAPS_API_KEY` | Your Google Maps API key | Production, Preview, Development | Client: Maps JavaScript SDK (build-time) |
+
+> **Security Note**: `VITE_GEMINI_API_KEY` is NOT needed and should NOT be set. The Gemini API key is kept server-side only. The frontend fetches short-lived ephemeral tokens from `/api/live/token` for secure Live API authentication.
 
 3. Click **Deploy**
 
@@ -94,8 +103,9 @@ Once deployed:
 
 ### Gemini API Key
 
-- **Purpose**: Powers the real-time voice conversation feature
+- **Purpose**: Powers the real-time voice conversation feature via ephemeral tokens
 - **Get it from**: [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **Security**: This key is kept server-side only. The backend generates short-lived ephemeral tokens that the frontend uses to connect to the Gemini Live API. This prevents API key exposure in browser bundles.
 
 ### Google Maps API Key
 
@@ -241,13 +251,28 @@ vercel logs <deployment-url>
 
 ### Voice Feature Doesn't Work
 
-**Cause:** Missing or invalid `GEMINI_API_KEY` environment variable.
+**Possible causes:**
+
+1. Missing or invalid `GEMINI_API_KEY` server-side environment variable
+2. Token endpoint (`/api/live/token`) not responding
+3. Browser microphone permissions denied
 
 **Solution:**
 
-1. Verify the environment variable is set
-2. Check the API key is valid at [Google AI Studio](https://aistudio.google.com)
-3. Ensure the browser has microphone permissions
+1. Verify `GEMINI_API_KEY` is set in Vercel (server-side, no `VITE_` prefix):
+   ```bash
+   vercel env ls
+   ```
+2. Test the token endpoint directly:
+   ```bash
+   curl -X POST https://your-app.vercel.app/api/live/token
+   ```
+   Should return `{"token": "...", "expiresAt": "..."}`. If it returns an error, check your `GEMINI_API_KEY`.
+3. Check the API key is valid at [Google AI Studio](https://aistudio.google.com)
+4. Ensure the browser has microphone permissions
+5. Check browser console for errors related to token fetching or WebSocket connection
+
+> **Note**: `VITE_GEMINI_API_KEY` is NOT used. The app fetches ephemeral tokens from the server.
 
 ### Environment Variables Not Taking Effect
 
@@ -306,10 +331,11 @@ Or via Dashboard:
 
 ## Security Best Practices
 
-1. **Restrict API Keys**: In Google Cloud Console, add HTTP referrer restrictions for your Vercel domains
-2. **Use Environment Variables**: Never commit API keys to the repository
-3. **Review Preview Deployments**: Be cautious with preview deployments that may expose your app publicly
-4. **Monitor Usage**: Set up billing alerts in Google Cloud to monitor API usage
+1. **Ephemeral Tokens**: The Gemini API key is protected using ephemeral tokens. The key stays server-side, and the frontend only receives short-lived tokens (30 min max, single-use) for Live API connections.
+2. **Restrict API Keys**: In Google Cloud Console, add HTTP referrer restrictions for your Google Maps API key (used client-side for the Maps SDK)
+3. **Use Environment Variables**: Never commit API keys to the repository
+4. **Review Preview Deployments**: Be cautious with preview deployments that may expose your app publicly
+5. **Monitor Usage**: Set up billing alerts in Google Cloud to monitor API usage
 
 ## Cost Considerations
 

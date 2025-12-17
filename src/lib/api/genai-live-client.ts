@@ -71,14 +71,19 @@ export class GenAILiveClient {
 
   /**
    * Creates a new GenAILiveClient instance.
-   * @param apiKey - API key for authentication with Google GenAI
+   * @param token - Ephemeral token or API key for authentication with Google GenAI.
+   *                Ephemeral tokens are recommended for browser environments as they
+   *                expire quickly and don't expose the actual API key.
    * @param model - Optional model name to override the default model
    */
-  constructor(apiKey: string, model?: string) {
+  constructor(token: string, model?: string) {
     if (model) this.model = model;
 
+    // Ephemeral tokens work like API keys but are short-lived
+    // Must use v1alpha API version for ephemeral token support with Live API
     this.client = new GoogleGenAI({
-      apiKey: apiKey,
+      apiKey: token,
+      httpOptions: { apiVersion: 'v1alpha' },
     });
   }
 

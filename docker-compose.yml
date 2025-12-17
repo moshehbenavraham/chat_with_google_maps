@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    ports:
+      - '3001:3001'
+    environment:
+      - NODE_ENV=production
+      - API_PORT=3001
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

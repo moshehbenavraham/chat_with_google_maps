@@ -30,16 +30,21 @@ import { Map3D, type Map3DCameraProps } from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
 
-function getRequiredEnvVar(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+// Note: GEMINI_API_KEY is no longer needed client-side.
+// Ephemeral tokens are fetched from the backend on-demand.
+// Use direct property access (not bracket notation) so Vite's define can replace it.
+const GOOGLE_MAPS_API_KEY: string = (() => {
+  const key = process.env.GOOGLE_MAPS_API_KEY;
+  if (!key) {
+    const isProduction = import.meta.env.PROD;
+    throw new Error(
+      isProduction
+        ? 'Missing VITE_GOOGLE_MAPS_API_KEY in Vercel Environment Variables. Add it in Project Settings > Environment Variables.'
+        : 'Missing GOOGLE_MAPS_API_KEY. Add VITE_GOOGLE_MAPS_API_KEY to your .env file.'
+    );
   }
-  return value;
-}
-
-const GEMINI_API_KEY = getRequiredEnvVar('GEMINI_API_KEY');
-const GOOGLE_MAPS_API_KEY = getRequiredEnvVar('GOOGLE_MAPS_API_KEY');
+  return key;
+})();
 
 const INITIAL_VIEW_PROPS = {
   center: {
@@ -213,7 +218,6 @@ function AppComponent() {
 
   return (
     <LiveAPIProvider
-      apiKey={GEMINI_API_KEY}
       map={map}
       placesLib={placesLib}
       elevationLib={elevationLib}

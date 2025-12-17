@@ -23,9 +23,10 @@
  * limitations under the License.
  */
 
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { GenAILiveClient } from '@/lib/api/genai-live-client';
 import { type LiveConnectConfig, type LiveServerToolCall } from '@google/genai';
+import { fetchLiveToken } from '@/lib/api/token-service';
 import { AudioStreamer } from '@/lib/audio/audio-streamer';
 import { audioContext } from '@/lib/utils';
 import VolMeterWorket from '@/lib/worklets/vol-meter';
@@ -38,7 +39,7 @@ import {
 import { type ToolContext, toolRegistry } from '@/lib/tools/tool-registry';
 
 export interface UseLiveApiResults {
-  client: GenAILiveClient;
+  client: GenAILiveClient | null;
   setConfig: (config: LiveConnectConfig) => void;
   config: LiveConnectConfig;
   audioStreamer: RefObject<AudioStreamer | null>;
@@ -55,14 +56,12 @@ export interface UseLiveApiResults {
 }
 
 export function useLiveApi({
-  apiKey,
   map,
   placesLib,
   elevationLib,
   geocoder,
   padding,
 }: {
-  apiKey: string;
   map: google.maps.maps3d.Map3DElement | null;
   placesLib: google.maps.PlacesLibrary | null;
   elevationLib: google.maps.ElevationLibrary | null;
@@ -70,7 +69,8 @@ export function useLiveApi({
   padding: [number, number, number, number];
 }): UseLiveApiResults {
   const { model } = useSettings();
-  const client = useMemo(() => new GenAILiveClient(apiKey, model), [apiKey, model]);
+  // Client is created on-demand when connecting with a fresh ephemeral token
+  const clientRef = useRef<GenAILiveClient | null>(null);
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
 
@@ -92,6 +92,9 @@ export function useLiveApi({
     setHeldGroundedResponse(undefined);
   }, []);
 
+  // Store cleanup function for event listeners
+  const cleanupListenersRef = useRef<(() => void) | null>(null);
+
   // register audio for streaming server -> speakers
   useEffect(() => {
     if (!audioStreamerRef.current) {
@@ -108,201 +111,215 @@ export function useLiveApi({
     }
   }, []);
 
-  // This effect sets up the main event listeners for the GenAILiveClient.
-  useEffect(() => {
-    const onOpen = () => {
-      setConnected(true);
-    };
+  /**
+   * Sets up event listeners on the client. Called when a new client is created during connect().
+   * Returns a cleanup function to remove the listeners.
+   */
+  const setupClientListeners = useCallback(
+    (client: GenAILiveClient): (() => void) => {
+      const onOpen = () => {
+        setConnected(true);
+      };
 
-    const onSetupComplete = () => {
-      // Send the initial message once the connection is confirmed open and setup is complete.
-      client.sendRealtimeText('hello');
-    };
+      const onSetupComplete = () => {
+        // Send the initial message once the connection is confirmed open and setup is complete.
+        client.sendRealtimeText('hello');
+      };
 
-    const onClose = (event: CloseEvent) => {
-      setConnected(false);
-      stopAudioStreamer();
-      const reason = "Session ended. Press 'Play' to start a new session. " + event.reason;
-      useLogStore.getState().addTurn({
-        role: 'agent',
-        text: reason,
-        isFinal: true,
-      });
-    };
+      const stopAudioStreamer = () => {
+        if (audioStreamerRef.current) {
+          audioStreamerRef.current.stop();
+        }
+      };
 
-    const stopAudioStreamer = () => {
-      if (audioStreamerRef.current) {
-        audioStreamerRef.current.stop();
-      }
-    };
+      const onClose = (event: CloseEvent) => {
+        setConnected(false);
+        stopAudioStreamer();
+        const reason = "Session ended. Press 'Play' to start a new session. " + event.reason;
+        useLogStore.getState().addTurn({
+          role: 'agent',
+          text: reason,
+          isFinal: true,
+        });
+      };
 
-    const onInterrupted = () => {
-      stopAudioStreamer();
-      const { updateLastTurn, turns } = useLogStore.getState();
-      const lastTurn = turns[turns.length - 1];
-      if (lastTurn && !lastTurn.isFinal) {
-        updateLastTurn({ isFinal: true });
-      }
-    };
+      const onInterrupted = () => {
+        stopAudioStreamer();
+        const { updateLastTurn, turns } = useLogStore.getState();
+        const lastTurn = turns[turns.length - 1];
+        if (lastTurn && !lastTurn.isFinal) {
+          updateLastTurn({ isFinal: true });
+        }
+      };
 
-    const onAudio = (data: ArrayBuffer) => {
-      if (audioStreamerRef.current) {
-        audioStreamerRef.current.addPCM16(new Uint8Array(data));
-      }
-    };
+      const onAudio = (data: ArrayBuffer) => {
+        if (audioStreamerRef.current) {
+          audioStreamerRef.current.addPCM16(new Uint8Array(data));
+        }
+      };
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function -- Placeholder for future implementation
-    const onGenerationComplete = () => {};
+      // eslint-disable-next-line @typescript-eslint/no-empty-function -- Placeholder for future implementation
+      const onGenerationComplete = () => {};
 
-    // Bind event listeners
-    client.on('open', onOpen);
-    client.on('setupcomplete', onSetupComplete);
-    client.on('close', onClose);
-    client.on('interrupted', onInterrupted);
-    client.on('audio', onAudio);
-    client.on('generationcomplete', onGenerationComplete);
+      /**
+       * Handles incoming `toolcall` events from the Gemini Live API. This function
+       * acts as the central dispatcher for all function calls requested by the model.
+       */
+      const onToolCall = async (toolCall: LiveServerToolCall) => {
+        useLogStore.getState().setIsAwaitingFunctionResponse(true);
+        try {
+          const functionResponses: FunctionResponse[] = [];
+          const toolContext: ToolContext = {
+            map,
+            placesLib,
+            elevationLib,
+            geocoder,
+            padding,
+            setHeldGroundedResponse,
+            setHeldGroundingChunks,
+          };
 
-    /**
-     * Handles incoming `toolcall` events from the Gemini Live API. This function
-     * acts as the central dispatcher for all function calls requested by the model.
-     *
-     * The process is as follows:
-     * 1. Sets a UI state flag (`isAwaitingFunctionResponse`) to show a spinner.
-     * 2. Iterates through each function call in the `toolCall` payload.
-     * 3. Logs the function call to the system messages for debugging and visibility.
-     * 4. Looks up the corresponding tool implementation in the `toolRegistry` by name.
-     * 5. Executes the tool's function, passing the model-provided arguments and a
-     *    `toolContext` object. This context gives the tool access to shared
-     *    resources like the map instance, map libraries, and state setters, without
-     *    tightly coupling the tool logic to React components.
-     * 6. Packages the tool's return value into a `functionResponse` object.
-     * 7. After all function calls are executed, it sends the collected responses
-     *    back to the Gemini API using `client.sendToolResponse`. This provides the
-     *    model with the information it needs to continue the conversation.
-     * 8. Clears the UI spinner state.
-     */
-    const onToolCall = async (toolCall: LiveServerToolCall) => {
-      useLogStore.getState().setIsAwaitingFunctionResponse(true);
-      try {
-        const functionResponses: FunctionResponse[] = [];
-        const toolContext: ToolContext = {
-          map,
-          placesLib,
-          elevationLib,
-          geocoder,
-          padding,
-          setHeldGroundedResponse,
-          setHeldGroundingChunks,
-        };
-
-        const functionCalls = toolCall.functionCalls ?? [];
-        for (const fc of functionCalls) {
-          // Log the function call trigger
-          const fcName = fc.name ?? 'unknown';
-          const triggerMessage = `Triggering function call: **${
-            fcName
-          }**\n\`\`\`json\n${JSON.stringify(fc.args, null, 2)}\n\`\`\``;
-          useLogStore.getState().addTurn({
-            role: 'system',
-            text: triggerMessage,
-            isFinal: true,
-          });
-
-          let toolResponse: GenerateContentResponse | string = 'ok';
-          try {
-            const toolImplementation = fcName ? toolRegistry[fcName] : undefined;
-            if (toolImplementation) {
-              toolResponse = await toolImplementation(fc.args ?? {}, toolContext);
-            } else {
-              toolResponse = `Unknown tool called: ${fcName}.`;
-              console.warn(toolResponse);
-            }
-
-            // Prepare the response to send back to the model
-            functionResponses.push({
-              id: fc.id,
-              name: fc.name,
-              response: { result: toolResponse },
-            });
-          } catch (error) {
-            const errorMessage = `Error executing tool ${fcName}.`;
-            console.error(errorMessage, error);
-            // Log error to UI
+          const functionCalls = toolCall.functionCalls ?? [];
+          for (const fc of functionCalls) {
+            // Log the function call trigger
+            const fcName = fc.name ?? 'unknown';
+            const triggerMessage = `Triggering function call: **${fcName}**\n\`\`\`json\n${JSON.stringify(fc.args, null, 2)}\n\`\`\``;
             useLogStore.getState().addTurn({
               role: 'system',
-              text: errorMessage,
+              text: triggerMessage,
               isFinal: true,
             });
-            // Inform the model about the failure
-            functionResponses.push({
-              id: fc.id,
-              name: fc.name,
-              response: { result: errorMessage },
+
+            let toolResponse: GenerateContentResponse | string = 'ok';
+            try {
+              const toolImplementation = fcName ? toolRegistry[fcName] : undefined;
+              if (toolImplementation) {
+                toolResponse = await toolImplementation(fc.args ?? {}, toolContext);
+              } else {
+                toolResponse = `Unknown tool called: ${fcName}.`;
+                console.warn(toolResponse);
+              }
+
+              // Prepare the response to send back to the model
+              functionResponses.push({
+                id: fc.id,
+                name: fc.name,
+                response: { result: toolResponse },
+              });
+            } catch (error) {
+              const errorMessage = `Error executing tool ${fcName}.`;
+              console.error(errorMessage, error);
+              // Log error to UI
+              useLogStore.getState().addTurn({
+                role: 'system',
+                text: errorMessage,
+                isFinal: true,
+              });
+              // Inform the model about the failure
+              functionResponses.push({
+                id: fc.id,
+                name: fc.name,
+                response: { result: errorMessage },
+              });
+            }
+          }
+
+          // Log the function call response
+          if (functionResponses.length > 0) {
+            const responseMessage = `Function call response:\n\`\`\`json\n${JSON.stringify(
+              functionResponses,
+              null,
+              2
+            )}\n\`\`\``;
+            useLogStore.getState().addTurn({
+              role: 'system',
+              text: responseMessage,
+              isFinal: true,
             });
           }
+
+          client.sendToolResponse({ functionResponses: functionResponses });
+        } finally {
+          useLogStore.getState().setIsAwaitingFunctionResponse(false);
         }
+      };
 
-        // Log the function call response
-        if (functionResponses.length > 0) {
-          const responseMessage = `Function call response:\n\`\`\`json\n${JSON.stringify(
-            functionResponses,
-            null,
-            2
-          )}\n\`\`\``;
-          useLogStore.getState().addTurn({
-            role: 'system',
-            text: responseMessage,
-            isFinal: true,
-          });
-        }
+      // Wrap the async handler to handle promise properly
+      const onToolCallWrapper = (toolCall: LiveServerToolCall) => {
+        void onToolCall(toolCall);
+      };
 
-        client.sendToolResponse({ functionResponses: functionResponses });
-      } finally {
-        useLogStore.getState().setIsAwaitingFunctionResponse(false);
-      }
-    };
+      // Bind event listeners
+      client.on('open', onOpen);
+      client.on('setupcomplete', onSetupComplete);
+      client.on('close', onClose);
+      client.on('interrupted', onInterrupted);
+      client.on('audio', onAudio);
+      client.on('generationcomplete', onGenerationComplete);
+      client.on('toolcall', onToolCallWrapper);
 
-    // Wrap the async handler to handle promise properly
-    const onToolCallWrapper = (toolCall: LiveServerToolCall) => {
-      void onToolCall(toolCall);
-    };
-    client.on('toolcall', onToolCallWrapper);
-
-    return () => {
-      // Clean up event listeners
-      client.off('open', onOpen);
-      client.off('setupcomplete', onSetupComplete);
-      client.off('close', onClose);
-      client.off('interrupted', onInterrupted);
-      client.off('audio', onAudio);
-      client.off('toolcall', onToolCallWrapper);
-      client.off('generationcomplete', onGenerationComplete);
-    };
-  }, [
-    client,
-    map,
-    placesLib,
-    elevationLib,
-    geocoder,
-    padding,
-    setHeldGroundedResponse,
-    setHeldGroundingChunks,
-  ]);
+      // Return cleanup function
+      return () => {
+        client.off('open', onOpen);
+        client.off('setupcomplete', onSetupComplete);
+        client.off('close', onClose);
+        client.off('interrupted', onInterrupted);
+        client.off('audio', onAudio);
+        client.off('toolcall', onToolCallWrapper);
+        client.off('generationcomplete', onGenerationComplete);
+      };
+    },
+    [
+      map,
+      placesLib,
+      elevationLib,
+      geocoder,
+      padding,
+      setHeldGroundedResponse,
+      setHeldGroundingChunks,
+    ]
+  );
 
   const connect = useCallback(async () => {
     useLogStore.getState().clearTurns();
     useMapStore.getState().clearMarkers();
-    client.disconnect();
-    await client.connect(config);
-  }, [client, config]);
+
+    // Clean up previous client if exists
+    if (cleanupListenersRef.current) {
+      cleanupListenersRef.current();
+      cleanupListenersRef.current = null;
+    }
+    if (clientRef.current) {
+      clientRef.current.disconnect();
+    }
+
+    // Fetch a fresh ephemeral token from the backend
+    const { token } = await fetchLiveToken();
+
+    // Create a new client with the ephemeral token
+    const newClient = new GenAILiveClient(token, model);
+    clientRef.current = newClient;
+
+    // Set up event listeners and store cleanup function
+    cleanupListenersRef.current = setupClientListeners(newClient);
+
+    // Connect to the Live API
+    await newClient.connect(config);
+  }, [config, model, setupClientListeners]);
 
   const disconnect = useCallback(() => {
-    client.disconnect();
+    if (cleanupListenersRef.current) {
+      cleanupListenersRef.current();
+      cleanupListenersRef.current = null;
+    }
+    if (clientRef.current) {
+      clientRef.current.disconnect();
+    }
     setConnected(false);
-  }, [setConnected, client]);
+  }, []);
 
   return {
-    client,
+    client: clientRef.current,
     config,
     setConfig,
     connect,

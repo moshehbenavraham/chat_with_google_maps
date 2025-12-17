@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Hono } from 'hono';
-import { maps } from '../routes/maps.js';
-import { errorHandler } from '../middleware/error-handler.js';
+import { maps } from '../_routes/maps.js';
+import { errorHandler } from '../_middleware/error-handler.js';
 
 // Create test app with error handler
 const createTestApp = () => {

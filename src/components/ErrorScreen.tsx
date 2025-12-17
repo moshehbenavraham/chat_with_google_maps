@@ -16,6 +16,8 @@ export default function ErrorScreen() {
   const [error, setError] = useState<{ message?: string } | null>(null);
 
   useEffect(() => {
+    if (!client) return;
+
     function onError(error: ErrorEvent) {
       console.error(error);
       setError(error);

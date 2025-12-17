@@ -6,10 +6,10 @@
  */
 
 import { Hono } from 'hono';
-import { getGeminiApiKey } from '../lib/env.js';
-import { ExternalApiError, TimeoutError } from '../lib/errors.js';
-import { validateJsonBody, validateGeminiRequest } from '../middleware/validate-request.js';
-import type { GeminiGroundingRequest } from '../lib/types.js';
+import { getGeminiApiKey } from '../_lib/env.js';
+import { ExternalApiError, TimeoutError } from '../_lib/errors.js';
+import { validateJsonBody, validateGeminiRequest } from '../_middleware/validate-request.js';
+import type { GeminiGroundingRequest } from '../_lib/types.js';
 
 /** Timeout for external API calls (30 seconds) */
 const API_TIMEOUT_MS = 30000;

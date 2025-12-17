@@ -5,8 +5,8 @@
  */
 
 import type { Context, MiddlewareHandler, Next } from 'hono';
-import { ValidationError } from '../lib/errors.js';
-import type { GeminiGroundingRequest } from '../lib/types.js';
+import { ValidationError } from '../_lib/errors.js';
+import type { GeminiGroundingRequest } from '../_lib/types.js';
 
 /**
  * Validate that request body is valid JSON.

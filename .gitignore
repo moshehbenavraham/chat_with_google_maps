@@ -88,3 +88,5 @@ temp
 # Optional stylelint cache
 .stylelintcache
 .vercel
+.env*.local
+.env.vercel
