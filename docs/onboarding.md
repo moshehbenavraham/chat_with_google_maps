@@ -57,16 +57,16 @@ npm run dev
 
 ### 7. Verify Setup
 
-- [ ] App runs at `http://localhost:3000`
+- [ ] App runs at `http://localhost:3003`
 - [ ] Tests pass: `npm run test`
 - [ ] Quality checks pass: `npm run quality`
 - [ ] 3D map loads and responds to voice
 
 ## Common Issues
 
-### Port 3000 in use
+### Port 3003 in use
 
-Vite auto-increments to 3001, 3002, etc. Check terminal output for actual port.
+Vite auto-increments to 3004, 3005, etc. Check terminal output for actual port.
 
 ### Map not loading
 

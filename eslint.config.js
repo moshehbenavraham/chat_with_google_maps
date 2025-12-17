@@ -89,6 +89,40 @@ export default tseslint.config(
     },
   },
 
+  // API configuration (Node.js backend)
+  {
+    files: ['api/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: './api/tsconfig.json',
+      },
+      globals: {
+        ...globals.node,
+        ...globals.es2022,
+      },
+    },
+    rules: {
+      // TypeScript-ESLint rule adjustments for API
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+
+      // Consistent type imports
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+    },
+  },
+
   // Prettier - must be last to disable conflicting rules
   prettier
 );

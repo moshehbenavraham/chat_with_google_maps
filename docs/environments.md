@@ -4,7 +4,7 @@
 
 | Environment | URL                   | Purpose           |
 | ----------- | --------------------- | ----------------- |
-| Development | http://localhost:3000 | Local development |
+| Development | http://localhost:3003 | Local development |
 | Production  | Vercel deployment     | Live system       |
 
 ## Environment Variables

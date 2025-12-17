@@ -50,8 +50,8 @@ npm --version   # Should output v8.x or higher
    ```
 
 5. **Access the application**:
-   - Open your browser to `http://localhost:3000`
-   - If port 3000 is in use, Vite will automatically try port 3001, 3002, etc.
+   - Open your browser to `http://localhost:3003`
+   - If port 3003 is in use, Vite will automatically try port 3004, 3005, etc.
 
 ## Required API Keys
 
@@ -79,15 +79,15 @@ The Vite configuration (`vite.config.ts`) includes:
 
 | Setting | Value   | Description                              |
 | ------- | ------- | ---------------------------------------- |
-| Port    | 3000    | Default port (auto-increments if in use) |
+| Port    | 3003    | Default port (auto-increments if in use) |
 | Host    | 0.0.0.0 | Allows access from network               |
 
 ### Accessing from Other Devices on Your Network
 
 When running on WSL2, the server binds to `0.0.0.0`, making it accessible via:
 
-- `http://localhost:3000` - From the WSL2 instance itself
-- `http://<wsl-ip>:3000` - From Windows host or other network devices
+- `http://localhost:3003` - From the WSL2 instance itself
+- `http://<wsl-ip>:3003` - From Windows host or other network devices
 
 To find your WSL2 IP address:
 
@@ -107,13 +107,13 @@ ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1
 
 ### Port Already in Use
 
-If you see "Port 3000 is in use, trying another one...", Vite automatically finds the next available port. Check the terminal output for the actual port being used.
+If you see "Port 3003 is in use, trying another one...", Vite automatically finds the next available port. Check the terminal output for the actual port being used.
 
 To find and kill processes using a specific port:
 
 ```bash
-# Find process using port 3000
-lsof -i :3000
+# Find process using port 3003
+lsof -i :3003
 
 # Kill process by PID
 kill -9 <PID>

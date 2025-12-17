@@ -11,7 +11,7 @@
 
 | Service         | Port | URL                   |
 | --------------- | ---- | --------------------- |
-| Vite Dev Server | 3000 | http://localhost:3000 |
+| Vite Dev Server | 3003 | http://localhost:3003 |
 
 ## Dev Scripts
 

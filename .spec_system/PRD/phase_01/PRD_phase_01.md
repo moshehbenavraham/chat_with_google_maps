@@ -1,10 +1,10 @@
 # PRD Phase 01: Backend API Layer (Hono)
 
-**Status**: Not Started
+**Status**: In Progress
 **Sessions**: 3 (initial estimate)
 **Estimated Duration**: 2-3 days
 
-**Progress**: 0/3 sessions (0%)
+**Progress**: 1/3 sessions (33%)
 
 ---
 
@@ -18,7 +18,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 
 | Session | Name | Status | Est. Tasks | Validated |
 |---------|------|--------|------------|-----------|
-| 01 | Hono Setup & Configuration | Not Started | ~20 | - |
+| 01 | Hono Setup & Configuration | Complete | 22 | 2025-12-17 |
 | 02 | API Key Protection | Not Started | ~25 | - |
 | 03 | Deployment Verification | Not Started | ~15 | - |
 
@@ -26,13 +26,13 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 
 ## Completed Sessions
 
-[None yet]
+- Session 01: Hono Setup & Configuration (2025-12-17)
 
 ---
 
 ## Upcoming Sessions
 
-- Session 01: Hono Setup & Configuration
+- Session 02: API Key Protection
 
 ---
 
