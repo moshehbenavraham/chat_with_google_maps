@@ -3,73 +3,40 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
-
-const API_KEY = process.env.API_KEY ?? '';
-const SYS_INSTRUCTIONS =
-  "You are a helpful assistant that provides concise answers based on the user's query. Provide details for the top 3 results, unless the user requests less. Provide the name and a concise one line description that highlights a unique, interesting, or fun aspect about the place. Do not state addresses. ";
+import type { GenerateContentResponse } from '@google/genai';
 
 /**
- * Calls the Gemini API with the googleSearch tool to get a grounded response.
- * @param prompt The user's text prompt.
- * @returns An object containing the model's text response and grounding sources.
+ * Proxy endpoint for maps grounding - calls server-side API
+ * which keeps the API key secure.
  */
-export async function fetchMapsGroundedResponseSDK({
-  prompt,
-  enableWidget: _enableWidget = true,
-  lat,
-  lng,
-  systemInstruction,
-}: {
+const PROXY_ENDPOINT = '/api/gemini/grounding';
+
+/**
+ * Request body for maps grounding proxy
+ */
+interface MapsGroundingRequest {
   prompt: string;
   enableWidget?: boolean;
   lat?: number;
   lng?: number;
   systemInstruction?: string;
-}): Promise<GenerateContentResponse> {
-  if (!API_KEY) {
-    throw new Error('Missing required environment variable: API_KEY');
-  }
-
-  try {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK types incomplete for googleMaps tool config
-    const request: Record<string, any> = {
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        tools: [{ googleMaps: {} }],
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
-        systemInstruction: systemInstruction ?? SYS_INSTRUCTIONS,
-      },
-    };
-
-    if (lat !== undefined && lng !== undefined) {
-      request.toolConfig = {
-        retrievalConfig: {
-          latLng: {
-            latitude: lat,
-            longitude: lng,
-          },
-        },
-      };
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- SDK types incomplete for googleMaps tool
-    const response = await ai.models.generateContent(request as any);
-    return response;
-  } catch (error) {
-    console.error(`Error calling Google Search grounding: ${String(error)}
-   With prompt: ${prompt}`);
-    throw error;
-  }
 }
 
 /**
- * Calls the Google AI Platform REST API to get a Maps-grounded response.
+ * API error response format
+ */
+interface ApiErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+}
+
+/**
+ * Calls the server-side proxy to get a Maps-grounded response.
+ * The API key is handled securely on the server.
+ *
  * @param options The request parameters.
  * @returns A promise that resolves to the API's GenerateContentResponse.
  */
@@ -79,77 +46,74 @@ export async function fetchMapsGroundedResponseREST({
   lat,
   lng,
   systemInstruction,
-}: {
-  prompt: string;
-  enableWidget?: boolean;
-  lat?: number;
-  lng?: number;
-  systemInstruction?: string;
-}): Promise<GenerateContentResponse> {
-  if (!API_KEY) {
-    throw new Error('Missing required environment variable: API_KEY');
-  }
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- REST API body structure not fully typed
-  const requestBody: Record<string, any> = {
-    contents: [
-      {
-        parts: [
-          {
-            text: prompt,
-          },
-        ],
-      },
-    ],
-    system_instruction: {
-      parts: [{ text: systemInstruction ?? SYS_INSTRUCTIONS }],
-    },
-    tools: [
-      {
-        google_maps: {
-          enable_widget: enableWidget,
-        },
-      },
-    ],
-    generationConfig: {
-      thinkingConfig: {
-        thinkingBudget: 0,
-      },
-    },
+}: MapsGroundingRequest): Promise<GenerateContentResponse> {
+  const requestBody: MapsGroundingRequest = {
+    prompt,
+    enableWidget,
+    lat,
+    lng,
+    systemInstruction,
   };
 
-  if (lat !== undefined && lng !== undefined) {
-    requestBody.toolConfig = {
-      retrievalConfig: {
-        latLng: {
-          latitude: lat,
-          longitude: lng,
-        },
-      },
-    };
-  }
+  // Remove undefined values
+  const cleanBody = Object.fromEntries(
+    Object.entries(requestBody).filter(([, v]) => v !== undefined)
+  );
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await fetch(PROXY_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': API_KEY,
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(cleanBody),
     });
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Error from Generative Language API:', errorBody);
-      throw new Error(`API request failed with status ${String(response.status)}: ${errorBody}`);
+      let errorMessage = `API request failed with status ${String(response.status)}`;
+
+      try {
+        const errorData = (await response.json()) as ApiErrorResponse;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- error may be undefined depending on API response
+        if (errorData.error?.message) {
+          errorMessage = errorData.error.message;
+        }
+      } catch {
+        // Use default error message if JSON parsing fails
+      }
+
+      console.error('Error from Maps Grounding proxy:', errorMessage);
+      throw new Error(errorMessage);
     }
 
     const data: unknown = await response.json();
     return data as GenerateContentResponse;
   } catch (error) {
-    console.error(`Error calling Maps grounding REST API: ${String(error)}`);
+    console.error(`Error calling Maps grounding proxy: ${String(error)}`);
     throw error;
   }
+}
+
+/**
+ * SDK-based implementation - uses server-side proxy.
+ * Kept for backwards compatibility with existing code.
+ *
+ * @param options The request parameters.
+ * @returns A promise that resolves to the API's GenerateContentResponse.
+ */
+export async function fetchMapsGroundedResponseSDK({
+  prompt,
+  enableWidget = true,
+  lat,
+  lng,
+  systemInstruction,
+}: MapsGroundingRequest): Promise<GenerateContentResponse> {
+  // Route through REST proxy for API key security
+  return fetchMapsGroundedResponseREST({
+    prompt,
+    enableWidget,
+    lat,
+    lng,
+    systemInstruction,
+  });
 }

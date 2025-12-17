@@ -4,7 +4,7 @@
 **Sessions**: 3 (initial estimate)
 **Estimated Duration**: 2-3 days
 
-**Progress**: 1/3 sessions (33%)
+**Progress**: 2/3 sessions (67%)
 
 ---
 
@@ -19,7 +19,7 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 | Session | Name | Status | Est. Tasks | Validated |
 |---------|------|--------|------------|-----------|
 | 01 | Hono Setup & Configuration | Complete | 22 | 2025-12-17 |
-| 02 | API Key Protection | Not Started | ~25 | - |
+| 02 | API Key Protection | Complete | 22 | 2025-12-17 |
 | 03 | Deployment Verification | Not Started | ~15 | - |
 
 ---
@@ -27,12 +27,13 @@ Add a lightweight backend API layer using Hono. This enables server-side API key
 ## Completed Sessions
 
 - Session 01: Hono Setup & Configuration (2025-12-17)
+- Session 02: API Key Protection (2025-12-17)
 
 ---
 
 ## Upcoming Sessions
 
-- Session 02: API Key Protection
+- Session 03: Deployment Verification
 
 ---
 
