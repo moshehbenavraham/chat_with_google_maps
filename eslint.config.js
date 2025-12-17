@@ -8,7 +8,7 @@ import prettier from 'eslint-config-prettier';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.js', '*.config.ts'],
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.config.js', '*.config.ts'],
   },
 
   // Base JavaScript rules
