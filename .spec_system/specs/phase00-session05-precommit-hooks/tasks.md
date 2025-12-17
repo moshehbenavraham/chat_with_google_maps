@@ -21,11 +21,11 @@
 
 | Category | Total | Done | Remaining |
 |----------|-------|------|-----------|
-| Setup | 3 | 0 | 3 |
-| Configuration | 5 | 0 | 5 |
-| Implementation | 3 | 0 | 3 |
-| Testing | 6 | 0 | 6 |
-| **Total** | **17** | **0** | **17** |
+| Setup | 3 | 3 | 0 |
+| Configuration | 5 | 5 | 0 |
+| Implementation | 3 | 3 | 0 |
+| Testing | 6 | 6 | 0 |
+| **Total** | **17** | **17** | **0** |
 
 ---
 
@@ -67,10 +67,10 @@ Verify the complete setup works correctly.
 
 - [x] T012 [S0005] Test: Verify `npm run typecheck` works standalone
 - [x] T013 [S0005] Test: Verify `npm run quality` runs all checks
-- [ ] T014 [S0005] Test: Create file with lint error, verify commit blocked
-- [ ] T015 [S0005] Test: Create file with type error, verify commit blocked
-- [ ] T016 [S0005] Test: Verify clean commit proceeds successfully
-- [ ] T017 [S0005] Test: Verify fresh `npm install` sets up hooks (prepare script)
+- [x] T014 [S0005] Test: Create file with lint error, verify commit blocked
+- [x] T015 [S0005] Test: Create file with type error, verify commit blocked
+- [x] T016 [S0005] Test: Verify clean commit proceeds successfully
+- [x] T017 [S0005] Test: Verify fresh `npm install` sets up hooks (prepare script)
 
 ---
 
@@ -78,12 +78,12 @@ Verify the complete setup works correctly.
 
 Before marking session complete:
 
-- [ ] All tasks marked `[x]`
-- [ ] All quality scripts working
-- [ ] Pre-commit hook blocking bad code
-- [ ] Clean commits proceeding normally
-- [ ] All files ASCII-encoded
-- [ ] Ready for `/validate`
+- [x] All tasks marked `[x]`
+- [x] All quality scripts working
+- [x] Pre-commit hook blocking bad code
+- [x] Clean commits proceeding normally
+- [x] All files ASCII-encoded
+- [x] Ready for `/validate`
 
 ---
 
