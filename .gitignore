@@ -90,3 +90,6 @@ temp
 .vercel
 .env*.local
 .env.vercel
+
+# Docker Compose local overrides
+docker-compose.override.yml

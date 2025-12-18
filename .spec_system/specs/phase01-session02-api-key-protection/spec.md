@@ -263,7 +263,7 @@ GEMINI_API_KEY=your-gemini-api-key
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 
 # Optional - API server port
-API_PORT=3001
+API_PORT=3011
 ```
 
 ### Client-Side (src/)

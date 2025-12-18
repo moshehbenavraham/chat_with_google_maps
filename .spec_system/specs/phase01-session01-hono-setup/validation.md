@@ -32,7 +32,7 @@
 | Testing | 5 | 4 | PASS |
 
 ### Incomplete Tasks
-- T022 (Manual browser testing) - Automated verification substituted: `curl http://localhost:3001/api/health` returns correct JSON response `{"status":"ok","timestamp":"...","version":"0.0.5"}`
+- T022 (Manual browser testing) - Automated verification substituted: `curl http://localhost:3011/api/health` returns correct JSON response `{"status":"ok","timestamp":"...","version":"0.0.5"}`
 
 ---
 
@@ -95,8 +95,8 @@ From spec.md:
 - [x] `hono` (^4.11.1) and `@hono/node-server` (^1.19.7) packages installed in dependencies
 - [x] `/api/index.ts` exports valid Hono application
 - [x] `GET /api/health` returns JSON: `{ status: "ok", timestamp: string, version: string }`
-- [x] Vite proxy correctly forwards `/api/*` requests to Hono server (port 3001)
-- [x] `npm run api:dev` starts Hono server on port 3001
+- [x] Vite proxy correctly forwards `/api/*` requests to Hono server (port 3011)
+- [x] `npm run api:dev` starts Hono server on port 3011
 - [x] `npm run dev:all` starts both Vite and Hono concurrently
 - [x] API endpoint accessible and returns correct response format
 

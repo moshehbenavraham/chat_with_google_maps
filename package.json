@@ -1,7 +1,7 @@
 {
   "name": "copy-of-chat-with-maps-live",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,8 +20,13 @@
     "api:dev": "tsx watch api/_server.ts",
     "api:start": "tsx api/_adapters/node.ts",
     "docker:build": "docker build -t chat-with-maps-api .",
-    "docker:run": "docker run -p 3001:3001 --env-file .env chat-with-maps-api",
-    "dev:all": "concurrently \"npm run api:dev\" \"npm run dev\""
+    "docker:run": "docker run -p 3011:3011 --env-file .env chat-with-maps-api",
+    "dev:all": "concurrently \"npm run api:dev\" \"npm run dev\"",
+    "db:start": "docker compose up -d db",
+    "db:stop": "docker compose stop db",
+    "db:reset": "docker compose down db -v && docker compose up -d db",
+    "db:logs": "docker compose logs -f db",
+    "db:shell": "docker compose exec db psql -U ${POSTGRES_USER:-chatmaps} -d ${POSTGRES_DB:-chatmaps}"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -80,7 +80,7 @@ This session transforms the project from a client-only React application into a 
 Development Mode:
 +-------------+     +-----------------+     +------------------+
 |   Browser   | --> | Vite Dev Server | --> | Hono Dev Server  |
-|  (port 3003)|     |   (port 3003)   |     |   (port 3001)    |
+|  (port 3003)|     |   (port 3003)   |     |   (port 3011)    |
 +-------------+     +-----------------+     +------------------+
        |                    |                       |
        |   /api/* --------> | ---proxy-----------> |
@@ -139,7 +139,7 @@ api/
 - [ ] `/api/index.ts` exports valid Hono application
 - [ ] `GET /api/health` returns JSON: `{ status: "ok", timestamp: string, version: string }`
 - [ ] Vite proxy correctly forwards `/api/*` requests to Hono server
-- [ ] `npm run api:dev` starts Hono server on port 3001
+- [ ] `npm run api:dev` starts Hono server on port 3011
 - [ ] `npm run dev:all` starts both Vite and Hono concurrently
 - [ ] Frontend can call `/api/health` and receive response
 
@@ -170,7 +170,7 @@ api/
 ### Potential Challenges
 - **Vite proxy not forwarding**: Ensure proxy target matches Hono server port; test with curl first
 - **TypeScript path resolution**: API may need its own tsconfig extending root; verify import paths work
-- **Port conflicts**: Make API port configurable via environment variable (default 3001)
+- **Port conflicts**: Make API port configurable via environment variable (default 3011)
 - **Hot reload**: tsx provides hot reload for API; verify it works before considering alternatives
 
 ### ASCII Reminder
@@ -192,7 +192,7 @@ All output files must use ASCII-only characters (0-127). Avoid smart quotes, em 
 
 ### Manual Testing
 1. Start API server: `npm run api:dev`
-2. Verify health endpoint directly: `curl http://localhost:3001/api/health`
+2. Verify health endpoint directly: `curl http://localhost:3011/api/health`
 3. Start full dev environment: `npm run dev:all`
 4. Verify proxy works: Open browser dev tools, check Network tab for `/api/health`
 5. Verify response format in browser console

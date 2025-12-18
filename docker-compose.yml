@@ -1,17 +1,50 @@
+# Docker Compose configuration for local development
+# Database: npm run db:start | db:stop | db:reset | db:logs | db:shell
+# API: docker compose up api
+
 services:
+  # PostgreSQL database for local development
+  db:
+    image: postgres:16-alpine
+    container_name: chat_maps_db
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5438}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chatmaps}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatmaps_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-chatmaps}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chatmaps} -d ${POSTGRES_DB:-chatmaps}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Hono API server (production build)
   api:
     build: .
     ports:
-      - '3001:3001'
+      - "3011:3011"
     environment:
       - NODE_ENV=production
-      - API_PORT=3001
+      - API_PORT=3011
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://chatmaps:chatmaps_dev_password@db:5432/chatmaps}
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     healthcheck:
-      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:3001/api/health']
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3011/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+
+volumes:
+  pgdata:
+    name: chat_maps_pgdata

@@ -4,16 +4,36 @@ This document outlines the architecture of the Interactive Day Planner, a web ap
 
 ## Overview
 
-The application is a **React-based Single Page Application (SPA)** with a modular architecture that separates concerns into distinct components, hooks, contexts, and utility libraries.
+The application is a **React SPA + Hono Backend** with a modular architecture. The frontend handles UI, voice interaction, and 3D map rendering. The backend proxies sensitive API calls to protect credentials.
+
+### System Diagram
+
+```
+Browser                           Backend                      External APIs
++------------------+         +------------------+         +------------------+
+|  React SPA       |  HTTP   |  Hono API        |  HTTPS  |  Google Services |
+|  - Voice UI      |-------->|  /api/health     |-------->|  - Gemini API    |
+|  - 3D Map        |         |  /api/gemini/*   |         |  - Maps API      |
+|  - Chat Console  |<--------|  /api/maps/*     |<--------|                  |
++------------------+         +------------------+         +------------------+
+     :3003                        :3011
+```
 
 ### Core Technologies
 
-- **React** - UI framework
+**Frontend**
+
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool and dev server
 - **Zustand** - Lightweight state management
 - **@vis.gl/react-google-maps** - Google Maps React integration
 - **@google/genai** - Gemini API SDK
+
+**Backend**
+
+- **Hono** - Lightweight, vendor-neutral web framework
+- **Node.js** - Runtime (also works on Bun, Deno, Cloudflare Workers)
 
 ## Project Structure
 
@@ -61,6 +81,22 @@ src/
 │   └── utils.ts                  # Shared utilities
 └── types/                        # Global TypeScript types
     └── index.ts                  # Type re-exports
+
+api/                              # Backend API (Hono)
+├── _app.ts                       # Route mounting (platform-agnostic)
+├── _server.ts                    # Development server entry
+├── [[...route]].ts               # Vercel serverless entry point
+├── _adapters/                    # Platform adapters
+│   ├── node.ts                   # Node.js server
+│   └── vercel.ts                 # Vercel export
+├── _middleware/                  # Hono middleware
+│   └── error-handler.ts          # Centralized error handling
+├── _routes/                      # API route handlers
+│   ├── health.ts                 # GET /api/health
+│   ├── gemini.ts                 # Gemini API proxy
+│   └── maps.ts                   # Maps API proxy
+├── _lib/                         # Shared utilities
+└── _tests/                       # API tests
 ```
 
 ## Key Files
@@ -72,8 +108,34 @@ src/
 | `src/lib/api/genai-live-client.ts` | Low-level wrapper around `@google/genai` SDK with event-emitter pattern                                         |
 | `src/lib/tools/tool-registry.ts`   | Function-calling tool implementations (mapsGrounding, frameEstablishingShot, frameLocations)                    |
 | `src/lib/map/map-controller.ts`    | Abstraction layer for Photorealistic 3D Map interactions                                                        |
+| `api/_app.ts`                      | Hono app with all routes mounted - platform-agnostic core                                                       |
+| `api/_routes/gemini.ts`            | Gemini API proxy - ephemeral tokens, grounding endpoint                                                         |
+| `api/_routes/maps.ts`              | Google Maps API proxy - place details, photos, geocoding                                                        |
 
 ## Key Concepts
+
+### Backend API Layer (Hono)
+
+The backend provides server-side API key protection and proxies requests to Google services.
+
+**Why server-side proxying?**
+
+- API keys never exposed to browser DevTools
+- Single point for rate limiting and error handling
+- Enables future authentication integration
+
+**API Routes:**
+
+| Route                     | Method | Purpose                         |
+| ------------------------- | ------ | ------------------------------- |
+| `/api/health`             | GET    | Health check                    |
+| `/api/gemini/grounding`   | POST   | Maps grounding via Gemini       |
+| `/api/live/token`         | POST   | Ephemeral token for Gemini Live |
+| `/api/maps/place-details` | GET    | Place details proxy             |
+| `/api/maps/place-photo`   | GET    | Place photo proxy               |
+
+**Deployment-agnostic design:**
+The `api/_app.ts` is pure Hono code with no platform dependencies. Adapters in `api/_adapters/` provide platform-specific entry points (Node.js, Vercel, Cloudflare Workers).
 
 ### Gemini Live API
 

@@ -1,0 +1,27 @@
+# Docker Compose Local Overrides
+# ================================
+# Copy this file to docker-compose.override.yml for local customizations.
+# The override file is automatically merged with docker-compose.yml.
+#
+# Usage:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+#   # Edit docker-compose.override.yml as needed
+#   npm run db:start
+#
+# Note: docker-compose.override.yml is in .gitignore and won't be committed.
+
+services:
+  db:
+    # Uncomment to change the exposed port (useful if 5432 is in use)
+    # ports:
+    #   - "${POSTGRES_PORT:-5433}:5432"
+
+    # Uncomment to add custom PostgreSQL configuration
+    # command: postgres -c log_statement=all -c log_duration=on
+
+    # Uncomment to limit container resources
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 512M

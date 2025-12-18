@@ -181,7 +181,7 @@ FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/dist/api ./
 COPY --from=builder /app/node_modules ./node_modules
-EXPOSE 3001
+EXPOSE 3011
 CMD ["node", "server.js"]
 ```
 
@@ -191,7 +191,7 @@ services:
   api:
     build: .
     ports:
-      - "3001:3001"
+      - "3011:3001"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
@@ -225,9 +225,9 @@ All output files must use ASCII-only characters (0-127).
 
 ### Manual Testing - Docker
 1. Build and run: `docker compose up --build`
-2. Test health endpoint: `curl http://localhost:3001/api/health`
-3. Test Gemini proxy: POST to localhost:3001/api/gemini/generate-content
-4. Test Maps proxy: GET localhost:3001/api/maps/places/search
+2. Test health endpoint: `curl http://localhost:3011/api/health`
+3. Test Gemini proxy: POST to localhost:3011/api/gemini/generate-content
+4. Test Maps proxy: GET localhost:3011/api/maps/places/search
 
 ### Edge Cases
 - Empty response handling from external APIs

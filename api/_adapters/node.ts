@@ -2,7 +2,7 @@
 import { serve, type ServerType } from '@hono/node-server';
 import { app } from '../_app.js';
 
-const port = Number(process.env.API_PORT) || 3001;
+const port = Number(process.env.API_PORT) || 3011;
 
 export function startServer(): ServerType {
   return serve(

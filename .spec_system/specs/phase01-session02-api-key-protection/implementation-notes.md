@@ -33,7 +33,7 @@
 
 **Notes**:
 - Hono setup exists with health route mounted
-- Vite proxy configured for `/api` -> `http://localhost:3001`
+- Vite proxy configured for `/api` -> `http://localhost:3011`
 - API directory structure has `routes/`, `lib/types.ts`, `__tests__/`
 - Client maps-grounding.ts uses `process.env.API_KEY` directly
 

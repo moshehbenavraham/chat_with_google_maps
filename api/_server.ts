@@ -7,7 +7,7 @@ import { app } from './_app.js';
 export { app };
 
 // Start the server for local development
-const port = Number(process.env.API_PORT) || 3001;
+const port = Number(process.env.API_PORT) || 3011;
 
 serve(
   {

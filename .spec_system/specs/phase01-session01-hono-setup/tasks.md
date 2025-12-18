@@ -119,7 +119,7 @@ Create `api/lib/types.ts` with:
 Add `"api/**/*"` to the `include` array in `tsconfig.json`.
 
 ### T008: Add API_PORT to environment example
-Add `API_PORT=3001` to `.env.example` with comment explaining its purpose.
+Add `API_PORT=3011` to `.env.example` with comment explaining its purpose.
 
 ### T009: Add api:dev script
 Add to package.json scripts:
@@ -150,7 +150,7 @@ Import health route and mount at `/api/health` in `api/index.ts`.
 
 ### T014: Create API server entry point
 Add @hono/node-server serve() call to `api/index.ts`:
-- Read port from `process.env.API_PORT` or default to 3001
+- Read port from `process.env.API_PORT` or default to 3011
 - Log server start message
 
 ### T015: Configure Vite proxy
@@ -158,7 +158,7 @@ Update `vite.config.ts` server.proxy:
 ```typescript
 proxy: {
   '/api': {
-    target: 'http://localhost:3001',
+    target: 'http://localhost:3011',
     changeOrigin: true,
   },
 }
@@ -166,7 +166,7 @@ proxy: {
 
 ### T016: Test API server starts
 Run `npm run api:dev` and verify:
-- Server starts on port 3001
+- Server starts on port 3011
 - No TypeScript errors
 - Hot reload works (modify file, see restart)
 

@@ -23,10 +23,10 @@ React 19 + TypeScript SPA built with Vite. Renders a left chat panel, a full-scr
 | Script            | Description             |
 | ----------------- | ----------------------- |
 | `npm run dev`     | Frontend on `:3003`     |
-| `npm run api:dev` | Backend on `:3001`      |
+| `npm run api:dev` | Backend on `:3011`      |
 | `npm run dev:all` | Both (via concurrently) |
 
-Vite proxies `/api/*` → `http://localhost:3001`.
+Vite proxies `/api/*` → `http://localhost:3011`.
 
 ### Environment Variables
 

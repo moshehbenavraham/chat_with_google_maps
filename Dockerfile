@@ -14,11 +14,11 @@ RUN npm ci --omit=dev --ignore-scripts && npm install tsx
 COPY api/ ./api/
 
 # Expose API port
-EXPOSE 3001
+EXPOSE 3011
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV API_PORT=3001
+ENV API_PORT=3011
 
 # Run API server using tsx
 CMD ["npx", "tsx", "api/_adapters/node.ts"]

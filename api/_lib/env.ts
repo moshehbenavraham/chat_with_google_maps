@@ -38,7 +38,7 @@ export function loadEnv(): ServerEnv {
 
   const geminiApiKey = process.env.GEMINI_API_KEY;
   const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
-  const apiPort = Number(process.env.API_PORT) || 3001;
+  const apiPort = Number(process.env.API_PORT) || 3011;
 
   // Validate required keys
   if (!geminiApiKey) {

@@ -99,7 +99,7 @@ FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/dist/api ./
 COPY --from=builder /app/node_modules ./node_modules
-EXPOSE 3001
+EXPOSE 3011
 CMD ["node", "server.js"]
 ```
 
@@ -109,7 +109,7 @@ services:
   api:
     build: .
     ports:
-      - "3001:3001"
+      - "3011:3001"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}

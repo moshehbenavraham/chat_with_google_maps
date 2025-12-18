@@ -37,7 +37,7 @@ Both deployment methods require these environment variables:
 | --------------------- | -------- | ------------------------------- |
 | `GEMINI_API_KEY`      | Yes      | Google Gemini API key           |
 | `GOOGLE_MAPS_API_KEY` | Yes      | Google Maps API key             |
-| `API_PORT`            | No       | API server port (default: 3001) |
+| `API_PORT`            | No       | API server port (default: 3011) |
 
 **Important**: Never commit API keys to version control. Use environment variables or secrets management.
 
@@ -108,7 +108,7 @@ npm run docker:run
 3. Verify deployment:
 
 ```bash
-curl http://localhost:3001/api/health
+curl http://localhost:3011/api/health
 ```
 
 ### Production Deployment with Docker
@@ -131,7 +131,7 @@ server {
     ssl_certificate_key /path/to/key.pem;
 
     location / {
-        proxy_pass http://localhost:3001;
+        proxy_pass http://localhost:3011;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -259,7 +259,7 @@ Test your deployment health:
 curl https://your-project.vercel.app/api/health
 
 # Docker
-curl http://localhost:3001/api/health
+curl http://localhost:3011/api/health
 
 # Expected response:
 # {"status":"ok","timestamp":"2025-01-01T00:00:00.000Z","version":"0.0.7"}

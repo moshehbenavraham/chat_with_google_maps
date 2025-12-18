@@ -16,6 +16,12 @@
       "description": "Add a lightweight backend API layer using Hono for server-side API key protection, future authentication, and database access while remaining vendor-neutral",
       "status": "complete",
       "session_count": 4
+    },
+    "2": {
+      "name": "Database Layer (PostgreSQL + Drizzle)",
+      "description": "Add a PostgreSQL database with Drizzle ORM for persistent storage, prepared for Better Auth integration, fully self-hostable",
+      "status": "in_progress",
+      "session_count": 4
     }
   },
   "completed_sessions": [
@@ -27,7 +33,8 @@
     "phase01-session01-hono-setup",
     "phase01-session02-api-key-protection",
     "phase01-session03-deployment-verification",
-    "phase01-session04-prd-deployment-philosophy"
+    "phase01-session04-prd-deployment-philosophy",
+    "phase02-session01-postgresql-setup"
   ],
   "next_session_history": [
     {
@@ -78,6 +85,11 @@
     {
       "date": "2025-12-17",
       "session": "phase01-session04-prd-deployment-philosophy",
+      "status": "completed"
+    },
+    {
+      "date": "2025-12-18",
+      "session": "phase02-session01-postgresql-setup",
       "status": "completed"
     }
   ]

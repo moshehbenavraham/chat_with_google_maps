@@ -29,11 +29,11 @@ This session transformed the project from a client-only React application into a
 | File | Changes |
 |------|---------|
 | `package.json` | Added hono, @hono/node-server, tsx, concurrently; added api:dev, dev:all scripts |
-| `vite.config.ts` | Added proxy configuration for /api/* to localhost:3001 |
+| `vite.config.ts` | Added proxy configuration for /api/* to localhost:3011 |
 | `tsconfig.json` | Added api/**/* to include array |
 | `vitest.config.ts` | Added api/**/*.test.ts to include |
 | `eslint.config.js` | Added API configuration block with own tsconfig project |
-| `.env.example` | Added API_PORT=3001 configuration |
+| `.env.example` | Added API_PORT=3011 configuration |
 
 ---
 

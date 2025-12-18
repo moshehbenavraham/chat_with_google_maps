@@ -80,7 +80,7 @@
 - T005: Created api/tsconfig.json with NodeNext module settings
 - T006: Created api/lib/types.ts with HealthResponse and ApiError interfaces
 - T007: Updated root tsconfig.json include to add api/**/*
-- T008: Added API_PORT=3001 to .env.example
+- T008: Added API_PORT=3011 to .env.example
 - T009: Added api:dev script using tsx watch
 - T010: Added dev:all script using concurrently
 
@@ -114,7 +114,7 @@
 **Completed**: 2025-12-17 15:17
 
 **Notes**:
-- Added proxy configuration for /api/* to target localhost:3001
+- Added proxy configuration for /api/* to target localhost:3011
 
 **Files Changed**:
 - `vite.config.ts` - Added server.proxy configuration
@@ -126,7 +126,7 @@
 **Completed**: 2025-12-17 15:17
 
 **Notes**:
-- Server starts successfully on port 3001
+- Server starts successfully on port 3011
 - Health endpoint returns correct JSON response:
   `{"status":"ok","timestamp":"2025-12-17T13:16:33.745Z","version":"0.0.5"}`
 

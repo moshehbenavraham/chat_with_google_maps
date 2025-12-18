@@ -2,10 +2,10 @@
 
 ## Environment Overview
 
-| Environment | URL                   | Purpose           |
-| ----------- | --------------------- | ----------------- |
-| Development | http://localhost:3003 | Local development |
-| Production  | Vercel deployment     | Live system       |
+| Environment | Frontend              | Backend               | Purpose           |
+| ----------- | --------------------- | --------------------- | ----------------- |
+| Development | http://localhost:3003 | http://localhost:3011 | Local development |
+| Production  | Vercel deployment     | Vercel serverless     | Live system       |
 
 ## Environment Variables
 
@@ -18,18 +18,20 @@
 
 ### Optional
 
-| Variable        | Description             |
-| --------------- | ----------------------- |
-| `CLIENT_ID`     | OAuth 2.0 Client ID     |
-| `CLIENT_SECRET` | OAuth 2.0 Client Secret |
+| Variable        | Description                  |
+| --------------- | ---------------------------- |
+| `API_PORT`      | Backend port (default: 3011) |
+| `CLIENT_ID`     | OAuth 2.0 Client ID          |
+| `CLIENT_SECRET` | OAuth 2.0 Client Secret      |
 
 ## Configuration Differences
 
-| Config      | Development | Production                   |
-| ----------- | ----------- | ---------------------------- |
-| API Keys    | `.env` file | Vercel environment variables |
-| Source Maps | Enabled     | Disabled                     |
-| Hot Reload  | Yes         | No                           |
+| Config      | Development              | Production                   |
+| ----------- | ------------------------ | ---------------------------- |
+| API Keys    | `.env` file              | Vercel environment variables |
+| API Server  | Node.js (localhost:3011) | Vercel serverless functions  |
+| Source Maps | Enabled                  | Disabled                     |
+| Hot Reload  | Yes                      | No                           |
 
 ## Security Notes
 
