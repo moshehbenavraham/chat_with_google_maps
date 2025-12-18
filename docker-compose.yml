@@ -9,7 +9,7 @@ services:
     container_name: chat_maps_db
     restart: unless-stopped
     ports:
-      - "${POSTGRES_PORT:-5438}:5432"
+      - '${POSTGRES_PORT:-5438}:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-chatmaps}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatmaps_dev_password}
@@ -17,7 +17,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chatmaps} -d ${POSTGRES_DB:-chatmaps}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-chatmaps} -d ${POSTGRES_DB:-chatmaps}']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,7 +27,7 @@ services:
   api:
     build: .
     ports:
-      - "3011:3011"
+      - '3011:3011'
     environment:
       - NODE_ENV=production
       - API_PORT=3011
@@ -39,7 +39,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3011/api/health"]
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:3011/api/health']
       interval: 30s
       timeout: 10s
       retries: 3

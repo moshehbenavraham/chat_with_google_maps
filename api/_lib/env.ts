@@ -17,6 +17,8 @@ export interface ServerEnv {
   googleMapsApiKey: string;
   /** API server port */
   apiPort: number;
+  /** PostgreSQL database connection URL */
+  databaseUrl: string;
 }
 
 /**
@@ -38,6 +40,7 @@ export function loadEnv(): ServerEnv {
 
   const geminiApiKey = process.env.GEMINI_API_KEY;
   const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const databaseUrl = process.env.DATABASE_URL;
   const apiPort = Number(process.env.API_PORT) || 3011;
 
   // Validate required keys
@@ -49,10 +52,15 @@ export function loadEnv(): ServerEnv {
     throw new MissingApiKeyError('GOOGLE_MAPS_API_KEY');
   }
 
+  if (!databaseUrl) {
+    throw new MissingApiKeyError('DATABASE_URL');
+  }
+
   cachedEnv = {
     geminiApiKey,
     googleMapsApiKey,
     apiPort,
+    databaseUrl,
   };
 
   return cachedEnv;
@@ -89,6 +97,21 @@ export function getGoogleMapsApiKey(): string {
 }
 
 /**
+ * Get the database connection URL.
+ * Validates that the URL is configured.
+ *
+ * @returns PostgreSQL connection URL
+ * @throws MissingApiKeyError if not configured
+ */
+export function getDatabaseUrl(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new MissingApiKeyError('DATABASE_URL');
+  }
+  return url;
+}
+
+/**
  * Check if environment is properly configured (without throwing).
  * Useful for health checks.
  *
@@ -106,6 +129,10 @@ export function validateEnv(): {
 
   if (!process.env.GOOGLE_MAPS_API_KEY) {
     missing.push('GOOGLE_MAPS_API_KEY');
+  }
+
+  if (!process.env.DATABASE_URL) {
+    missing.push('DATABASE_URL');
   }
 
   return {
