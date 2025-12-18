@@ -75,6 +75,7 @@ code {
 body {
   font-family: 'Google Sans Display', sans-serif;
   background: var(--Neutral-00);
+  overflow: hidden; /* Prevent scrollbars from causing layout shifts */
 }
 
 :root {
@@ -248,8 +249,8 @@ button .icon {
 
 .streaming-console {
   position: relative;
-  height: 100vh;
-  width: 100vw;
+  height: 100dvh; /* Dynamic viewport height - accounts for mobile browser chrome */
+  width: 100%; /* Using 100% instead of 100vw to avoid scrollbar width issues */
   box-sizing: border-box;
 }
 
@@ -751,7 +752,7 @@ gmp-place-details-compact {
   right: 0;
   width: 380px;
   max-width: 100%;
-  height: 100vh;
+  height: 100dvh;
   background: var(--gray-900);
   border-left: 1px solid var(--gray-800);
   z-index: 1000;
