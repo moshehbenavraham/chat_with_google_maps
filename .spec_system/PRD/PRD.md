@@ -61,7 +61,7 @@ Every backend component must:
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
 | 00 | Developer Tooling & Quality Foundation | 5 | Complete |
-| 01 | Backend API Layer (Hono) | 4 | In Progress |
+| 01 | Backend API Layer (Hono) | 4 | Complete |
 | 02 | Database Layer (PostgreSQL + Drizzle) | TBD | Not Started |
 | 03 | Authentication (Better Auth) | TBD | Not Started |
 
@@ -477,21 +477,22 @@ export const { useSession, signIn, signUp, signOut } = authClient;
 ## Success Criteria
 
 ### Phase 00: Developer Tooling
-- [ ] Zero TypeScript errors with strict mode enabled
-- [ ] ESLint configured with no warnings in codebase
-- [ ] Prettier formatting applied consistently
-- [ ] Unit test framework operational with example tests
-- [ ] Pre-commit hooks blocking commits with quality issues
-- [ ] CI-ready quality checks (can run in pipeline)
+- [x] Zero TypeScript errors with strict mode enabled
+- [x] ESLint configured with no warnings in codebase
+- [x] Prettier formatting applied consistently
+- [x] Unit test framework operational with example tests
+- [x] Pre-commit hooks blocking commits with quality issues
+- [x] CI-ready quality checks (can run in pipeline)
 
 ### Phase 01: Backend API Layer
-- [ ] Hono backend running at `/api/*` endpoints
-- [ ] Health check endpoint responding (`GET /api/health`)
-- [ ] API keys moved to server-side (not exposed in browser)
-- [ ] Gemini API calls proxied through backend
-- [ ] Maps API calls proxied through backend
-- [ ] Works on Vercel deployment
-- [ ] Documentation for deploying to alternative platforms
+- [x] Hono backend running at `/api/*` endpoints
+- [x] Health check endpoint responding (`GET /api/health`)
+- [x] API keys moved to server-side (not exposed in browser)
+- [x] Gemini API calls proxied through backend
+- [x] Maps API calls proxied through backend
+- [x] Works on Vercel deployment
+- [x] Docker configuration for self-hosted deployment
+- [x] Documentation for deploying to alternative platforms
 
 ### Phase 02: Database Layer
 - [ ] PostgreSQL running via Docker (local dev)
