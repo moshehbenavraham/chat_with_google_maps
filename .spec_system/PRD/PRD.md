@@ -62,7 +62,7 @@ Every backend component must:
 |-------|------|----------|--------|
 | 00 | Developer Tooling & Quality Foundation | 5 | Complete |
 | 01 | Backend API Layer (Hono) | 4 | Complete |
-| 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Not Started |
+| 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Complete |
 | 03 | Authentication (Better Auth) | TBD | Not Started |
 
 ## Phase 00: Developer Tooling & Quality Foundation
@@ -495,13 +495,13 @@ export const { useSession, signIn, signUp, signOut } = authClient;
 - [x] Documentation for deploying to alternative platforms
 
 ### Phase 02: Database Layer
-- [ ] PostgreSQL running via Docker (local dev)
-- [ ] docker-compose.yml configured for local development
-- [ ] Drizzle ORM configured with type-safe schema
-- [ ] Database connection working in development and production
-- [ ] Migrations workflow established (`drizzle-kit generate/migrate`)
-- [ ] Test endpoint verifying database connectivity
-- [ ] Documentation for production PostgreSQL deployment
+- [x] PostgreSQL running via Docker (local dev)
+- [x] docker-compose.yml configured for local development
+- [x] Drizzle ORM configured with type-safe schema
+- [x] Database connection working in development and production
+- [x] Migrations workflow established (`drizzle-kit generate/migrate`)
+- [x] Test endpoint verifying database connectivity
+- [x] Documentation for production PostgreSQL deployment
 
 ### Phase 03: Authentication
 - [ ] Better Auth configured with Drizzle adapter

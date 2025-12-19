@@ -58,16 +58,18 @@ See [.env.example](.env.example) for detailed configuration.
 
 ## Documentation
 
-| Guide                                            | Description                            |
-| ------------------------------------------------ | -------------------------------------- |
-| [Onboarding](./docs/onboarding.md)               | Getting started checklist              |
-| [Development](./docs/development.md)             | Dev scripts and workflow               |
-| [Local Deployment](./docs/LOCAL_DEPLOYMENT.md)   | Development setup and troubleshooting  |
-| [Vercel Deployment](./docs/VERCEL_DEPLOYMENT.md) | Production hosting on Vercel           |
-| [Architecture](./docs/ARCHITECTURE.md)           | Application structure and key concepts |
-| [Customization](./docs/CUSTOMIZATION.md)         | Creating personas and adding tools     |
-| [Prompts](./docs/PROMPTS.md)                     | System prompt management               |
-| [Contributing](./CONTRIBUTING.md)                | Development workflow and guidelines    |
+| Guide                                                | Description                            |
+| ---------------------------------------------------- | -------------------------------------- |
+| [Onboarding](./docs/onboarding.md)                   | Getting started checklist              |
+| [Development](./docs/development.md)                 | Dev scripts and workflow               |
+| [Local Deployment](./docs/LOCAL_DEPLOYMENT.md)       | Development setup and troubleshooting  |
+| [Vercel Deployment](./docs/VERCEL_DEPLOYMENT.md)     | Production hosting on Vercel           |
+| [Database Setup](./docs/DATABASE.md)                 | Local PostgreSQL with Docker           |
+| [Database Deployment](./docs/DEPLOYMENT_DATABASE.md) | Production database options            |
+| [Architecture](./docs/ARCHITECTURE.md)               | Application structure and key concepts |
+| [Customization](./docs/CUSTOMIZATION.md)             | Creating personas and adding tools     |
+| [Prompts](./docs/PROMPTS.md)                         | System prompt management               |
+| [Contributing](./CONTRIBUTING.md)                    | Development workflow and guidelines    |
 
 ## Project Status
 
@@ -89,6 +91,10 @@ See [PRD](.spec_system/PRD/PRD.md) for current progress and roadmap.
 | `npm run test:watch`    | Run tests in watch mode        |
 | `npm run test:coverage` | Run tests with coverage report |
 | `npm run quality`       | Run all quality checks         |
+| `npm run db:start`      | Start PostgreSQL container     |
+| `npm run db:stop`       | Stop PostgreSQL container      |
+| `npm run db:migrate`    | Apply database migrations      |
+| `npm run db:reset`      | Reset database (deletes data)  |
 
 ## Tech Stack
 

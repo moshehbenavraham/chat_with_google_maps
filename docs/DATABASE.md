@@ -316,10 +316,55 @@ DROP TABLE test;
 
 ---
 
+## Verifying Database Integration
+
+After setting up the database and running migrations, verify everything works:
+
+### Health Check
+
+The health endpoint includes database connectivity status:
+
+```bash
+curl http://localhost:5175/api/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-12-19T10:30:00.000Z",
+  "version": "0.0.7",
+  "services": {
+    "database": "connected"
+  }
+}
+```
+
+### Database Test Endpoint
+
+For detailed database diagnostics:
+
+```bash
+curl http://localhost:5175/api/db/test
+```
+
+Expected response:
+
+```json
+{
+  "status": "connected",
+  "timestamp": "2025-12-19T10:30:00.000Z",
+  "tables": {
+    "users": true,
+    "sessions": true
+  }
+}
+```
+
+---
+
 ## Next Steps
 
-After database setup is complete:
-
-1. **Drizzle ORM Configuration** - Session 02 will add Drizzle for type-safe database access
-2. **Schema Migrations** - Session 03 will create the application database schema
-3. **Integration Testing** - Session 04 will verify the full database stack
+- **Production Deployment** - See [DEPLOYMENT_DATABASE.md](./DEPLOYMENT_DATABASE.md) for production database setup
+- **Schema Reference** - See [SCHEMA.md](./SCHEMA.md) for table definitions and relationships
