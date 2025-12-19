@@ -12,3 +12,5 @@
 // drizzle-kit will strip extensions when loading
 export * from './users.ts';
 export * from './sessions.ts';
+export * from './accounts.ts';
+export * from './verifications.ts';

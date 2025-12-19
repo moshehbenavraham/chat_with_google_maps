@@ -1,7 +1,7 @@
 {
   "name": "copy-of-chat-with-maps-live",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -46,6 +46,7 @@
     "@headlessui/react": "2.2.7",
     "@hono/node-server": "^1.19.7",
     "@vis.gl/react-google-maps": "1.5.5",
+    "better-auth": "^1.4.7",
     "classnames": "^2.5.1",
     "drizzle-orm": "^0.45.1",
     "eventemitter3": "^5.0.1",

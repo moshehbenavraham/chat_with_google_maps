@@ -63,7 +63,7 @@ Every backend component must:
 | 00 | Developer Tooling & Quality Foundation | 5 | Complete |
 | 01 | Backend API Layer (Hono) | 4 | Complete |
 | 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Complete |
-| 03 | Authentication (Better Auth) | TBD | Not Started |
+| 03 | Authentication (Better Auth) | 4 | Not Started |
 
 ## Phase 00: Developer Tooling & Quality Foundation
 

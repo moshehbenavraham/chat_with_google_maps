@@ -71,6 +71,8 @@ describe('Database Configuration', () => {
       process.env.DATABASE_URL = 'postgresql://user:pass@localhost:5432/testdb';
       process.env.GEMINI_API_KEY = 'test-gemini-key';
       process.env.GOOGLE_MAPS_API_KEY = 'test-maps-key';
+      process.env.BETTER_AUTH_SECRET = 'test-secret-key-minimum-32-characters!';
+      process.env.BETTER_AUTH_URL = 'http://localhost:5173';
 
       const { validateEnv } = await import('../../_lib/env.js');
       const result = validateEnv();
@@ -96,6 +98,8 @@ describe('Database Configuration', () => {
       process.env.DATABASE_URL = testUrl;
       process.env.GEMINI_API_KEY = 'test-gemini-key';
       process.env.GOOGLE_MAPS_API_KEY = 'test-maps-key';
+      process.env.BETTER_AUTH_SECRET = 'test-secret-key-minimum-32-characters!';
+      process.env.BETTER_AUTH_URL = 'http://localhost:5173';
 
       const { loadEnv, clearEnvCache } = await import('../../_lib/env.js');
       clearEnvCache();

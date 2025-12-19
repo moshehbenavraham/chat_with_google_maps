@@ -9,14 +9,23 @@ The application is a **React SPA + Hono Backend** with a modular architecture. T
 ### System Diagram
 
 ```
-Browser                           Backend                      External APIs
+Browser                           Backend                      External Services
 +------------------+         +------------------+         +------------------+
 |  React SPA       |  HTTP   |  Hono API        |  HTTPS  |  Google Services |
 |  - Voice UI      |-------->|  /api/health     |-------->|  - Gemini API    |
 |  - 3D Map        |         |  /api/gemini/*   |         |  - Maps API      |
 |  - Chat Console  |<--------|  /api/maps/*     |<--------|                  |
-+------------------+         +------------------+         +------------------+
-     :3003                        :3011
++------------------+         |  /api/db/*       |         +------------------+
+     :3003                   +--------+---------+
+                                      |
+                                      | SQL
+                                      v
+                             +------------------+
+                             |  PostgreSQL 16   |
+                             |  - users         |
+                             |  - sessions      |
+                             +------------------+
+                                   :5438
 ```
 
 ### Core Technologies
@@ -34,6 +43,12 @@ Browser                           Backend                      External APIs
 
 - **Hono** - Lightweight, vendor-neutral web framework
 - **Node.js** - Runtime (also works on Bun, Deno, Cloudflare Workers)
+
+**Database**
+
+- **PostgreSQL 16** - Relational database (Docker for local, managed for production)
+- **Drizzle ORM** - Type-safe database access with SQL-like syntax
+- **postgres-js** - PostgreSQL driver for Node.js
 
 ## Project Structure
 
@@ -89,14 +104,26 @@ api/                              # Backend API (Hono)
 ├── _adapters/                    # Platform adapters
 │   ├── node.ts                   # Node.js server
 │   └── vercel.ts                 # Vercel export
+├── _db/                          # Database layer (Drizzle)
+│   ├── client.ts                 # postgres-js connection
+│   ├── index.ts                  # Drizzle instance with schema
+│   └── schema/                   # Table definitions
+│       ├── index.ts              # Schema barrel export
+│       ├── users.ts              # Users table
+│       └── sessions.ts           # Sessions table
 ├── _middleware/                  # Hono middleware
 │   └── error-handler.ts          # Centralized error handling
 ├── _routes/                      # API route handlers
 │   ├── health.ts                 # GET /api/health
+│   ├── db.ts                     # Database test endpoints
 │   ├── gemini.ts                 # Gemini API proxy
 │   └── maps.ts                   # Maps API proxy
 ├── _lib/                         # Shared utilities
 └── _tests/                       # API tests
+
+drizzle/                          # Database migrations
+├── 0000_*.sql                    # Initial schema migration
+└── meta/                         # Drizzle metadata
 ```
 
 ## Key Files
@@ -109,6 +136,8 @@ api/                              # Backend API (Hono)
 | `src/lib/tools/tool-registry.ts`   | Function-calling tool implementations (mapsGrounding, frameEstablishingShot, frameLocations)                    |
 | `src/lib/map/map-controller.ts`    | Abstraction layer for Photorealistic 3D Map interactions                                                        |
 | `api/_app.ts`                      | Hono app with all routes mounted - platform-agnostic core                                                       |
+| `api/_db/index.ts`                 | Drizzle ORM instance with schema - database access layer                                                        |
+| `api/_db/client.ts`                | postgres-js connection with pooling configuration                                                               |
 | `api/_routes/gemini.ts`            | Gemini API proxy - ephemeral tokens, grounding endpoint                                                         |
 | `api/_routes/maps.ts`              | Google Maps API proxy - place details, photos, geocoding                                                        |
 
@@ -136,6 +165,41 @@ The backend provides server-side API key protection and proxies requests to Goog
 
 **Deployment-agnostic design:**
 The `api/_app.ts` is pure Hono code with no platform dependencies. Adapters in `api/_adapters/` provide platform-specific entry points (Node.js, Vercel, Cloudflare Workers).
+
+### Database Layer (PostgreSQL + Drizzle)
+
+The application uses PostgreSQL for persistent storage with Drizzle ORM for type-safe database access.
+
+**Why PostgreSQL + Drizzle?**
+
+- PostgreSQL is fully open source and self-hostable
+- Drizzle provides type-safe queries with SQL-like syntax
+- Same schema works in development (Docker) and production (managed)
+- Prepared for Better Auth integration in Phase 03
+
+**Database Routes:**
+
+| Route          | Method | Purpose                     |
+| -------------- | ------ | --------------------------- |
+| `/api/db/test` | GET    | Database connectivity check |
+| `/api/health`  | GET    | Includes database status    |
+
+**Schema Design:**
+
+Tables are designed for future Better Auth integration:
+
+- `users` - User accounts (email, name, verification status)
+- `sessions` - Active user sessions with expiration
+
+See [SCHEMA.md](./SCHEMA.md) for detailed table definitions.
+
+**Local Development:**
+
+```bash
+npm run db:start    # Start PostgreSQL Docker container
+npm run db:migrate  # Apply migrations
+npm run db:shell    # Connect with psql
+```
 
 ### Gemini Live API
 
@@ -239,3 +303,6 @@ The app uses **Zustand** for global state (`src/stores/index.ts`):
 - [Local Deployment](./LOCAL_DEPLOYMENT.md) - Development setup
 - [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Production hosting
 - [Customization Guide](./CUSTOMIZATION.md) - Extending the application
+- [Database Setup](./DATABASE.md) - Local PostgreSQL setup
+- [Database Deployment](./DEPLOYMENT_DATABASE.md) - Production database options
+- [Schema Reference](./SCHEMA.md) - Table definitions and conventions

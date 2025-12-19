@@ -1,0 +1,43 @@
+# CODEOWNERS - Code Ownership Assignments
+#
+# This file defines who is responsible for reviewing code in different parts of the repository.
+# GitHub will automatically request reviews from the appropriate teams/individuals.
+#
+# Format: <pattern> <owner1> <owner2> ...
+#
+# TODO: Replace placeholder values with actual GitHub usernames or team names
+
+# Default owner for everything (fallback)
+*                                   @moshehbenavraham
+
+# Frontend code
+/src/                               @moshehbenavraham
+/src/components/                    @moshehbenavraham
+
+# Backend API
+/api/                               @moshehbenavraham
+/api/_routes/                       @moshehbenavraham
+/api/_db/                           @moshehbenavraham
+
+# Database schema and migrations
+/drizzle/                           @moshehbenavraham
+/api/_db/schema/                    @moshehbenavraham
+
+# Configuration and tooling
+/eslint.config.js                   @moshehbenavraham
+/tsconfig.json                      @moshehbenavraham
+/vite.config.ts                     @moshehbenavraham
+/drizzle.config.ts                  @moshehbenavraham
+
+# Documentation
+/docs/                              @moshehbenavraham
+*.md                                @moshehbenavraham
+
+# Infrastructure and deployment
+/docker-compose.yml                 @moshehbenavraham
+/Dockerfile                         @moshehbenavraham
+/vercel.json                        @moshehbenavraham
+/.env.example                       @moshehbenavraham
+
+# Spec system (project management)
+/.spec_system/                      @moshehbenavraham

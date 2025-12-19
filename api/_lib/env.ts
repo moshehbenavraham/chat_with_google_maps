@@ -19,6 +19,10 @@ export interface ServerEnv {
   apiPort: number;
   /** PostgreSQL database connection URL */
   databaseUrl: string;
+  /** Better Auth secret key for signing cookies/tokens */
+  betterAuthSecret: string;
+  /** Better Auth base URL for callbacks and redirects */
+  betterAuthUrl: string;
 }
 
 /**
@@ -41,6 +45,8 @@ export function loadEnv(): ServerEnv {
   const geminiApiKey = process.env.GEMINI_API_KEY;
   const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
   const databaseUrl = process.env.DATABASE_URL;
+  const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
+  const betterAuthUrl = process.env.BETTER_AUTH_URL;
   const apiPort = Number(process.env.API_PORT) || 3011;
 
   // Validate required keys
@@ -56,11 +62,25 @@ export function loadEnv(): ServerEnv {
     throw new MissingApiKeyError('DATABASE_URL');
   }
 
+  if (!betterAuthSecret) {
+    throw new MissingApiKeyError('BETTER_AUTH_SECRET');
+  }
+
+  if (betterAuthSecret.length < 32) {
+    throw new Error('BETTER_AUTH_SECRET must be at least 32 characters long');
+  }
+
+  if (!betterAuthUrl) {
+    throw new MissingApiKeyError('BETTER_AUTH_URL');
+  }
+
   cachedEnv = {
     geminiApiKey,
     googleMapsApiKey,
     apiPort,
     databaseUrl,
+    betterAuthSecret,
+    betterAuthUrl,
   };
 
   return cachedEnv;
@@ -112,6 +132,40 @@ export function getDatabaseUrl(): string {
 }
 
 /**
+ * Get the Better Auth secret key.
+ * Validates that the key is configured and meets minimum length.
+ *
+ * @returns Better Auth secret key
+ * @throws MissingApiKeyError if not configured
+ * @throws Error if key is too short
+ */
+export function getBetterAuthSecret(): string {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (!secret) {
+    throw new MissingApiKeyError('BETTER_AUTH_SECRET');
+  }
+  if (secret.length < 32) {
+    throw new Error('BETTER_AUTH_SECRET must be at least 32 characters long');
+  }
+  return secret;
+}
+
+/**
+ * Get the Better Auth base URL.
+ * Validates that the URL is configured.
+ *
+ * @returns Better Auth base URL
+ * @throws MissingApiKeyError if not configured
+ */
+export function getBetterAuthUrl(): string {
+  const url = process.env.BETTER_AUTH_URL;
+  if (!url) {
+    throw new MissingApiKeyError('BETTER_AUTH_URL');
+  }
+  return url;
+}
+
+/**
  * Check if environment is properly configured (without throwing).
  * Useful for health checks.
  *
@@ -133,6 +187,14 @@ export function validateEnv(): {
 
   if (!process.env.DATABASE_URL) {
     missing.push('DATABASE_URL');
+  }
+
+  if (!process.env.BETTER_AUTH_SECRET) {
+    missing.push('BETTER_AUTH_SECRET');
+  }
+
+  if (!process.env.BETTER_AUTH_URL) {
+    missing.push('BETTER_AUTH_URL');
   }
 
   return {

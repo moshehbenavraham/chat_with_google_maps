@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Chat with Google Maps",
   "description": "A voice-driven conversational interface for exploring locations using Gemini Live API and Photorealistic 3D Maps",
-  "current_phase": 2,
+  "current_phase": 3,
   "current_session": null,
   "phases": {
     "0": {
@@ -22,6 +22,12 @@
       "description": "Add a PostgreSQL database with Drizzle ORM for persistent storage, prepared for Better Auth integration, fully self-hostable",
       "status": "complete",
       "session_count": 4
+    },
+    "3": {
+      "name": "Authentication (Better Auth)",
+      "description": "Implement user authentication using Better Auth with Drizzle adapter, providing a complete vendor-neutral auth stack with email/password and social OAuth",
+      "status": "in_progress",
+      "session_count": 4
     }
   },
   "completed_sessions": [
@@ -37,7 +43,8 @@
     "phase02-session01-postgresql-setup",
     "phase02-session02-drizzle-configuration",
     "phase02-session03-schema-migrations",
-    "phase02-session04-integration-verification"
+    "phase02-session04-integration-verification",
+    "phase03-session01-better-auth-server-setup"
   ],
   "next_session_history": [
     {
@@ -108,6 +115,11 @@
     {
       "date": "2025-12-19",
       "session": "phase02-session04-integration-verification",
+      "status": "completed"
+    },
+    {
+      "date": "2025-12-19",
+      "session": "phase03-session01-better-auth-server-setup",
       "status": "completed"
     }
   ]

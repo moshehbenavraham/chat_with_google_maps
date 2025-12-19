@@ -98,11 +98,19 @@ See [PRD](.spec_system/PRD/PRD.md) for current progress and roadmap.
 
 ## Tech Stack
 
-- React + TypeScript
-- Vite
+**Frontend**
+
+- React 19 + TypeScript
+- Vite (build tooling)
 - Zustand (state management)
 - @vis.gl/react-google-maps
 - @google/genai (Gemini SDK)
+
+**Backend**
+
+- Hono (vendor-neutral web framework)
+- PostgreSQL 16 (database)
+- Drizzle ORM (type-safe database access)
 
 ## Attribution
 
