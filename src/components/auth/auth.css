@@ -1,0 +1,204 @@
+/**
+ * Auth Component Styles
+ *
+ * Styles for authentication forms and components.
+ * Uses CSS variables for theming consistency.
+ */
+
+/* Auth page container */
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #1a1a1a;
+}
+
+/* Auth card container */
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Auth form title */
+.auth-title {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Form container */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Form field group */
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Field label */
+.auth-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d1d1d1;
+}
+
+/* Text input */
+.auth-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  color: #ffffff;
+  background-color: #3a3a3a;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border-color: #4a9eff;
+}
+
+.auth-input::placeholder {
+  color: #888888;
+}
+
+/* Submit button */
+.auth-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #4a9eff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: #3a8eef;
+}
+
+.auth-button:disabled {
+  background-color: #4a4a4a;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.auth-error {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 4px;
+}
+
+/* Success message */
+.auth-success {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #69db7c;
+  background-color: rgba(105, 219, 124, 0.1);
+  border: 1px solid rgba(105, 219, 124, 0.3);
+  border-radius: 4px;
+}
+
+/* Form switch link container */
+.auth-switch {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #888888;
+}
+
+/* Switch link button */
+.auth-switch-link {
+  padding: 0;
+  font-size: 0.875rem;
+  color: #4a9eff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Loading spinner */
+.auth-loading {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: auth-spin 0.8s linear infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Validation hint */
+.auth-hint {
+  font-size: 0.75rem;
+  color: #888888;
+}
+
+.auth-hint.error {
+  color: #ff6b6b;
+}
+
+/* User info display */
+.auth-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+}
+
+.auth-user-email {
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.auth-sign-out-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #ff6b6b;
+  background-color: transparent;
+  border: 1px solid #ff6b6b;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-sign-out-button:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}

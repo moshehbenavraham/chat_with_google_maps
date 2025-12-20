@@ -29,6 +29,7 @@ import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Map3D, type Map3DCameraProps } from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
+import { useAuth, AuthPage } from '@/components/auth';
 
 // Note: GEMINI_API_KEY is no longer needed client-side.
 // Ephemeral tokens are fetched from the backend on-demand.
@@ -69,6 +70,9 @@ function AppComponent() {
   const geocodingLib = useMapsLibrary('geocoding');
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [viewProps, setViewProps] = useState(INITIAL_VIEW_PROPS);
+  // Auth testing UI state (temporary - remove in Session 03)
+  const [showAuthPage, setShowAuthPage] = useState(false);
+  const { isAuthenticated, user } = useAuth();
   // Subscribe to marker and camera state from the global Zustand store.
   const { markers, cameraTarget, setCameraTarget, preventAutoFrame } = useMapStore();
   const mapController = useRef<MapController | null>(null);
@@ -216,6 +220,17 @@ function AppComponent() {
     setViewProps(oldProps => ({ ...oldProps, ...props }));
   }, []);
 
+  // Render auth page when toggled
+  if (showAuthPage) {
+    return (
+      <AuthPage
+        onAuthSuccess={() => {
+          setShowAuthPage(false);
+        }}
+      />
+    );
+  }
+
   return (
     <LiveAPIProvider
       map={map}
@@ -224,6 +239,27 @@ function AppComponent() {
       geocoder={geocoder}
       padding={padding}
     >
+      {/* Temporary auth testing button - remove in Session 03 */}
+      <button
+        onClick={() => {
+          setShowAuthPage(true);
+        }}
+        style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          zIndex: 9999,
+          padding: '8px 16px',
+          backgroundColor: isAuthenticated ? '#69db7c' : '#4a9eff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '12px',
+        }}
+      >
+        {isAuthenticated ? (user?.email.split('@')[0] ?? 'User') : 'Sign In'}
+      </button>
       <ErrorScreen />
       <Sidebar />
       {showPopUp && <PopUp onClose={handleClosePopUp} />}
