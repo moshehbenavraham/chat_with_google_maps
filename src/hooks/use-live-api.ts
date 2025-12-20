@@ -26,7 +26,8 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { GenAILiveClient } from '@/lib/api/genai-live-client';
 import { type LiveConnectConfig, type LiveServerToolCall } from '@google/genai';
-import { fetchLiveToken } from '@/lib/api/token-service';
+import { fetchLiveToken, type AuthenticationError } from '@/lib/api/token-service';
+import { isAuthenticationError } from '@/lib/api/auth-fetch';
 import { AudioStreamer } from '@/lib/audio/audio-streamer';
 import { audioContext } from '@/lib/utils';
 import VolMeterWorket from '@/lib/worklets/vol-meter';
@@ -53,6 +54,11 @@ export interface UseLiveApiResults {
   clearHeldGroundingChunks: () => void;
   heldGroundedResponse: GenerateContentResponse | undefined;
   clearHeldGroundedResponse: () => void;
+
+  /** Authentication error if session expired during token fetch */
+  authError: AuthenticationError | null;
+  /** Clear the current auth error */
+  clearAuthError: () => void;
 }
 
 export function useLiveApi({
@@ -83,6 +89,7 @@ export function useLiveApi({
   const [heldGroundedResponse, setHeldGroundedResponse] = useState<
     GenerateContentResponse | undefined
   >(undefined);
+  const [authError, setAuthError] = useState<AuthenticationError | null>(null);
 
   const clearHeldGroundingChunks = useCallback(() => {
     setHeldGroundingChunks(undefined);
@@ -90,6 +97,10 @@ export function useLiveApi({
 
   const clearHeldGroundedResponse = useCallback(() => {
     setHeldGroundedResponse(undefined);
+  }, []);
+
+  const clearAuthError = useCallback(() => {
+    setAuthError(null);
   }, []);
 
   // Store cleanup function for event listeners
@@ -283,6 +294,8 @@ export function useLiveApi({
   const connect = useCallback(async () => {
     useLogStore.getState().clearTurns();
     useMapStore.getState().clearMarkers();
+    // Clear any previous auth errors
+    setAuthError(null);
 
     // Clean up previous client if exists
     if (cleanupListenersRef.current) {
@@ -293,18 +306,34 @@ export function useLiveApi({
       clientRef.current.disconnect();
     }
 
-    // Fetch a fresh ephemeral token from the backend
-    const { token } = await fetchLiveToken();
+    try {
+      // Fetch a fresh ephemeral token from the backend
+      const { token } = await fetchLiveToken();
 
-    // Create a new client with the ephemeral token
-    const newClient = new GenAILiveClient(token, model);
-    clientRef.current = newClient;
+      // Create a new client with the ephemeral token
+      const newClient = new GenAILiveClient(token, model);
+      clientRef.current = newClient;
 
-    // Set up event listeners and store cleanup function
-    cleanupListenersRef.current = setupClientListeners(newClient);
+      // Set up event listeners and store cleanup function
+      cleanupListenersRef.current = setupClientListeners(newClient);
 
-    // Connect to the Live API
-    await newClient.connect(config);
+      // Connect to the Live API
+      await newClient.connect(config);
+    } catch (error) {
+      // Handle authentication errors specifically
+      if (isAuthenticationError(error)) {
+        setAuthError(error);
+        // Log the auth error to the UI
+        useLogStore.getState().addTurn({
+          role: 'system',
+          text: 'Session expired. Please sign in again to continue.',
+          isFinal: true,
+        });
+        return;
+      }
+      // Re-throw other errors
+      throw error;
+    }
   }, [config, model, setupClientListeners]);
 
   const disconnect = useCallback(() => {
@@ -331,5 +360,7 @@ export function useLiveApi({
     heldGroundedResponse,
     clearHeldGroundedResponse,
     audioStreamer: audioStreamerRef,
+    authError,
+    clearAuthError,
   };
 }

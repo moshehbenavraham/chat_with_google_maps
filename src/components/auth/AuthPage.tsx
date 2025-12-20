@@ -7,7 +7,8 @@
  * @module src/components/auth/AuthPage
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
@@ -24,8 +25,6 @@ type AuthMode = 'signin' | 'signup';
 interface AuthPageProps {
   /** Initial mode to display */
   initialMode?: AuthMode;
-  /** Callback when authentication succeeds */
-  onAuthSuccess?: () => void;
 }
 
 /**
@@ -38,16 +37,27 @@ interface AuthPageProps {
  *
  * @example
  * ```tsx
- * // As a standalone page
- * <AuthPage onAuthSuccess={() => navigate('/dashboard')} />
+ * // As a standalone page (redirects to /app on success)
+ * <AuthPage />
  *
  * // Starting with sign-up
  * <AuthPage initialMode="signup" />
  * ```
  */
-export function AuthPage({ initialMode = 'signin', onAuthSuccess }: AuthPageProps) {
+export function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
   const { user, isAuthenticated, isLoading, handleSignOut } = useAuth();
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect to app if already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      const state = location.state as { from?: { pathname?: string } } | null;
+      const from = state?.from?.pathname ?? '/app';
+      void navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate, location.state]);
 
   // Switch to sign-up mode
   const handleSwitchToSignUp = useCallback(() => {
@@ -59,15 +69,18 @@ export function AuthPage({ initialMode = 'signin', onAuthSuccess }: AuthPageProp
     setMode('signin');
   }, []);
 
-  // Handle successful authentication
+  // Handle successful authentication - navigate to app
   const handleSuccess = useCallback(() => {
-    onAuthSuccess?.();
-  }, [onAuthSuccess]);
+    const state = location.state as { from?: { pathname?: string } } | null;
+    const from = state?.from?.pathname ?? '/app';
+    void navigate(from, { replace: true });
+  }, [navigate, location.state]);
 
-  // Handle sign out click
+  // Handle sign out click - redirect to landing
   const handleSignOutClick = useCallback(async () => {
     await handleSignOut();
-  }, [handleSignOut]);
+    void navigate('/');
+  }, [handleSignOut, navigate]);
 
   // Show loading state
   if (isLoading) {

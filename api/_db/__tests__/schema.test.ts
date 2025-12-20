@@ -132,16 +132,20 @@ describe('Sessions Schema', () => {
       expect(tableConfig.name).toBe('sessions');
     });
 
-    it('should have 4 columns', () => {
-      expect(tableConfig.columns.length).toBe(4);
+    it('should have 8 columns', () => {
+      expect(tableConfig.columns.length).toBe(8);
     });
 
     it('should have correct column names', () => {
       const columnNames = tableConfig.columns.map(c => c.name);
       expect(columnNames).toContain('id');
+      expect(columnNames).toContain('token');
       expect(columnNames).toContain('user_id');
       expect(columnNames).toContain('expires_at');
+      expect(columnNames).toContain('ip_address');
+      expect(columnNames).toContain('user_agent');
       expect(columnNames).toContain('created_at');
+      expect(columnNames).toContain('updated_at');
     });
   });
 
@@ -150,6 +154,12 @@ describe('Sessions Schema', () => {
       const idColumn = tableConfig.columns.find(c => c.name === 'id');
       expect(idColumn).toBeDefined();
       expect(idColumn?.dataType).toBe('string');
+    });
+
+    it('should have token as not null and unique', () => {
+      const column = tableConfig.columns.find(c => c.name === 'token');
+      expect(column?.notNull).toBe(true);
+      expect(column?.isUnique).toBe(true);
     });
 
     it('should have user_id as not null', () => {
@@ -162,8 +172,24 @@ describe('Sessions Schema', () => {
       expect(column?.notNull).toBe(true);
     });
 
+    it('should have ip_address as nullable', () => {
+      const column = tableConfig.columns.find(c => c.name === 'ip_address');
+      expect(column?.notNull).toBe(false);
+    });
+
+    it('should have user_agent as nullable', () => {
+      const column = tableConfig.columns.find(c => c.name === 'user_agent');
+      expect(column?.notNull).toBe(false);
+    });
+
     it('should have created_at as not null with default', () => {
       const column = tableConfig.columns.find(c => c.name === 'created_at');
+      expect(column?.notNull).toBe(true);
+      expect(column?.hasDefault).toBe(true);
+    });
+
+    it('should have updated_at as not null with default', () => {
+      const column = tableConfig.columns.find(c => c.name === 'updated_at');
       expect(column?.notNull).toBe(true);
       expect(column?.hasDefault).toBe(true);
     });
@@ -191,9 +217,13 @@ describe('Sessions Schema', () => {
     it('should infer Session type with correct shape', () => {
       const session: Session = {
         id: 'session-id',
+        token: 'session-token',
         userId: 'user-id',
         expiresAt: new Date(),
+        ipAddress: '127.0.0.1',
+        userAgent: 'Mozilla/5.0',
         createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       expect(session.id).toBe('session-id');
@@ -201,9 +231,11 @@ describe('Sessions Schema', () => {
     });
 
     it('should allow NewSession without auto-generated fields', () => {
-      // NewSession should not require createdAt (it has default)
+      // NewSession should not require createdAt/updatedAt (they have defaults)
+      // ipAddress and userAgent are nullable
       const newSession: NewSession = {
         id: 'new-session-id',
+        token: 'new-session-token',
         userId: 'user-id',
         expiresAt: new Date(),
       };

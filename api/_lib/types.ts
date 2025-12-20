@@ -5,6 +5,7 @@
  */
 
 import type { ApiErrorCode } from './errors.js';
+import type { Session } from './auth.js';
 
 /**
  * Service status for health check services field
@@ -113,11 +114,25 @@ export interface GeminiGroundingResponse {
 }
 
 /**
+ * User type inferred from Better Auth session
+ */
+export type AuthUser = Session['user'];
+
+/**
+ * Session type inferred from Better Auth session
+ */
+export type AuthSession = Session['session'];
+
+/**
  * Hono context variables for middleware data passing
  */
 declare module 'hono' {
   interface ContextVariableMap {
     body: Record<string, unknown>;
     validatedRequest: GeminiGroundingRequest;
+    /** Authenticated user from auth-guard middleware */
+    user: AuthUser;
+    /** Session data from auth-guard middleware */
+    session: AuthSession;
   }
 }

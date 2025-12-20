@@ -49,6 +49,8 @@ interface AuthContextValue {
   error: Error | null;
   /** Sign out the current user */
   handleSignOut: () => Promise<void>;
+  /** Manually check if the session is still valid */
+  checkSession: () => Promise<boolean>;
 }
 
 /**
@@ -86,6 +88,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await signOut();
   }, []);
 
+  // Check if session is still valid by fetching from the session endpoint
+  const checkSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/get-session', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = (await response.json()) as { session?: unknown; user?: unknown };
+      return !!(data.session && data.user);
+    } catch {
+      // Network error - return false to be safe
+      return false;
+    }
+  }, []);
+
   // Memoize context value to prevent unnecessary re-renders
   const value = useMemo<AuthContextValue>(() => {
     const user = sessionData?.user ?? null;
@@ -98,8 +120,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isAuthenticated: !!user,
       error: error ?? null,
       handleSignOut,
+      checkSession,
     };
-  }, [sessionData, isPending, error, handleSignOut]);
+  }, [sessionData, isPending, error, handleSignOut, checkSession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

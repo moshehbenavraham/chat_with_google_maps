@@ -10,6 +10,9 @@ import { getGeminiApiKey } from '../_lib/env.js';
 import { ExternalApiError, TimeoutError } from '../_lib/errors.js';
 import { validateJsonBody, validateGeminiRequest } from '../_middleware/validate-request.js';
 import type { GeminiGroundingRequest } from '../_lib/types.js';
+import { createChildLogger } from '../_lib/logger.js';
+
+const log = createChildLogger('gemini');
 
 /** Timeout for external API calls (30 seconds) */
 const API_TIMEOUT_MS = 30000;
@@ -101,10 +104,7 @@ async function callGeminiApi(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('[Gemini API Error]', {
-        status: response.status,
-        body: errorBody,
-      });
+      log.error({ status: response.status, body: errorBody }, 'Gemini API error');
 
       throw new ExternalApiError(`Gemini API returned status ${String(response.status)}`, {
         status: response.status,

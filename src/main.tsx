@@ -18,11 +18,13 @@
  * limitations under the License.
  */
 
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 
-import App from './App';
 import { AuthProvider } from '@/components/auth';
+import { ToastProvider } from '@/components/ui/Toast';
+import { router } from './router';
 import './index.css';
 
 const rootElement = document.getElementById('root');
@@ -33,7 +35,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
     </AuthProvider>
   </StrictMode>
 );

@@ -17,7 +17,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { getClient } from '../_db/client.js';
 import * as schema from '../_db/schema/index.js';
-import { getBetterAuthSecret, getBetterAuthUrl } from './env.js';
+import { getBetterAuthSecret, getBetterAuthUrl, getTrustedOrigins } from './env.js';
 
 /**
  * Create Drizzle ORM instance with schema for Better Auth
@@ -60,9 +60,9 @@ export const auth = betterAuth({
 
   /**
    * Trusted origins for CORS
-   * Allows requests from the frontend URL
+   * Includes primary URL and additional dev ports in development
    */
-  trustedOrigins: [getBetterAuthUrl()],
+  trustedOrigins: getTrustedOrigins(),
 
   /**
    * Email and password authentication configuration

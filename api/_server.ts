@@ -2,6 +2,9 @@
 import { serve } from '@hono/node-server';
 // Note: _app.ts handles all route imports from underscore-prefixed directories
 import { app } from './_app.js';
+import { createChildLogger } from './_lib/logger.js';
+
+const log = createChildLogger('server');
 
 // Re-export app for testing
 export { app };
@@ -15,6 +18,9 @@ serve(
     port,
   },
   info => {
-    console.log(`API server running on http://localhost:${String(info.port)}`);
+    log.info(
+      { port: info.port, url: `http://localhost:${String(info.port)}` },
+      'API server started'
+    );
   }
 );

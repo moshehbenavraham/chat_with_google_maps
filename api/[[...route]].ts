@@ -1,6 +1,9 @@
 // Vercel serverless function - full API implementation
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
+import { createChildLogger } from './_lib/logger.js';
+
+const log = createChildLogger('vercel');
 
 /** Version constant */
 const VERSION = '0.0.7';
@@ -164,7 +167,7 @@ async function callGeminiApi(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('[Gemini API Error]', { status: response.status, body: errorBody });
+      log.error({ status: response.status, body: errorBody }, 'Gemini API error');
       throw new Error(`Gemini API returned status ${String(response.status)}: ${errorBody}`);
     }
 
@@ -216,7 +219,10 @@ async function handleLiveToken(res: VercelResponse) {
       expiresAt: expireTime.toISOString(),
     });
   } catch (error) {
-    console.error('[Live Token Error]', error);
+    log.error(
+      { error: error instanceof Error ? error.message : String(error) },
+      'Live token error'
+    );
     const message = error instanceof Error ? error.message : 'Failed to create token';
     return errorResponse(res, 'TOKEN_CREATION_ERROR', message, 500);
   }
@@ -249,7 +255,7 @@ async function handleGeminiGrounding(req: VercelRequest, res: VercelResponse) {
     const response = await callGeminiApi(requestBody, apiKey);
     return jsonResponse(res, response);
   } catch (error) {
-    console.error('[Grounding Error]', error);
+    log.error({ error: error instanceof Error ? error.message : String(error) }, 'Grounding error');
     const message = error instanceof Error ? error.message : 'Unknown error';
     return errorResponse(res, 'EXTERNAL_API_ERROR', message, 502);
   }

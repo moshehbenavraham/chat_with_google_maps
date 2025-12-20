@@ -1,0 +1,189 @@
+/**
+ * Loading Skeleton Styles
+ *
+ * Styles for skeleton loading animations and loading screens.
+ */
+
+/* Base skeleton element with shimmer effect */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--Neutral-15, #1f1f1f) 25%,
+    var(--Neutral-20, #2a2a2a) 50%,
+    var(--Neutral-15, #1f1f1f) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Full-page loading screen */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--Neutral-00, #0a0a0a);
+  color: var(--Neutral-60, #737373);
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.loading-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: var(--Green-800, #166534);
+  border-radius: 16px;
+  animation: loading-brand-pulse 2s ease-in-out infinite;
+}
+
+.loading-icon {
+  font-size: 2rem;
+  color: var(--Green-400, #4ade80);
+}
+
+@keyframes loading-brand-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.loading-spinner-container {
+  position: relative;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--Neutral-20, #2a2a2a);
+  border-top-color: var(--Green-400, #4ade80);
+  border-radius: 50%;
+  animation: loading-spin 0.8s linear infinite;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-message {
+  font-size: 0.875rem;
+  color: var(--Neutral-50, #525252);
+  margin: 0;
+}
+
+/* App skeleton layout */
+.app-skeleton {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--Neutral-00, #0a0a0a);
+}
+
+.app-skeleton-panel {
+  width: 400px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--Neutral-5, #0f0f0f);
+  border-right: 1px solid var(--Neutral-20, #2a2a2a);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.app-skeleton-header {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--Neutral-20, #2a2a2a);
+  margin-bottom: 1rem;
+}
+
+.app-skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.app-skeleton-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--Neutral-20, #2a2a2a);
+}
+
+.app-skeleton-map {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--Neutral-10, #171717) 0%,
+    var(--Neutral-15, #1f1f1f) 100%
+  );
+}
+
+.app-skeleton-map-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--Neutral-40, #404040);
+}
+
+.app-skeleton-map-content .material-symbols-outlined {
+  font-size: 4rem;
+  animation: loading-brand-pulse 2s ease-in-out infinite;
+}
+
+.app-skeleton-map-content span:last-child {
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-skeleton {
+    flex-direction: column;
+  }
+
+  .app-skeleton-panel {
+    width: 100%;
+    height: 50%;
+    border-right: none;
+    border-bottom: 1px solid var(--Neutral-20, #2a2a2a);
+  }
+
+  .app-skeleton-map {
+    height: 50%;
+  }
+}

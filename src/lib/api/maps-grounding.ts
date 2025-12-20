@@ -4,6 +4,7 @@
  */
 
 import type { GenerateContentResponse } from '@google/genai';
+import { jsonFetch } from './auth-fetch';
 
 /**
  * Proxy endpoint for maps grounding - calls server-side API
@@ -39,6 +40,8 @@ interface ApiErrorResponse {
  *
  * @param options The request parameters.
  * @returns A promise that resolves to the API's GenerateContentResponse.
+ * @throws {AuthenticationError} If the user is not authenticated (401)
+ * @throws {Error} For other API errors
  */
 export async function fetchMapsGroundedResponseREST({
   prompt,
@@ -61,11 +64,9 @@ export async function fetchMapsGroundedResponseREST({
   );
 
   try {
-    const response = await fetch(PROXY_ENDPOINT, {
+    // Uses jsonFetch which handles 401 and includes credentials
+    const response = await jsonFetch(PROXY_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(cleanBody),
     });
 

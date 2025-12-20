@@ -8,6 +8,9 @@ import type { Context, ErrorHandler } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { type ApiError, isApiError } from '../_lib/errors.js';
 import type { ApiErrorResponse } from '../_lib/types.js';
+import { createChildLogger } from '../_lib/logger.js';
+
+const log = createChildLogger('error');
 
 /**
  * Format an error into a consistent API error response.
@@ -68,12 +71,17 @@ function formatErrorResponse(error: unknown): {
  * ```
  */
 export const errorHandler: ErrorHandler = (err: Error, c: Context) => {
-  // Log error for debugging (server-side only)
-  console.error('[API Error]', {
-    name: err.name,
-    message: err.message,
-    stack: err.stack,
-  });
+  // Log error with structured data
+  log.error(
+    {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+      path: c.req.path,
+      method: c.req.method,
+    },
+    'unhandled error'
+  );
 
   const { response, statusCode } = formatErrorResponse(err);
 

@@ -166,6 +166,50 @@ export function getBetterAuthUrl(): string {
 }
 
 /**
+ * Get trusted origins for Better Auth CORS configuration.
+ *
+ * Returns an array of origins that are allowed to make auth requests:
+ * - Always includes BETTER_AUTH_URL
+ * - In development, includes common dev ports (3003-3010)
+ * - Optionally parses BETTER_AUTH_TRUSTED_ORIGINS for additional origins
+ *
+ * @returns Array of trusted origin URLs
+ */
+export function getTrustedOrigins(): string[] {
+  const origins = new Set<string>();
+
+  // Always include the primary URL
+  const primaryUrl = process.env.BETTER_AUTH_URL;
+  if (primaryUrl) {
+    origins.add(primaryUrl);
+  }
+
+  // In development, add common dev ports to prevent origin mismatch issues
+  // when Vite dev server starts on an alternate port
+  const isDev = process.env.NODE_ENV !== 'production';
+  if (isDev) {
+    const devPorts = [3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010];
+    for (const port of devPorts) {
+      origins.add(`http://localhost:${String(port)}`);
+    }
+  }
+
+  // Parse additional trusted origins from environment variable
+  const additionalOrigins = process.env.BETTER_AUTH_TRUSTED_ORIGINS;
+  if (additionalOrigins) {
+    const parsed = additionalOrigins
+      .split(',')
+      .map(o => o.trim())
+      .filter(Boolean);
+    for (const origin of parsed) {
+      origins.add(origin);
+    }
+  }
+
+  return Array.from(origins);
+}
+
+/**
  * Check if environment is properly configured (without throwing).
  * Useful for health checks.
  *

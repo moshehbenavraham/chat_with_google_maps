@@ -17,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 
 import ControlTray from '@/components/ControlTray';
@@ -29,7 +30,10 @@ import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Map3D, type Map3DCameraProps } from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
-import { useAuth, AuthPage } from '@/components/auth';
+import { useAuth } from '@/components/auth';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/Toast';
+import { useSessionHealth } from '@/hooks/use-session-health';
 
 // Note: GEMINI_API_KEY is no longer needed client-side.
 // Ephemeral tokens are fetched from the backend on-demand.
@@ -64,15 +68,18 @@ const INITIAL_VIEW_PROPS = {
  * orchestrating the layout of UI components and reacting to global state changes
  * to update the 3D map.
  */
-function AppComponent() {
+function AppContent() {
   const [map, setMap] = useState<google.maps.maps3d.Map3DElement | null>(null);
   const placesLib = useMapsLibrary('places');
   const geocodingLib = useMapsLibrary('geocoding');
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [viewProps, setViewProps] = useState(INITIAL_VIEW_PROPS);
-  // Auth testing UI state (temporary - remove in Session 03)
-  const [showAuthPage, setShowAuthPage] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { user, handleSignOut } = useAuth();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  // Enable periodic session health checks (every 5 minutes)
+  useSessionHealth();
   // Subscribe to marker and camera state from the global Zustand store.
   const { markers, cameraTarget, setCameraTarget, preventAutoFrame } = useMapStore();
   const mapController = useRef<MapController | null>(null);
@@ -220,16 +227,12 @@ function AppComponent() {
     setViewProps(oldProps => ({ ...oldProps, ...props }));
   }, []);
 
-  // Render auth page when toggled
-  if (showAuthPage) {
-    return (
-      <AuthPage
-        onAuthSuccess={() => {
-          setShowAuthPage(false);
-        }}
-      />
-    );
-  }
+  // Handle sign out and redirect to landing
+  const handleSignOutClick = useCallback(async () => {
+    await handleSignOut();
+    showToast('Successfully signed out', 'success');
+    void navigate('/');
+  }, [handleSignOut, navigate, showToast]);
 
   return (
     <LiveAPIProvider
@@ -239,26 +242,25 @@ function AppComponent() {
       geocoder={geocoder}
       padding={padding}
     >
-      {/* Temporary auth testing button - remove in Session 03 */}
+      {/* User menu button */}
       <button
-        onClick={() => {
-          setShowAuthPage(true);
-        }}
+        onClick={() => void handleSignOutClick()}
         style={{
           position: 'fixed',
           top: '10px',
           right: '10px',
           zIndex: 9999,
           padding: '8px 16px',
-          backgroundColor: isAuthenticated ? '#69db7c' : '#4a9eff',
+          backgroundColor: 'var(--Green-600, #16a34a)',
           color: '#fff',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer',
           fontSize: '12px',
         }}
+        title="Sign out"
       >
-        {isAuthenticated ? (user?.email.split('@')[0] ?? 'User') : 'Sign In'}
+        {user?.email.split('@')[0] ?? 'User'} (Sign Out)
       </button>
       <ErrorScreen />
       <Sidebar />
@@ -283,10 +285,12 @@ function AppComponent() {
 }
 
 /**
- * Main application component that provides a streaming interface for Live API.
- * Manages video streaming state and provides controls for webcam/screen capture.
+ * AppPage - Main application page (protected)
+ *
+ * Provides the map interface with streaming capabilities.
+ * Wrapped with Google Maps API provider.
  */
-function App() {
+export function AppPage() {
   return (
     <div className="App">
       <APIProvider
@@ -294,10 +298,10 @@ function App() {
         apiKey={GOOGLE_MAPS_API_KEY}
         solutionChannel={'gmp_aistudio_itineraryapplet_v1.0.0'}
       >
-        <AppComponent />
+        <AppContent />
       </APIProvider>
     </div>
   );
 }
 
-export default App;
+export default AppPage;

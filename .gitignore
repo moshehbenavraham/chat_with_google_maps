@@ -93,3 +93,4 @@ temp
 
 # Docker Compose local overrides
 docker-compose.override.yml
+logs/

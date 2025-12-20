@@ -9,6 +9,8 @@
  * without exposing the API key in the browser.
  */
 
+import { jsonFetch, AuthenticationError } from './auth-fetch';
+
 export interface TokenResponse {
   token: string;
   expiresAt: string;
@@ -21,19 +23,21 @@ export interface TokenError {
   };
 }
 
+// Re-export AuthenticationError for consumers
+export { AuthenticationError };
+
 /**
  * Fetches an ephemeral token from the backend for Live API authentication.
  * The token is single-use and expires after 30 minutes.
  *
- * @throws {Error} If the token fetch fails
+ * @throws {AuthenticationError} If the user is not authenticated (401)
+ * @throws {Error} If the token fetch fails for other reasons
  * @returns Promise<TokenResponse> The token and expiration time
  */
 export async function fetchLiveToken(): Promise<TokenResponse> {
-  const response = await fetch('/api/live/token', {
+  // Uses fetchWithAuth which handles 401 and includes credentials
+  const response = await jsonFetch('/api/live/token', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
 
   if (!response.ok) {

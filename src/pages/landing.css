@@ -1,0 +1,343 @@
+/**
+ * Landing Page Styles
+ *
+ * Styles for the public landing page.
+ * Uses existing CSS variables from index.css for consistency.
+ */
+
+/* Page container */
+.landing-page {
+  min-height: 100vh;
+  height: 100vh;
+  background-color: var(--Neutral-00);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Override body overflow:hidden for scrollable content */
+}
+
+/* Navigation */
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--Neutral-20);
+}
+
+.landing-logo {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.landing-nav-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.landing-nav-button {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--Neutral-80);
+  border: 1px solid var(--Neutral-30);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.landing-nav-button:hover {
+  background: var(--Neutral-15);
+  border-color: var(--Neutral-50);
+  color: var(--text);
+}
+
+.landing-nav-button.demo {
+  background: var(--Green-800);
+  border-color: var(--Green-500);
+  color: var(--Green-400);
+}
+
+.landing-nav-button.demo:hover {
+  background: var(--Green-700);
+  border-color: var(--Green-400);
+}
+
+/* Main content */
+.landing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Hero section */
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem 3rem;
+}
+
+.landing-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--Green-400), var(--Blue-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.landing-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--Neutral-60);
+  max-width: 600px;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.landing-cta {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  background: var(--Green-500);
+  color: var(--text);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.landing-cta:hover {
+  background: var(--Green-400);
+  transform: translateY(-2px);
+}
+
+/* Preview section */
+.landing-preview {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, var(--Neutral-00) 0%, var(--Neutral-5) 100%);
+}
+
+.landing-preview-container {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 10;
+  background: var(--Neutral-10);
+  border: 1px solid var(--Neutral-20);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.landing-preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--Neutral-50);
+}
+
+.landing-preview-placeholder .icon {
+  font-size: 4rem;
+  color: var(--Neutral-30);
+}
+
+.landing-preview-placeholder span {
+  font-size: 0.875rem;
+}
+
+/* Features section */
+.landing-features {
+  padding: 4rem 2rem;
+  background: var(--Neutral-5);
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.landing-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--Neutral-10);
+  border: 1px solid var(--Neutral-20);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.landing-feature:hover {
+  border-color: var(--Neutral-30);
+  transform: translateY(-4px);
+}
+
+.landing-feature-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  margin-bottom: 1.25rem;
+  font-size: 2rem;
+}
+
+.landing-feature-icon.voice {
+  background: var(--Blue-800);
+  color: var(--Blue-400);
+}
+
+.landing-feature-icon.maps {
+  background: var(--Green-800);
+  color: var(--Green-400);
+}
+
+.landing-feature-icon.realtime {
+  background: rgba(255, 70, 0, 0.15);
+  color: var(--Red-400);
+}
+
+.landing-feature-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.landing-feature-description {
+  font-size: 0.9375rem;
+  color: var(--Neutral-60);
+  line-height: 1.6;
+}
+
+/* Footer */
+.landing-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--Neutral-20);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.landing-footer-copyright {
+  font-size: 0.875rem;
+  color: var(--Neutral-50);
+}
+
+.landing-footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.landing-footer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--Neutral-60);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.landing-footer-link:hover {
+  color: var(--text);
+}
+
+.landing-footer-link .icon {
+  font-size: 1.25rem;
+}
+
+/* Loading state */
+.landing-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: var(--Neutral-00);
+  color: var(--Neutral-60);
+  overflow: hidden; /* No scroll needed for loading state */
+}
+
+.landing-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.landing-spinner::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--Neutral-20);
+  border-top-color: var(--Blue-400);
+  border-radius: 50%;
+  animation: landing-spin 0.8s linear infinite;
+}
+
+@keyframes landing-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .landing-nav {
+    padding: 1rem;
+  }
+
+  .landing-hero {
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  .landing-preview {
+    padding: 1.5rem;
+  }
+
+  .landing-preview-container {
+    border-radius: 8px;
+  }
+
+  .landing-features {
+    padding: 3rem 1.5rem;
+  }
+
+  .landing-features-grid {
+    gap: 1.5rem;
+  }
+
+  .landing-feature {
+    padding: 1.5rem 1rem;
+  }
+
+  .landing-footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .landing-footer-links {
+    justify-content: center;
+  }
+}

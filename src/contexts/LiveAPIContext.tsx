@@ -18,8 +18,9 @@
  * limitations under the License.
  */
 
-import React, { createContext, type FC, type ReactNode, useContext } from 'react';
+import React, { createContext, type FC, type ReactNode, useContext, useEffect } from 'react';
 import { useLiveApi, type UseLiveApiResults } from '@/hooks/use-live-api';
+import { useAuthError } from '@/components/AuthErrorBoundary';
 
 const LiveAPIContext = createContext<UseLiveApiResults | undefined>(undefined);
 
@@ -30,6 +31,28 @@ export interface LiveAPIProviderProps {
   elevationLib: google.maps.ElevationLibrary | null;
   geocoder: google.maps.Geocoder | null;
   padding: [number, number, number, number];
+}
+
+/**
+ * Inner component that watches for auth errors and reports them
+ * to the AuthErrorBoundary.
+ */
+function AuthErrorReporter({
+  authError,
+  clearAuthError,
+}: Pick<UseLiveApiResults, 'authError' | 'clearAuthError'>) {
+  const { reportAuthError } = useAuthError();
+
+  useEffect(() => {
+    if (authError) {
+      // Report the error to AuthErrorBoundary which will show the modal
+      reportAuthError(authError);
+      // Clear the error from the hook so it doesn't keep reporting
+      clearAuthError();
+    }
+  }, [authError, reportAuthError, clearAuthError]);
+
+  return null;
 }
 
 export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
@@ -43,7 +66,13 @@ export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
   // Note: apiKey is no longer needed here - ephemeral tokens are fetched on-demand
   const liveAPI = useLiveApi({ map, placesLib, elevationLib, geocoder, padding });
 
-  return <LiveAPIContext.Provider value={liveAPI}>{children}</LiveAPIContext.Provider>;
+  return (
+    <LiveAPIContext.Provider value={liveAPI}>
+      {/* Auto-report auth errors to the boundary */}
+      <AuthErrorReporter authError={liveAPI.authError} clearAuthError={liveAPI.clearAuthError} />
+      {children}
+    </LiveAPIContext.Provider>
+  );
 };
 
 export const useLiveAPIContext = (): UseLiveApiResults => {
