@@ -23,6 +23,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 
 import { AuthProvider } from '@/components/auth';
+import { ThemeProvider } from '@/providers';
 import { ToastProvider } from '@/components/ui/Toast';
 import { router } from './router';
 import './index.css';
@@ -34,10 +35,12 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <StrictMode>
-    <AuthProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>
 );

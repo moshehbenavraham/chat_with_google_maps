@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 
 /**
@@ -88,6 +89,8 @@ export function UserMenu({ className = '' }: UserMenuProps) {
             <p className="text-xs text-[var(--muted-foreground)]">{user.email}</p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-[var(--Neutral-30)]" />
+        <ThemeToggle />
         <DropdownMenuSeparator className="bg-[var(--Neutral-30)]" />
         <DropdownMenuItem
           onClick={() => void handleSignOutClick()}

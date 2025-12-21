@@ -25,6 +25,92 @@
     --ring: var(--Blue-500);
     --radius: 0.5rem;
   }
+
+  /* Light mode overrides */
+  .light {
+    /* Core text color - inverted for light backgrounds */
+    --text: #1c1f21;
+
+    /* Neutral palette - inverted (dark becomes light) */
+    --Neutral-00: #ffffff;
+    --Neutral-5: #f8f9fa;
+    --Neutral-10: #f1f3f4;
+    --Neutral-15: #e8eaed;
+    --Neutral-20: #dadce0;
+    --Neutral-30: #bdc1c6;
+    --Neutral-50: #9aa0a6;
+    --Neutral-60: #80868b;
+    --Neutral-80: #5f6368;
+    --Neutral-90: #3c4043;
+
+    /* Gray scale - adjusted for light mode */
+    --gray-200: #5f6368;
+    --gray-300: #80868b;
+    --gray-500: #9aa0a6;
+    --gray-600: #80868b;
+    --gray-700: #bdc1c6;
+    --gray-800: #dadce0;
+    --gray-900: #f1f3f4;
+    --gray-1000: #ffffff;
+
+    /* Border and background */
+    --border-stroke: #dadce0;
+    --background: #ffffff;
+    --color: var(--text);
+
+    /* Scrollbar colors for light mode */
+    scrollbar-color: #bdc1c6 #f1f3f4;
+
+    /* Accent colors - slightly adjusted for light backgrounds */
+    --accent-blue: #1a73e8;
+    --accent-blue-active-bg: #e8f0fe;
+    --accent-blue-active: #1967d2;
+    --accent-blue-headers: #1a73e8;
+    --accent-green: #1e8e3e;
+    --midnight-blue: #e8f0fe;
+    --blue-30: #4285f4;
+    --accent-red: #d93025;
+
+    /* Color palette - adjusted for light mode contrast */
+    --Green-400: #1e8e3e;
+    --Green-500: #137333;
+    --Green-700: #0d5626;
+    --Green-800: #ceead6;
+    --Blue-400: #4285f4;
+    --Blue-500: #1a73e8;
+    --Blue-800: #e8f0fe;
+    --Red-400: #ea4335;
+    --Red-500: #d93025;
+    --Red-600: #c5221f;
+    --Red-700: #a50e0e;
+    --Red-800: #fce8e6;
+
+    /* Card styling */
+    --card-header: #1a73e8;
+    --card-border: #dadce0;
+    --card-background: #ffffff;
+
+    /* shadcn/ui tokens - light mode values */
+    --background: #ffffff;
+    --foreground: #1c1f21;
+    --card: #f1f3f4;
+    --card-foreground: #1c1f21;
+    --popover: #ffffff;
+    --popover-foreground: #1c1f21;
+    --primary: #1a73e8;
+    --primary-foreground: #ffffff;
+    --secondary: #e8eaed;
+    --secondary-foreground: #3c4043;
+    --muted: #f1f3f4;
+    --muted-foreground: #5f6368;
+    --accent: #e8f0fe;
+    --accent-foreground: #1a73e8;
+    --destructive: #d93025;
+    --destructive-foreground: #ffffff;
+    --border: #dadce0;
+    --input: #dadce0;
+    --ring: #1a73e8;
+  }
 }
 
 body {
