@@ -1,0 +1,110 @@
+/**
+ * UserMenu Component Styles
+ *
+ * Provides styling for user dropdown menu.
+ */
+
+.user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger button */
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+}
+
+.user-menu-trigger:hover {
+  opacity: 0.85;
+}
+
+.user-menu-trigger:focus {
+  outline: 2px solid var(--Green-600, #16a34a);
+  outline-offset: 2px;
+}
+
+/* Dropdown container */
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  z-index: 9000;
+  overflow: hidden;
+}
+
+/* User info section */
+.user-menu-info {
+  padding: 12px 16px;
+}
+
+.user-menu-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-email {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Divider */
+.user-menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0;
+}
+
+/* Menu items */
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+.user-menu-item:focus {
+  outline: none;
+  background-color: #f3f4f6;
+}
+
+/* Sign out button */
+.user-menu-signout {
+  color: #dc2626;
+}
+
+.user-menu-signout:hover {
+  background-color: #fef2f2;
+}

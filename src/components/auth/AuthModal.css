@@ -1,0 +1,90 @@
+/**
+ * AuthModal Component Styles
+ *
+ * Provides styling for modal overlay and container.
+ */
+
+/* Backdrop overlay */
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+  animation: auth-modal-fade-in 0.2s ease-out;
+}
+
+@keyframes auth-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal content container */
+.auth-modal-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 100%;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  z-index: 10001;
+  animation: auth-modal-slide-up 0.2s ease-out;
+}
+
+@keyframes auth-modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close button */
+.auth-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  z-index: 1;
+}
+
+.auth-modal-close:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.auth-modal-close:focus {
+  outline: 2px solid var(--Green-600, #16a34a);
+  outline-offset: 2px;
+}
+
+/* Adjust auth-card inside modal */
+.auth-modal-content .auth-card {
+  box-shadow: none;
+  border: none;
+  margin: 0;
+}

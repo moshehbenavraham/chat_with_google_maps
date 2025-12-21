@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 2-3 days
 
-**Progress**: 2/4 sessions (50%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
@@ -22,7 +22,7 @@ Implement user authentication using Better Auth, an open-source authentication l
 |---------|------|--------|------------|-----------|
 | 01 | Better Auth Server Setup | Complete | 22 | 2025-12-19 |
 | 02 | React Client Integration | Complete | 25 | 2025-12-21 |
-| 03 | Protected Routes & UI | Not Started | ~20 | - |
+| 03 | Protected Routes & UI | Complete | 25 | 2025-12-21 |
 | 04 | Social OAuth (Optional) | Not Started | ~20 | - |
 
 ---
@@ -57,11 +57,26 @@ Implemented the React client-side integration for Better Auth, connecting the fr
 - `src/components/auth/AuthPage.tsx` - Container page
 - 33 new tests (10 AuthProvider + 23 validation)
 
+### Session 03: Protected Routes & UI
+
+**Completed**: 2025-12-21
+
+Completed the authentication user experience with polished UI components. Created Avatar component with initials/image support, UserMenu dropdown with user info and sign-out, and AuthModal for modal-based authentication. Replaced the inline sign-out button in AppPage with the professional UserMenu component.
+
+**Key Deliverables**:
+- `src/components/auth/Avatar.tsx` - User avatar with initials/image
+- `src/components/auth/Avatar.css` - Avatar styling (sm/md/lg)
+- `src/components/auth/UserMenu.tsx` - Dropdown menu component
+- `src/components/auth/UserMenu.css` - Dropdown styling
+- `src/components/auth/AuthModal.tsx` - Portal-based modal for auth
+- `src/components/auth/AuthModal.css` - Modal overlay styling
+- Updated `src/pages/AppPage.tsx` with UserMenu integration
+
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Protected Routes & UI
+- Session 04: Social OAuth (Optional)
 
 ---
 
@@ -148,8 +163,8 @@ Phase complete when:
 - [x] Sign-in flow working (email/password)
 - [x] Session management with secure cookies
 - [x] React client hooks working (`useSession`, `useUser`)
-- [ ] Protected routes redirecting unauthenticated users
-- [ ] User can view profile and log out
+- [x] Protected routes redirecting unauthenticated users
+- [x] User can view profile and log out
 - [x] Environment variables properly configured for dev/prod
 - [x] All quality gates still passing (TypeScript, ESLint, Prettier, tests)
 

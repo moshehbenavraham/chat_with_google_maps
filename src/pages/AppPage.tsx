@@ -30,9 +30,7 @@ import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Map3D, type Map3DCameraProps } from '@/components/map-3d';
 import { useMapStore } from '@/stores';
 import { MapController } from '@/lib/map/map-controller';
-import { useAuth } from '@/components/auth';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/Toast';
+import { useAuth, UserMenu } from '@/components/auth';
 import { useSessionHealth } from '@/hooks/use-session-health';
 
 // Note: GEMINI_API_KEY is no longer needed client-side.
@@ -74,9 +72,8 @@ function AppContent() {
   const geocodingLib = useMapsLibrary('geocoding');
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [viewProps, setViewProps] = useState(INITIAL_VIEW_PROPS);
-  const { user, handleSignOut } = useAuth();
-  const navigate = useNavigate();
-  const { showToast } = useToast();
+  // useAuth is used by UserMenu internally
+  useAuth();
 
   // Enable periodic session health checks (every 5 minutes)
   useSessionHealth();
@@ -227,13 +224,6 @@ function AppContent() {
     setViewProps(oldProps => ({ ...oldProps, ...props }));
   }, []);
 
-  // Handle sign out and redirect to landing
-  const handleSignOutClick = useCallback(async () => {
-    await handleSignOut();
-    showToast('Successfully signed out', 'success');
-    void navigate('/');
-  }, [handleSignOut, navigate, showToast]);
-
   return (
     <LiveAPIProvider
       map={map}
@@ -242,26 +232,17 @@ function AppContent() {
       geocoder={geocoder}
       padding={padding}
     >
-      {/* User menu button */}
-      <button
-        onClick={() => void handleSignOutClick()}
+      {/* User menu with avatar and dropdown */}
+      <div
         style={{
           position: 'fixed',
           top: '10px',
           right: '10px',
           zIndex: 9999,
-          padding: '8px 16px',
-          backgroundColor: 'var(--Green-600, #16a34a)',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontSize: '12px',
         }}
-        title="Sign out"
       >
-        {user?.email.split('@')[0] ?? 'User'} (Sign Out)
-      </button>
+        <UserMenu />
+      </div>
       <ErrorScreen />
       <Sidebar />
       {showPopUp && <PopUp onClose={handleClosePopUp} />}
