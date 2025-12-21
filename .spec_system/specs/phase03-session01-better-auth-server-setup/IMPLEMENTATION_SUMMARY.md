@@ -42,7 +42,7 @@ Established server-side authentication infrastructure for the Chat with Google M
 
 2. **Session cookie caching (5 min TTL)**: Balance between security (short cache) and performance (reduced DB queries). Sessions last 7 days with 5-minute cache validation.
 
-3. **Email/password first**: Implemented email/password authentication as the foundation before adding OAuth providers in Session 04.
+3. **Email/password authentication**: Implemented email/password authentication as the core authentication method.
 
 4. **Separate accounts/verifications tables**: Following Better Auth's schema design for OAuth provider linking and email verification tokens.
 
@@ -76,9 +76,9 @@ Items for future sessions:
 
 1. **Session 02**: React client integration with better-auth/react hooks
 2. **Session 03**: Protected routes and user-aware UI components
-3. **Session 04**: OAuth social providers (Google, GitHub)
-4. **Future**: Email verification flow implementation
-5. **Future**: Password reset functionality
+3. **Future**: Email verification flow implementation
+4. **Future**: Password reset functionality
+5. **Future**: Social OAuth providers (if needed)
 
 ---
 

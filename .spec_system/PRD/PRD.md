@@ -63,7 +63,8 @@ Every backend component must:
 | 00 | Developer Tooling & Quality Foundation | 5 | Complete |
 | 01 | Backend API Layer (Hono) | 4 | Complete |
 | 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Complete |
-| 03 | Authentication (Better Auth) | 4 | Not Started |
+| 03 | Authentication (Better Auth) | 3 | Complete |
+| 04 | Frontend Overhaul | 6 | Not Started |
 
 ## Phase 00: Developer Tooling & Quality Foundation
 
@@ -340,7 +341,6 @@ Implement user authentication using Better Auth, an open-source authentication l
 4. Create React auth client with hooks
 5. Implement sign-in/sign-up UI components
 6. Add protected routes and session management
-7. Configure social OAuth providers (optional)
 
 ### Auth Architecture
 
@@ -396,13 +396,6 @@ Use `/nextsession` to get recommendations for sessions to implement.
 5. Add loading states and error handling
 6. Test complete auth flow
 
-#### Session 4 (Optional): Social OAuth
-1. Configure Google OAuth provider
-2. Configure GitHub OAuth provider
-3. Add social login buttons
-4. Test OAuth flows
-5. Document adding additional providers
-
 ### Code Preview
 
 ```typescript
@@ -449,6 +442,326 @@ export const { useSession, signIn, signUp, signOut } = authClient;
 
 ---
 
+## Phase 04: Frontend Overhaul
+
+### Overview
+
+Modernize the frontend stack to achieve polished, production-grade visual appearance with smooth animations, consistent design system, and accessible components.
+
+### Current State vs Target State
+
+| Aspect | Current | Target |
+|--------|---------|--------|
+| **Styling** | Vanilla CSS with custom tokens in `src/index.css` | Tailwind CSS 4 with design tokens |
+| **Utilities** | Minimal | clsx + tailwind-merge via `cn()` helper |
+| **Components** | Minimal use of `@headlessui/react` | shadcn/ui (Radix primitives + Tailwind) |
+| **Icons** | Material Symbols via Google Fonts | Lucide React |
+| **Animations** | None | Framer Motion 12 |
+| **Theming** | Dark mode only | Dark/light mode toggle |
+
+### Why This Stack (Research Summary)
+
+| Technology | Benefit | Bundle Impact | Notes |
+|------------|---------|---------------|-------|
+| **Tailwind CSS 4** | Utility-first, consistent design | Tree-shaken | Industry standard |
+| **shadcn/ui** | Accessible Radix primitives | Copy-paste, no npm | Full control over components |
+| **Framer Motion** | Production animations | ~30KB | Best-in-class React animations |
+| **Lucide React** | Tree-shakeable icons | Per-icon | No external font dependency |
+| **next-themes** | Theme management | ~3KB | Works with Vite |
+
+### Objectives
+
+1. Replace vanilla CSS with Tailwind CSS 4 utilities
+2. Establish consistent className composition with `cn()` helper
+3. Add smooth animations and micro-interactions
+4. Replace custom components with accessible shadcn/ui primitives
+5. Migrate icons from Material Symbols to Lucide React
+6. Implement dark/light theme toggle
+
+### Frontend Architecture After Phase 04
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend Stack                            │
+├─────────────────────────────────────────────────────────────┤
+│   React 19 + TypeScript + Vite                              │
+├─────────────────────────────────────────────────────────────┤
+│   Styling Layer                                              │
+│   ├── Tailwind CSS 4 (utilities)                            │
+│   ├── CSS Variables (design tokens)                         │
+│   └── cn() helper (clsx + tailwind-merge)                   │
+├─────────────────────────────────────────────────────────────┤
+│   Component Layer                                            │
+│   ├── shadcn/ui (Radix primitives)                          │
+│   │   ├── Button, Dialog, Popover, Sheet                    │
+│   │   ├── ScrollArea, Tooltip, Avatar                       │
+│   │   └── DropdownMenu                                       │
+│   └── Custom components (using shadcn base)                 │
+├─────────────────────────────────────────────────────────────┤
+│   Animation Layer                                            │
+│   ├── Framer Motion (transitions, gestures)                 │
+│   └── AnimatePresence (exit animations)                     │
+├─────────────────────────────────────────────────────────────┤
+│   Icon Layer                                                 │
+│   └── Lucide React (tree-shakeable SVG icons)               │
+├─────────────────────────────────────────────────────────────┤
+│   Theme Layer                                                │
+│   ├── next-themes (provider)                                │
+│   └── Tailwind dark: variants                               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Sessions (To Be Defined)
+
+Use `/nextsession` to get recommendations for sessions to implement.
+
+### Implementation Steps
+
+#### Session 1: Tailwind CSS 4 Foundation
+
+**Objective**: Replace vanilla CSS with Tailwind utilities while preserving existing design tokens.
+
+**Tasks**:
+1. Install dependencies: `tailwindcss`, `@tailwindcss/postcss`, `postcss`
+2. Configure PostCSS (`postcss.config.js`)
+3. Create Tailwind config (`tailwind.config.ts`)
+   - Map existing CSS tokens (`--Neutral-*`, `--Blue-*`, etc.) to Tailwind theme
+   - Configure breakpoints (preserve `--breakpoint-md: 768px`)
+   - Set up dark mode strategy
+4. Update `src/index.css` with Tailwind directives (`@import "tailwindcss"`)
+5. Migrate leaf components first (buttons, badges)
+6. Progress to layout components (Sidebar, ControlTray)
+
+**Success Criteria**:
+- All new styles use Tailwind utilities
+- Existing components still render correctly
+- Build size remains reasonable
+
+#### Session 2: Utility Setup (clsx + tailwind-merge)
+
+**Objective**: Create consistent className composition pattern.
+
+**Tasks**:
+1. Install dependencies: `clsx`, `tailwind-merge`
+2. Create utility helper (`src/lib/utils.ts`):
+   ```typescript
+   import { clsx, type ClassValue } from 'clsx'
+   import { twMerge } from 'tailwind-merge'
+
+   export function cn(...inputs: ClassValue[]) {
+     return twMerge(clsx(inputs))
+   }
+   ```
+3. Replace any existing `classnames` usage with new `cn()` helper
+4. Remove `classnames` dependency if present
+
+**Success Criteria**:
+- Single utility for all className composition
+- No conflicts between Tailwind classes
+
+#### Session 3: Framer Motion Animations
+
+**Objective**: Add smooth animations and micro-interactions throughout the app.
+
+**Tasks**:
+1. Install Framer Motion: `npm install framer-motion`
+2. Create animation variants (`src/lib/animations.ts`):
+   ```typescript
+   export const fadeIn = {
+     initial: { opacity: 0 },
+     animate: { opacity: 1 },
+     exit: { opacity: 0 }
+   }
+
+   export const slideInLeft = {
+     initial: { x: -20, opacity: 0 },
+     animate: { x: 0, opacity: 1 },
+     exit: { x: -20, opacity: 0 }
+   }
+
+   export const scaleIn = {
+     initial: { scale: 0.95, opacity: 0 },
+     animate: { scale: 1, opacity: 1 },
+     exit: { scale: 0.95, opacity: 0 }
+   }
+   ```
+3. Animate key components:
+
+   | Component | Animation |
+   |-----------|-----------|
+   | Chat messages | Staggered fade-in from bottom |
+   | Sidebar | Slide in/out from right |
+   | PopUp (welcome) | Scale + fade with backdrop blur |
+   | ControlTray buttons | Hover scale, press feedback |
+   | ErrorScreen | Fade in with shake on error |
+   | Markers (Map3D) | Bounce on appear |
+
+4. Add `AnimatePresence` wrapper for exit animations
+5. Implement micro-interactions (button hover/active, input focus, loading spinners)
+
+**Success Criteria**:
+- All major UI transitions are animated
+- Animations feel snappy (< 300ms for most)
+- No jank or layout shift during animations
+
+#### Session 4: shadcn/ui Components
+
+**Objective**: Replace custom components with accessible, polished shadcn/ui primitives.
+
+**Tasks**:
+1. Initialize shadcn/ui for Vite: `npx shadcn@latest init`
+   - Select: TypeScript, Tailwind CSS, `src/components/ui` path
+   - Configure `components.json`
+2. Add base components:
+   ```bash
+   npx shadcn@latest add button dialog popover scroll-area sheet tooltip avatar dropdown-menu
+   ```
+3. Migrate existing components:
+
+   | Current | Replace With |
+   |---------|--------------|
+   | `PopUp` (welcome modal) | `Dialog` |
+   | `Sidebar` | `Sheet` (slide-over panel) |
+   | `SourcesPopover` | `Popover` |
+   | Custom buttons | `Button` variants |
+   | Scrollable areas | `ScrollArea` |
+
+4. Delete legacy CSS files (`PopUp.css`, `sources-popover.css`)
+5. Customize theme in `src/components/ui/*.tsx` to match brand
+
+**Success Criteria**:
+- All interactive components use Radix primitives
+- Keyboard navigation works throughout
+- Screen reader accessible
+
+#### Session 5: Lucide React Icons
+
+**Objective**: Replace Material Symbols with consistent, customizable Lucide icons.
+
+**Tasks**:
+1. Install Lucide React: `npm install lucide-react`
+2. Create icon mapping and update components:
+   ```tsx
+   // Before
+   <span className="material-symbols-outlined">settings</span>
+
+   // After
+   import { Settings } from 'lucide-react'
+   <Settings className="size-5" />
+   ```
+3. Icon mapping reference:
+
+   | Material Symbol | Lucide Equivalent |
+   |-----------------|-------------------|
+   | `settings` | `Settings` |
+   | `mic` | `Mic` |
+   | `mic_off` | `MicOff` |
+   | `send` | `Send` |
+   | `close` | `X` |
+   | `menu` | `Menu` |
+   | `place` | `MapPin` |
+   | `error` | `AlertCircle` |
+
+4. Remove Material Symbols font link from `index.html`
+5. Remove any `.material-symbols-*` CSS
+
+**Success Criteria**:
+- All icons use Lucide
+- Consistent sizing via Tailwind (`size-*`)
+- No external font dependencies for icons
+
+#### Session 6: Theme System
+
+**Objective**: Add dark/light mode toggle with system preference detection.
+
+**Tasks**:
+1. Install next-themes: `npm install next-themes`
+2. Create theme provider (`src/providers/theme-provider.tsx`):
+   ```tsx
+   import { ThemeProvider as NextThemesProvider } from 'next-themes'
+
+   export function ThemeProvider({ children }: { children: React.ReactNode }) {
+     return (
+       <NextThemesProvider
+         attribute="class"
+         defaultTheme="dark"
+         enableSystem
+         disableTransitionOnChange
+       >
+         {children}
+       </NextThemesProvider>
+     )
+   }
+   ```
+3. Update Tailwind config: `darkMode: 'class'`
+4. Add theme toggle component (using shadcn/ui `DropdownMenu` or `Button`)
+   - Icons: `Sun`, `Moon`, `Monitor` (system)
+5. Update color usage with `dark:` variants
+6. Ensure sufficient contrast in both modes
+
+**Success Criteria**:
+- Theme persists across sessions
+- Respects system preference on first visit
+- Smooth transition between themes (or instant if preferred)
+
+### Component Migration Checklist
+
+| Component | Tailwind | Framer | shadcn | Lucide | Theme |
+|-----------|:--------:|:------:|:------:|:------:|:-----:|
+| `App.tsx` | [ ] | [ ] | - | - | [ ] |
+| `StreamingConsole` | [ ] | [ ] | [ ] | [ ] | [ ] |
+| `ControlTray` | [ ] | [ ] | [ ] | [ ] | [ ] |
+| `Sidebar` | [ ] | [ ] | [ ] | [ ] | [ ] |
+| `PopUp` | [ ] | [ ] | [ ] | [ ] | [ ] |
+| `ErrorScreen` | [ ] | [ ] | - | [ ] | [ ] |
+| `Map3D` | [ ] | [ ] | - | - | [ ] |
+| `SourcesPopover` | [ ] | [ ] | [ ] | - | [ ] |
+
+### Dependencies Summary
+
+**Add**:
+```json
+{
+  "tailwindcss": "^4.0.0",
+  "@tailwindcss/postcss": "^4.0.0",
+  "postcss": "^8.x",
+  "clsx": "^2.x",
+  "tailwind-merge": "^2.x",
+  "framer-motion": "^12.x",
+  "lucide-react": "^0.x",
+  "next-themes": "^0.x"
+}
+```
+
+**Remove**:
+```json
+{
+  "classnames": "remove after Session 2"
+}
+```
+
+**shadcn/ui** (copy-paste, not npm): Components copied to `src/components/ui/`
+
+### Risk Mitigation
+
+| Risk | Mitigation |
+|------|------------|
+| Large migration scope | Migrate incrementally, component by component |
+| Breaking existing styles | Keep old CSS until component fully migrated |
+| Bundle size increase | Tree-shake unused components, lazy load where appropriate |
+| Animation performance | Use `transform` and `opacity` only, avoid layout animations |
+| Accessibility regression | Test with keyboard/screen reader after each shadcn migration |
+
+### References
+
+- [Tailwind CSS 4 Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com/docs)
+- [Framer Motion Documentation](https://www.framer.com/motion/)
+- [Lucide Icons](https://lucide.dev/icons/)
+- [next-themes](https://github.com/pacocoursey/next-themes)
+
+---
+
 ## Technical Stack
 
 ### Frontend (Existing)
@@ -473,6 +786,13 @@ export const { useSession, signIn, signUp, signOut } = authClient;
 ### Authentication (Phase 03)
 - Better Auth (open-source, vendor-neutral)
 - better-auth/react (React client hooks)
+
+### Frontend Modernization (Phase 04)
+- Tailwind CSS 4 (utility-first styling)
+- shadcn/ui (accessible Radix primitives)
+- Framer Motion 12 (animations)
+- Lucide React (tree-shakeable icons)
+- next-themes (dark/light mode)
 
 ## Success Criteria
 
@@ -504,19 +824,30 @@ export const { useSession, signIn, signUp, signOut } = authClient;
 - [x] Documentation for production PostgreSQL deployment
 
 ### Phase 03: Authentication
-- [ ] Better Auth configured with Drizzle adapter
-- [ ] Auth routes mounted in Hono (`/api/auth/*`)
-- [ ] Sign-up flow working (email/password)
-- [ ] Sign-in flow working (email/password)
-- [ ] Session management with secure cookies
-- [ ] React client hooks working (`useSession`, `useUser`)
-- [ ] Protected routes redirecting unauthenticated users
-- [ ] User can view profile and log out
-- [ ] Environment variables properly configured for dev/prod
+- [x] Better Auth configured with Drizzle adapter
+- [x] Auth routes mounted in Hono (`/api/auth/*`)
+- [x] Sign-up flow working (email/password)
+- [x] Sign-in flow working (email/password)
+- [x] Session management with secure cookies
+- [x] React client hooks working (`useSession`, `useUser`)
+- [x] Protected routes redirecting unauthenticated users
+- [x] User can view profile and log out
+- [x] Environment variables properly configured for dev/prod
+
+### Phase 04: Frontend Overhaul
+- [ ] All components use Tailwind utilities (no vanilla CSS)
+- [ ] Consistent className composition via `cn()`
+- [ ] Key UI transitions animated with Framer Motion
+- [ ] Interactive components use shadcn/ui (Radix)
+- [ ] Icons from Lucide React (no external font dependencies)
+- [ ] Dark/light theme toggle functional
+- [ ] Lighthouse accessibility score >= 90
+- [ ] No TypeScript errors
+- [ ] All existing tests pass
 
 ## Open Source & Vendor Neutrality Checklist
 
-The entire backend stack is **100% open source** with no vendor dependencies:
+The entire stack is **100% open source** with no vendor dependencies:
 
 | Component | License | Self-Hostable |
 |-----------|---------|---------------|
@@ -524,12 +855,18 @@ The entire backend stack is **100% open source** with no vendor dependencies:
 | PostgreSQL | PostgreSQL License (OSI) | ✅ |
 | Drizzle ORM | Apache 2.0 | ✅ |
 | Better Auth | MIT | ✅ |
+| Tailwind CSS | MIT | ✅ |
+| shadcn/ui | MIT | ✅ |
+| Framer Motion | MIT | ✅ |
+| Lucide React | ISC | ✅ |
+| next-themes | MIT | ✅ |
 
 **Verification Criteria:**
 
-- [ ] **Backend**: Hono code runs on Vercel, Cloudflare, AWS, Deno, Bun, Node.js
-- [ ] **Database**: PostgreSQL runs via Docker, deployable anywhere
-- [ ] **ORM**: Drizzle schema portable across any PostgreSQL instance
-- [ ] **Auth**: Better Auth is self-hostable, no external service dependency
-- [ ] **Zero SaaS Dependencies**: No required third-party services
-- [ ] **Deployment**: Documentation exists for at least 2 deployment targets
+- [x] **Backend**: Hono code runs on Vercel, Cloudflare, AWS, Deno, Bun, Node.js
+- [x] **Database**: PostgreSQL runs via Docker, deployable anywhere
+- [x] **ORM**: Drizzle schema portable across any PostgreSQL instance
+- [x] **Auth**: Better Auth is self-hostable, no external service dependency
+- [ ] **Frontend**: All UI libraries are open source with no vendor lock-in
+- [x] **Zero SaaS Dependencies**: No required third-party services
+- [x] **Deployment**: Documentation exists for at least 2 deployment targets

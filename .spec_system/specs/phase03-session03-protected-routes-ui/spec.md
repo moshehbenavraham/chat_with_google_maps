@@ -193,7 +193,6 @@ All output files must use ASCII-only characters (0-127). Use HTML entities or es
 
 ### Other Sessions
 - **Depends on**: `phase03-session02-react-client-integration`
-- **Depended by**: `phase03-session04-social-oauth` (social buttons may go in AuthModal)
 
 ---
 

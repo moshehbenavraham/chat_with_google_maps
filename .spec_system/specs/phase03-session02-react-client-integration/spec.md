@@ -13,7 +13,7 @@ This session implements the React client-side integration for Better Auth, conne
 
 The goal is to create a seamless authentication experience for users by building an auth client, context provider, and sign-in/sign-up form components. Users will be able to create accounts, sign in with their credentials, and maintain authenticated sessions. This forms the foundation for protected routes and user-specific features in subsequent sessions.
 
-This session bridges the gap between backend auth infrastructure and user-facing functionality. Without this integration, users cannot actually authenticate despite the backend being ready. Completing this session enables Session 03 (protected routes) and Session 04 (social OAuth) to proceed.
+This session bridges the gap between backend auth infrastructure and user-facing functionality. Without this integration, users cannot actually authenticate despite the backend being ready. Completing this session enables Session 03 (protected routes).
 
 ---
 
@@ -59,7 +59,7 @@ This session bridges the gap between backend auth infrastructure and user-facing
 ### Out of Scope (Deferred)
 - Protected routes - *Reason: Session 03 scope*
 - User profile/menu - *Reason: Session 03 scope*
-- Social OAuth buttons - *Reason: Session 04 scope*
+- Social OAuth buttons - *Reason: Future enhancement*
 - Password reset flow - *Reason: Future enhancement*
 - Email verification UI - *Reason: Future enhancement*
 - Remember me checkbox - *Reason: Future enhancement*

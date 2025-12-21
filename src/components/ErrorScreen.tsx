@@ -43,31 +43,18 @@ export default function ErrorScreen() {
   }
 
   if (!error) {
-    return <div style={{ display: 'none' }} />;
+    return <div className="hidden" />;
   }
 
   return (
-    <div className="error-screen">
-      <div
-        style={{
-          fontSize: 48,
-        }}
-      >
-        :(
-      </div>
-      <div
-        className="error-message-container"
-        style={{
-          fontSize: 22,
-          lineHeight: 1.2,
-          opacity: 0.5,
-        }}
-      >
+    <div className="flex flex-col items-center justify-center h-dvh w-full bg-black text-white gap-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99991]">
+      <div className="text-5xl">:(</div>
+      <div className="w-full text-center max-w-[650px] px-2 text-[22px] leading-tight opacity-50">
         {errorMessage}
       </div>
       {tryAgainOption ? (
         <button
-          className="close-button"
+          className="text-white text-2xl cursor-pointer"
           onClick={() => {
             setError(null);
           }}
@@ -76,14 +63,7 @@ export default function ErrorScreen() {
         </button>
       ) : null}
       {rawMessage ? (
-        <div
-          className="error-raw-message-container"
-          style={{
-            fontSize: 15,
-            lineHeight: 1.2,
-            opacity: 0.4,
-          }}
-        >
+        <div className="w-full text-center max-w-[650px] px-2 text-[15px] leading-tight opacity-40">
           {rawMessage}
         </div>
       ) : null}

@@ -32,12 +32,15 @@ cp .env.example .env
 # Edit .env with your API keys
 ```
 
-### 4. Required API Keys
+### 4. Required Environment Variables
 
 | Variable              | Where to Get                                                                          | Description                |
 | --------------------- | ------------------------------------------------------------------------------------- | -------------------------- |
 | `GEMINI_API_KEY`      | [Google AI Studio](https://aistudio.google.com/app/apikey)                            | Powers voice conversations |
 | `GOOGLE_MAPS_API_KEY` | [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/credentials) | Map rendering and APIs     |
+| `DATABASE_URL`        | See [DATABASE.md](./DATABASE.md)                                                      | PostgreSQL connection      |
+| `BETTER_AUTH_SECRET`  | Generate: `openssl rand -base64 32`                                                   | Auth secret (min 32 chars) |
+| `BETTER_AUTH_URL`     | `http://localhost:5173` for dev                                                       | Frontend URL for auth      |
 
 ### 5. Enable Google Maps APIs
 
@@ -49,18 +52,26 @@ In Google Cloud Console, enable:
 - Maps Elevation API
 - Maps Grounding API
 
-### 6. Start Development
+### 6. Start Database
+
+```bash
+npm run db:start
+npm run db:migrate
+```
+
+### 7. Start Development
 
 ```bash
 npm run dev
 ```
 
-### 7. Verify Setup
+### 8. Verify Setup
 
 - [ ] App runs at `http://localhost:3003`
 - [ ] Tests pass: `npm run test`
 - [ ] Quality checks pass: `npm run quality`
 - [ ] 3D map loads and responds to voice
+- [ ] Can sign up and sign in
 
 ## Common Issues
 
@@ -80,4 +91,5 @@ Verify `GEMINI_API_KEY` in `.env` and that microphone permissions are granted in
 
 - [Development Guide](./development.md) - Dev scripts and workflow
 - [Architecture](./ARCHITECTURE.md) - System design
+- [Authentication](./AUTH.md) - Auth setup and usage
 - [Contributing](../CONTRIBUTING.md) - Contribution guidelines

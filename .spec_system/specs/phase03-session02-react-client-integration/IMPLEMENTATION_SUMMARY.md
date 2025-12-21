@@ -82,9 +82,9 @@ Items for future sessions:
 
 1. **Protected Routes (Session 03)**: Route guards and redirect logic for authenticated routes
 2. **User Profile UI (Session 03)**: Profile menu and account management
-3. **Social OAuth (Session 04)**: Google/GitHub OAuth provider integration
-4. **Password Reset**: Email-based password recovery flow
-5. **Email Verification**: Confirmation email flow for new accounts
+3. **Password Reset**: Email-based password recovery flow
+4. **Email Verification**: Confirmation email flow for new accounts
+5. **Social OAuth**: Google/GitHub OAuth providers (if needed)
 
 ---
 

@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 body {
   margin: 0;
   font-family:
@@ -321,27 +323,20 @@ gmp-place-details-compact {
 }
 
 .action-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply flex items-center justify-center;
+  @apply text-xl leading-7 lowercase cursor-pointer select-none;
+  @apply size-12 rounded-[18px];
+  @apply transition-all duration-200 ease-in-out;
   background: var(--Neutral-20);
   color: var(--Neutral-60);
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  text-transform: lowercase;
-  cursor: pointer;
   animation: opacity-pulse 3s ease-in infinite;
-  transition: all 0.2s ease-in-out;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0);
-  user-select: none;
+  border: 1px solid transparent;
 }
 
 .action-button:focus {
-  border: 2px solid var(--Neutral-20);
-  outline: 2px solid var(--Neutral-80);
+  @apply border-2 outline-2;
+  border-color: var(--Neutral-20);
+  outline-color: var(--Neutral-80);
 }
 
 .action-button.outlined {
@@ -350,11 +345,11 @@ gmp-place-details-compact {
 }
 
 .action-button .no-action {
-  pointer-events: none;
+  @apply pointer-events-none;
 }
 
 .action-button:hover {
-  background: rgba(0, 0, 0, 0);
+  @apply bg-transparent;
   border: 1px solid var(--Neutral-20);
 }
 
@@ -441,76 +436,48 @@ gmp-place-details-compact {
 }
 
 .control-tray {
-  z-index: 12;
-  width: 100%;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
+  @apply z-[12] w-full shrink-0 flex justify-center;
 }
 
 .control-tray .disabled .action-button,
 .control-tray .action-button.disabled {
-  background: rgba(0, 0, 0, 0);
+  @apply bg-transparent;
   border: 1px solid var(--Neutral-30, #404547);
   color: var(--Neutral-30);
 }
 
 .actions-nav {
+  @apply flex gap-3 items-center overflow-clip p-2.5;
+  @apply rounded-[27px] transition-all duration-[600ms] ease-in;
   background: var(--Neutral-5);
   border: 1px solid var(--Neutral-30);
-  border-radius: 27px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  overflow: clip;
-  padding: 10px;
-  transition: all 0.6s ease-in;
 }
 
 .actions-nav > * {
-  display: flex;
-  align-items: center;
+  @apply flex items-center;
 }
 
 .prompt-form {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  /* background-color: var(--Neutral-20); */
-  /* border-radius: 18px; */
-  height: 48px;
-  padding: 0 8px 0 16px;
-  margin: 0 4px;
+  @apply flex flex-row items-center h-12 pr-2 pl-4 mx-1;
 }
 
 .prompt-input {
-  flex-grow: 1;
-  height: 100%;
-  font-size: 16px;
-  padding-right: 8px;
+  @apply grow h-full text-base pr-2;
 }
 
 .prompt-input:disabled {
-  cursor: not-allowed;
+  @apply cursor-not-allowed;
 }
 
 .send-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply flex items-center justify-center;
+  @apply text-xl leading-7 lowercase cursor-pointer select-none;
+  @apply size-12 rounded-[18px];
+  @apply transition-all duration-200 ease-in-out;
   background: var(--Neutral-20);
   color: var(--Neutral-60);
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  text-transform: lowercase;
-  cursor: pointer;
   animation: opacity-pulse 3s ease-in infinite;
-  transition: all 0.2s ease-in-out;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0);
-  user-select: none;
+  border: 1px solid transparent;
 }
 
 .send-button:hover:not(:disabled) {
@@ -518,11 +485,11 @@ gmp-place-details-compact {
 }
 
 .send-button .icon {
-  font-size: 24px;
+  @apply text-2xl;
 }
 
 .keyboard-toggle-button {
-  display: none;
+  @apply hidden;
 }
 
 @keyframes opacity-pulse {

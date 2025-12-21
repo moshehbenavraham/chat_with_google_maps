@@ -15,15 +15,17 @@ Browser                           Backend                      External Services
 |  - Voice UI      |-------->|  /api/health     |-------->|  - Gemini API    |
 |  - 3D Map        |         |  /api/gemini/*   |         |  - Maps API      |
 |  - Chat Console  |<--------|  /api/maps/*     |<--------|                  |
-+------------------+         |  /api/db/*       |         +------------------+
-     :3003                   +--------+---------+
-                                      |
+|  - Auth UI       |         |  /api/auth/*     |         +------------------+
++------------------+         +--------+---------+
+     :3003                            |
                                       | SQL
                                       v
                              +------------------+
                              |  PostgreSQL 16   |
                              |  - users         |
                              |  - sessions      |
+                             |  - accounts      |
+                             |  - verifications |
                              +------------------+
                                    :5438
 ```
@@ -49,6 +51,11 @@ Browser                           Backend                      External Services
 - **PostgreSQL 16** - Relational database (Docker for local, managed for production)
 - **Drizzle ORM** - Type-safe database access with SQL-like syntax
 - **postgres-js** - PostgreSQL driver for Node.js
+
+**Authentication**
+
+- **Better Auth** - Open-source, vendor-neutral auth library
+- **better-auth/react** - React hooks for session management
 
 ## Project Structure
 
@@ -175,7 +182,7 @@ The application uses PostgreSQL for persistent storage with Drizzle ORM for type
 - PostgreSQL is fully open source and self-hostable
 - Drizzle provides type-safe queries with SQL-like syntax
 - Same schema works in development (Docker) and production (managed)
-- Prepared for Better Auth integration in Phase 03
+- Integrated with Better Auth for authentication
 
 **Database Routes:**
 
@@ -186,12 +193,50 @@ The application uses PostgreSQL for persistent storage with Drizzle ORM for type
 
 **Schema Design:**
 
-Tables are designed for future Better Auth integration:
+Tables managed by Better Auth:
 
 - `users` - User accounts (email, name, verification status)
 - `sessions` - Active user sessions with expiration
+- `accounts` - Authentication provider accounts
+- `verifications` - Email verification tokens
 
 See [SCHEMA.md](./SCHEMA.md) for detailed table definitions.
+
+### Authentication (Better Auth)
+
+The application uses Better Auth for vendor-neutral authentication.
+
+**Why Better Auth?**
+
+- Open source (MIT license), no vendor lock-in
+- No per-user pricing, self-hostable
+- Native Hono + Drizzle integration
+- Cookie-based session management
+
+**Auth Routes:**
+
+| Route                     | Method | Purpose                |
+| ------------------------- | ------ | ---------------------- |
+| `/api/auth/get-session`   | GET    | Get current session    |
+| `/api/auth/sign-up/email` | POST   | Email/password sign up |
+| `/api/auth/sign-in/email` | POST   | Email/password sign in |
+| `/api/auth/sign-out`      | POST   | End session            |
+
+**React Integration:**
+
+```typescript
+import { authClient } from '@/lib/auth-client';
+
+// Hooks
+const { data: session } = authClient.useSession();
+
+// Methods
+await authClient.signIn.email({ email, password });
+await authClient.signUp.email({ email, password, name });
+await authClient.signOut();
+```
+
+See [AUTH.md](./AUTH.md) for detailed authentication documentation.
 
 **Local Development:**
 
@@ -305,4 +350,5 @@ The app uses **Zustand** for global state (`src/stores/index.ts`):
 - [Customization Guide](./CUSTOMIZATION.md) - Extending the application
 - [Database Setup](./DATABASE.md) - Local PostgreSQL setup
 - [Database Deployment](./DEPLOYMENT_DATABASE.md) - Production database options
+- [Authentication](./AUTH.md) - Better Auth setup and usage
 - [Schema Reference](./SCHEMA.md) - Table definitions and conventions

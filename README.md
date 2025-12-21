@@ -51,8 +51,9 @@ Enable these in your Google Cloud Console:
 | --------------------- | -------- | -------------------------------------- |
 | `GEMINI_API_KEY`      | Yes      | Gemini API key for voice conversations |
 | `GOOGLE_MAPS_API_KEY` | Yes      | Google Maps Platform API key           |
-| `CLIENT_ID`           | No       | OAuth 2.0 Client ID                    |
-| `CLIENT_SECRET`       | No       | OAuth 2.0 Client Secret                |
+| `DATABASE_URL`        | Yes      | PostgreSQL connection string           |
+| `BETTER_AUTH_SECRET`  | Yes      | Auth secret key (min 32 chars)         |
+| `BETTER_AUTH_URL`     | Yes      | Frontend URL for auth callbacks        |
 
 See [.env.example](.env.example) for detailed configuration.
 
@@ -66,6 +67,7 @@ See [.env.example](.env.example) for detailed configuration.
 | [Vercel Deployment](./docs/VERCEL_DEPLOYMENT.md)     | Production hosting on Vercel           |
 | [Database Setup](./docs/DATABASE.md)                 | Local PostgreSQL with Docker           |
 | [Database Deployment](./docs/DEPLOYMENT_DATABASE.md) | Production database options            |
+| [Authentication](./docs/AUTH.md)                     | Better Auth setup and usage            |
 | [Architecture](./docs/ARCHITECTURE.md)               | Application structure and key concepts |
 | [Customization](./docs/CUSTOMIZATION.md)             | Creating personas and adding tools     |
 | [Prompts](./docs/PROMPTS.md)                         | System prompt management               |
@@ -111,6 +113,7 @@ See [PRD](.spec_system/PRD/PRD.md) for current progress and roadmap.
 - Hono (vendor-neutral web framework)
 - PostgreSQL 16 (database)
 - Drizzle ORM (type-safe database access)
+- Better Auth (open-source authentication)
 
 ## Attribution
 

@@ -16,6 +16,8 @@
 | `GEMINI_API_KEY`      | Gemini API key for voice conversations |
 | `GOOGLE_MAPS_API_KEY` | Google Maps Platform API key           |
 | `DATABASE_URL`        | PostgreSQL connection string           |
+| `BETTER_AUTH_SECRET`  | Auth secret key (min 32 chars)         |
+| `BETTER_AUTH_URL`     | Frontend URL for auth callbacks        |
 
 ### Optional
 
@@ -26,8 +28,12 @@
 | `POSTGRES_USER`     | Local database username               |
 | `POSTGRES_PASSWORD` | Local database password               |
 | `POSTGRES_DB`       | Local database name                   |
-| `CLIENT_ID`         | OAuth 2.0 Client ID (future auth)     |
-| `CLIENT_SECRET`     | OAuth 2.0 Client Secret (future auth) |
+
+### Generating Auth Secret
+
+```bash
+openssl rand -base64 32
+```
 
 ## Configuration Differences
 

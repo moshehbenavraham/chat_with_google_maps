@@ -12,6 +12,8 @@
 | Service         | Port | URL                   |
 | --------------- | ---- | --------------------- |
 | Vite Dev Server | 3003 | http://localhost:3003 |
+| API Server      | 3011 | http://localhost:3011 |
+| PostgreSQL      | 5438 | localhost:5438        |
 
 ## Dev Scripts
 
@@ -29,15 +31,20 @@
 | `npm run test:watch`    | Run tests in watch mode                                         |
 | `npm run test:coverage` | Run tests with coverage report                                  |
 | `npm run quality`       | Run all quality checks (typecheck + lint + format:check + test) |
+| `npm run db:start`      | Start PostgreSQL container                                      |
+| `npm run db:stop`       | Stop PostgreSQL container                                       |
+| `npm run db:migrate`    | Apply database migrations                                       |
+| `npm run db:reset`      | Reset database (deletes data)                                   |
 
 ## Development Workflow
 
 1. Pull latest `main`
-2. Create feature branch: `git checkout -b feature/your-feature`
-3. Make changes
-4. Run quality checks: `npm run quality`
-5. Commit (pre-commit hooks run automatically)
-6. Open PR
+2. Start database: `npm run db:start`
+3. Create feature branch: `git checkout -b feature/your-feature`
+4. Make changes
+5. Run quality checks: `npm run quality`
+6. Commit (pre-commit hooks run automatically)
+7. Open PR
 
 ## Testing
 

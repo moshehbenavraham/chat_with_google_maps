@@ -8,7 +8,6 @@
  */
 
 import React from 'react';
-import './Avatar.css';
 
 /**
  * Props for Avatar component
@@ -53,6 +52,13 @@ function getInitials(user: AvatarProps['user']): string {
   return user.email.charAt(0).toUpperCase();
 }
 
+/** Size variant classes */
+const sizeClasses = {
+  sm: 'size-6 text-xs',
+  md: 'size-8 text-sm',
+  lg: 'size-10 text-base',
+} as const;
+
 /**
  * Avatar Component
  *
@@ -67,20 +73,17 @@ function getInitials(user: AvatarProps['user']): string {
 export function Avatar({ user, size = 'md', className = '' }: AvatarProps) {
   const initials = getInitials(user);
   const bgColor = getColorFromEmail(user.email);
-  const hasImage = user.image && user.image.length > 0;
-
-  const sizeClass = `avatar-${size}`;
 
   return (
     <div
-      className={`avatar ${sizeClass} ${className}`.trim()}
-      style={hasImage ? undefined : { backgroundColor: bgColor }}
+      className={`inline-flex items-center justify-center rounded-full overflow-hidden shrink-0 select-none ${sizeClasses[size]} ${className}`.trim()}
+      style={user.image ? undefined : { backgroundColor: bgColor }}
       aria-label={`Avatar for ${user.name ?? user.email}`}
     >
-      {hasImage ? (
-        <img src={user.image!} alt={user.name ?? user.email} className="avatar-image" />
+      {user.image ? (
+        <img src={user.image} alt={user.name ?? user.email} className="size-full object-cover" />
       ) : (
-        <span className="avatar-initials">{initials}</span>
+        <span className="text-white font-semibold leading-none uppercase">{initials}</span>
       )}
     </div>
   );

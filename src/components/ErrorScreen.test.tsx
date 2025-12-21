@@ -40,7 +40,7 @@ describe('ErrorScreen', () => {
     const { container } = render(<ErrorScreen />);
 
     // Component returns a hidden div when no error
-    const hiddenDiv = container.querySelector('div[style*="display: none"]');
+    const hiddenDiv = container.querySelector('div.hidden');
     expect(hiddenDiv).toBeInTheDocument();
   });
 

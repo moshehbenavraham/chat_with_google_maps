@@ -90,7 +90,7 @@ No new tests were added (UI components - manual testing preferred per spec).
 ## Future Considerations
 
 Items for future sessions:
-1. **Social OAuth buttons**: Session 04 may add Google/GitHub buttons to AuthModal
+1. **Social OAuth buttons**: Could add Google/GitHub buttons to AuthModal if needed
 2. **Profile editing**: Could extend UserMenu with profile link
 3. **Avatar image upload**: Currently supports image URL, upload could be added
 4. **Theme support**: CSS could be extended for dark mode

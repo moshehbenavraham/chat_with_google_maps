@@ -65,7 +65,7 @@ By the end of this session, the API server will expose fully functional auth end
 - React client integration - *Reason: Session 02 deliverable*
 - Sign-in/sign-up UI components - *Reason: Session 02 deliverable*
 - Protected routes and auth guards - *Reason: Session 03 deliverable*
-- OAuth social providers (Google, GitHub) - *Reason: Session 04 deliverable*
+- OAuth social providers (Google, GitHub) - *Reason: Future enhancement*
 - Email verification flow - *Reason: Future enhancement*
 - Password reset functionality - *Reason: Future enhancement*
 
@@ -228,7 +228,6 @@ All output files must use ASCII-only characters (0-127). Avoid smart quotes, em-
 - **Depended by**:
   - `phase03-session02-react-client-integration` (needs auth server)
   - `phase03-session03-protected-routes-ui` (needs auth server)
-  - `phase03-session04-social-oauth` (needs auth server)
 
 ---
 
