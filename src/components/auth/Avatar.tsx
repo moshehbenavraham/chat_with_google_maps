@@ -3,11 +3,14 @@
  *
  * Displays user avatar with initials fallback.
  * Shows first letter of name (or email if no name) on a colored background.
+ * Uses shadcn/ui Avatar primitives internally.
  *
  * @module src/components/auth/Avatar
  */
 
 import React from 'react';
+import { Avatar as ShadcnAvatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 /**
  * Props for Avatar component
@@ -54,9 +57,9 @@ function getInitials(user: AvatarProps['user']): string {
 
 /** Size variant classes */
 const sizeClasses = {
-  sm: 'size-6 text-xs',
-  md: 'size-8 text-sm',
-  lg: 'size-10 text-base',
+  sm: 'h-6 w-6 text-xs',
+  md: 'h-8 w-8 text-sm',
+  lg: 'h-10 w-10 text-base',
 } as const;
 
 /**
@@ -75,17 +78,20 @@ export function Avatar({ user, size = 'md', className = '' }: AvatarProps) {
   const bgColor = getColorFromEmail(user.email);
 
   return (
-    <div
-      className={`inline-flex items-center justify-center rounded-full overflow-hidden shrink-0 select-none ${sizeClasses[size]} ${className}`.trim()}
-      style={user.image ? undefined : { backgroundColor: bgColor }}
+    <ShadcnAvatar
+      className={cn(sizeClasses[size], className)}
       aria-label={`Avatar for ${user.name ?? user.email}`}
     >
-      {user.image ? (
-        <img src={user.image} alt={user.name ?? user.email} className="size-full object-cover" />
-      ) : (
-        <span className="text-white font-semibold leading-none uppercase">{initials}</span>
+      {user.image && (
+        <AvatarImage src={user.image} alt={user.name ?? user.email} className="object-cover" />
       )}
-    </div>
+      <AvatarFallback
+        style={{ backgroundColor: bgColor }}
+        className="text-white font-semibold uppercase"
+      >
+        {initials}
+      </AvatarFallback>
+    </ShadcnAvatar>
   );
 }
 

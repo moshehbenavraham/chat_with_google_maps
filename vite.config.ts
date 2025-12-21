@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
             // Google/Maps related libraries
             'vendor-google': ['@google/genai', '@vis.gl/react-google-maps'],
             // UI and utility libraries
-            'vendor-ui': ['react-markdown', 'remark-gfm', '@headlessui/react', 'lodash', 'zustand'],
+            'vendor-ui': ['react-markdown', 'remark-gfm', 'lodash', 'zustand'],
           },
         },
       },

@@ -1,5 +1,32 @@
 @import 'tailwindcss';
 
+/* shadcn/ui base layer - mapped to existing design tokens */
+@layer base {
+  :root {
+    /* shadcn/ui theme tokens mapped to existing CSS variables */
+    --background: var(--Neutral-00);
+    --foreground: var(--text);
+    --card: var(--Neutral-10);
+    --card-foreground: var(--Neutral-90);
+    --popover: var(--Neutral-10);
+    --popover-foreground: var(--Neutral-90);
+    --primary: var(--Blue-500);
+    --primary-foreground: #ffffff;
+    --secondary: var(--Neutral-20);
+    --secondary-foreground: var(--Neutral-90);
+    --muted: var(--Neutral-20);
+    --muted-foreground: var(--Neutral-60);
+    --accent: var(--Neutral-20);
+    --accent-foreground: var(--Neutral-90);
+    --destructive: var(--Red-500);
+    --destructive-foreground: #ffffff;
+    --border: var(--Neutral-20);
+    --input: var(--Neutral-20);
+    --ring: var(--Blue-500);
+    --radius: 0.5rem;
+  }
+}
+
 body {
   margin: 0;
   font-family:

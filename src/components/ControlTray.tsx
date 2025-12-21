@@ -25,6 +25,7 @@ import { AudioRecorder } from '@/lib/audio/audio-recorder';
 import { useLogStore, useUI, useSettings } from '@/stores';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import { buttonTap } from '@/lib/animations';
+import { Button } from '@/components/ui/button';
 
 // Hook to detect screen size for responsive component rendering
 const useMediaQuery = (query: string) => {
@@ -235,14 +236,16 @@ function ControlTray({ trayRef }: ControlTrayProps) {
               aria-label="Text prompt"
               disabled={!connected}
             />
-            <button
+            <Button
               type="submit"
+              variant="ghost"
+              size="icon"
               className="send-button"
               disabled={!textPrompt.trim() || !connected}
               aria-label="Send message"
             >
               <span className="icon">send</span>
-            </button>
+            </Button>
           </form>
         )}
         <motion.button

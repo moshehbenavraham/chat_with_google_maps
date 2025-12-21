@@ -19,7 +19,6 @@
  */
 
 import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
 
 import ControlTray from '@/components/ControlTray';
 import ErrorScreen from '@/components/ErrorScreen';
@@ -246,7 +245,7 @@ function AppContent() {
       </div>
       <ErrorScreen />
       <Sidebar />
-      <AnimatePresence>{showPopUp && <PopUp onClose={handleClosePopUp} />}</AnimatePresence>
+      <PopUp open={showPopUp} onClose={handleClosePopUp} />
       <div className="streaming-console">
         <div className="console-panel" ref={consolePanelRef}>
           <StreamingConsole />

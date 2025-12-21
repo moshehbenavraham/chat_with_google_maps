@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React, { useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { useSettings, useUI, useLogStore, useTools, useMapStore, personas } from '@/stores';
-import { cn } from '@/lib/utils';
-import { transitions } from '@/lib/animations';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import {
   AVAILABLE_VOICES_FULL,
   AVAILABLE_VOICES_LIMITED,
@@ -80,30 +79,31 @@ export default function Sidebar() {
   };
 
   return (
-    <>
-      <motion.aside
-        className={cn('sidebar', { open: isSidebarOpen })}
-        initial={{ x: '100%' }}
-        animate={{ x: isSidebarOpen ? 0 : '100%' }}
-        transition={transitions.slide}
+    <Sheet
+      open={isSidebarOpen}
+      onOpenChange={() => {
+        toggleSidebar();
+      }}
+    >
+      <SheetContent
+        side="right"
+        className="w-[380px] max-w-full bg-[var(--gray-900)] border-l border-[var(--gray-800)] flex flex-col"
       >
-        <div className="flex justify-between items-center p-5 border-b border-gray-800 shrink-0">
-          <h3 className="text-xl">Settings</h3>
-          <button onClick={toggleSidebar} className="text-2xl">
-            <span className="icon">close</span>
-          </button>
-        </div>
-        <div className="sidebar-content">
-          <div className="sidebar-section">
-            <fieldset disabled={connected}>
+        <SheetHeader className="border-b border-[var(--gray-800)] pb-5">
+          <SheetTitle className="text-xl text-[var(--text)]">Settings</SheetTitle>
+        </SheetHeader>
+        <div className="sidebar-content flex-1 overflow-y-auto p-5 flex flex-col gap-8">
+          <div className="sidebar-section flex flex-col gap-4">
+            <fieldset disabled={connected} className="border-none p-0 m-0 flex flex-col gap-4">
               {isEasterEggMode && (
-                <label>
+                <label className="flex flex-col gap-2 text-sm text-[var(--gray-300)]">
                   Persona
                   <select
                     value={activePersona}
                     onChange={e => {
                       setPersona(e.target.value);
                     }}
+                    className="w-full appearance-none border border-[var(--gray-700)] rounded-lg p-3 text-sm bg-[var(--gray-1000)] text-[var(--text)] focus:outline-none focus:border-[var(--accent-blue-active)] focus:shadow-[0_0_0_2px_var(--accent-blue-active-bg)]"
                   >
                     {Object.keys(personas).map(personaName => (
                       <option key={personaName} value={personaName}>
@@ -113,7 +113,7 @@ export default function Sidebar() {
                   </select>
                 </label>
               )}
-              <label>
+              <label className="flex flex-col gap-2 text-sm text-[var(--gray-300)]">
                 System Prompt
                 <textarea
                   value={systemPrompt}
@@ -123,15 +123,17 @@ export default function Sidebar() {
                   rows={10}
                   placeholder="Describe the role and personality of the AI..."
                   disabled={isEasterEggMode}
+                  className="border border-[var(--gray-700)] rounded-lg p-3 text-sm bg-[var(--gray-1000)] text-[var(--text)] focus:outline-none focus:border-[var(--accent-blue-active)] focus:shadow-[0_0_0_2px_var(--accent-blue-active-bg)]"
                 />
               </label>
-              <label>
+              <label className="flex flex-col gap-2 text-sm text-[var(--gray-300)]">
                 Model
                 <select
                   value={model}
                   onChange={e => {
                     setModel(e.target.value);
                   }}
+                  className="w-full appearance-none border border-[var(--gray-700)] rounded-lg p-3 text-sm bg-[var(--gray-1000)] text-[var(--text)] focus:outline-none focus:border-[var(--accent-blue-active)] focus:shadow-[0_0_0_2px_var(--accent-blue-active-bg)]"
                 >
                   {AVAILABLE_LIVE_MODELS.map(m => (
                     <option key={m.id} value={m.id} title={m.description}>
@@ -140,13 +142,14 @@ export default function Sidebar() {
                   ))}
                 </select>
               </label>
-              <label>
+              <label className="flex flex-col gap-2 text-sm text-[var(--gray-300)]">
                 Voice
                 <select
                   value={voice}
                   onChange={e => {
                     setVoice(e.target.value);
                   }}
+                  className="w-full appearance-none border border-[var(--gray-700)] rounded-lg p-3 text-sm bg-[var(--gray-1000)] text-[var(--text)] focus:outline-none focus:border-[var(--accent-blue-active)] focus:shadow-[0_0_0_2px_var(--accent-blue-active-bg)]"
                 >
                   {availableVoices.map(v => (
                     <option key={v.name} value={v.name}>
@@ -156,7 +159,7 @@ export default function Sidebar() {
                 </select>
               </label>
             </fieldset>
-            <div className="settings-toggle-item">
+            <div className="settings-toggle-item flex items-center gap-3 py-2 px-1">
               <label className="tool-checkbox-wrapper">
                 <input
                   type="checkbox"
@@ -166,23 +169,36 @@ export default function Sidebar() {
                 />
                 <span className="checkbox-visual"></span>
               </label>
-              <label htmlFor="system-message-toggle" className="settings-toggle-label">
+              <label
+                htmlFor="system-message-toggle"
+                className="text-sm text-[var(--gray-200)] cursor-pointer flex-grow select-none"
+              >
                 Show system messages
               </label>
             </div>
           </div>
-          <div className="sidebar-actions">
-            <button onClick={handleExportLogs} title="Export session logs">
-              <span className="icon">download</span>
+          <div className="sidebar-actions flex gap-3 mt-auto pt-5 border-t border-[var(--gray-800)]">
+            <Button
+              variant="secondary"
+              onClick={handleExportLogs}
+              title="Export session logs"
+              className="flex-1 p-3 rounded-lg font-medium flex items-center justify-center gap-2 bg-[var(--gray-800)] text-[var(--gray-200)] hover:bg-[var(--gray-700)] text-sm"
+            >
+              <span className="icon text-xl">download</span>
               Export Logs
-            </button>
-            <button onClick={handleResetSession} title="Reset session logs">
-              <span className="icon">refresh</span>
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleResetSession}
+              title="Reset session logs"
+              className="flex-1 p-3 rounded-lg font-medium flex items-center justify-center gap-2 bg-[var(--gray-800)] text-[var(--gray-200)] hover:bg-[var(--gray-700)] text-sm"
+            >
+              <span className="icon text-xl">refresh</span>
               Reset Session
-            </button>
+            </Button>
           </div>
         </div>
-      </motion.aside>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 }
