@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { Map } from 'lucide-react';
 import { AnimatedSpinner } from './AnimatedSpinner';
 import './loading-skeleton.css';
 
@@ -68,7 +69,7 @@ export function LoadingScreen({ message = 'Loading...', showBranding = true }: L
       <div className="loading-content">
         {showBranding && (
           <div className="loading-brand">
-            <span className="material-symbols-outlined loading-icon">map</span>
+            <Map className="loading-icon size-8" />
           </div>
         )}
         <div className="loading-spinner-container">
@@ -105,7 +106,7 @@ export function AppSkeleton() {
       {/* Map panel skeleton */}
       <div className="app-skeleton-map">
         <div className="app-skeleton-map-content">
-          <span className="material-symbols-outlined">map</span>
+          <Map className="size-16" />
           <span>Loading map...</span>
         </div>
       </div>

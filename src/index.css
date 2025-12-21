@@ -270,12 +270,6 @@ button .icon {
   display: block;
 }
 
-.icon {
-  font-family: 'Material Symbols Outlined';
-  font-weight: 300;
-  line-height: 1;
-}
-
 .streaming-console {
   position: relative;
   height: 100dvh; /* Dynamic viewport height - accounts for mobile browser chrome */

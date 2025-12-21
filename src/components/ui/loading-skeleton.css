@@ -59,7 +59,6 @@
 }
 
 .loading-icon {
-  font-size: 2rem;
   color: var(--Green-400, #4ade80);
 }
 
@@ -159,11 +158,6 @@
   align-items: center;
   gap: 1rem;
   color: var(--Neutral-40, #404040);
-}
-
-.app-skeleton-map-content .material-symbols-outlined {
-  font-size: 4rem;
-  animation: loading-brand-pulse 2s ease-in-out infinite;
 }
 
 .app-skeleton-map-content span:last-child {

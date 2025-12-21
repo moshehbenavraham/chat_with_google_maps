@@ -67,7 +67,6 @@
 
 /* Toast icon */
 .toast-icon {
-  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
@@ -99,10 +98,6 @@
 .toast-dismiss:hover {
   background: var(--Neutral-20, #2a2a2a);
   color: var(--Neutral-80, #e5e5e5);
-}
-
-.toast-dismiss .material-symbols-outlined {
-  font-size: 1rem;
 }
 
 /* Toast animations */

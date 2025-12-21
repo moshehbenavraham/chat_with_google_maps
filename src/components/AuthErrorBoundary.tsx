@@ -12,6 +12,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Lock } from 'lucide-react';
 import { useAuth } from '@/components/auth';
 import { isAuthenticationError, type AuthenticationError } from '@/lib/api/auth-fetch';
 
@@ -146,9 +147,7 @@ function SessionExpiredModal({
             margin: '0 auto 1rem',
           }}
         >
-          <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '24px' }}>
-            lock
-          </span>
+          <Lock className="size-6 text-white" />
         </div>
 
         <h2

@@ -21,6 +21,18 @@
 import { cn } from '@/lib/utils';
 import React, { memo, useEffect, useRef, useState, type FormEvent, type Ref } from 'react';
 import { motion } from 'framer-motion';
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff,
+  Keyboard,
+  KeyboardOff,
+  Send,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { AudioRecorder } from '@/lib/audio/audio-recorder';
 import { useLogStore, useUI, useSettings } from '@/stores';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
@@ -177,9 +189,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           title={connectButtonTitle}
           {...buttonTap}
         >
-          <span className="material-symbols-outlined filled">
-            {connected ? 'pause' : 'play_arrow'}
-          </span>
+          {connected ? <Pause className="size-6" /> : <Play className="size-6" />}
         </motion.button>
         <motion.button
           type="button"
@@ -194,9 +204,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           title={!speakerMuted ? 'Mute audio output' : 'Unmute audio output'}
           {...buttonTap}
         >
-          <span className="material-symbols-outlined">
-            {!speakerMuted ? 'volume_up' : 'volume_off'}
-          </span>
+          {!speakerMuted ? <Volume2 className="size-6" /> : <VolumeX className="size-6" />}
         </motion.button>
         <motion.button
           className={cn('action-button mic-button', {
@@ -207,11 +215,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           title={micButtonTitle}
           {...buttonTap}
         >
-          {!muted ? (
-            <span className="material-symbols-outlined filled">mic</span>
-          ) : (
-            <span className="material-symbols-outlined filled">mic_off</span>
-          )}
+          {!muted ? <Mic className="size-6" /> : <MicOff className="size-6" />}
         </motion.button>
         <motion.button
           className={cn('action-button keyboard-toggle-button')}
@@ -221,7 +225,11 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           title="Toggle text input"
           {...buttonTap}
         >
-          <span className="icon">{isTextEntryVisible ? 'keyboard_hide' : 'keyboard'}</span>
+          {isTextEntryVisible ? (
+            <KeyboardOff className="size-6" />
+          ) : (
+            <Keyboard className="size-6" />
+          )}
         </motion.button>
         {(!isMobile || isTextEntryVisible) && (
           <form className="prompt-form" onSubmit={handleTextSubmit}>
@@ -244,7 +252,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
               disabled={!textPrompt.trim() || !connected}
               aria-label="Send message"
             >
-              <span className="icon">send</span>
+              <Send className="size-5" />
             </Button>
           </form>
         )}
@@ -255,7 +263,7 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           aria-label="Settings"
           {...buttonTap}
         >
-          <span className="icon">tune</span>
+          <SlidersHorizontal className="size-6" />
         </motion.button>
       </nav>
     </section>

@@ -8,6 +8,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 import './toast.css';
 
 /**
@@ -27,8 +28,6 @@ export interface ToastConfig {
   type: ToastType;
   /** Duration in ms (0 = no auto-dismiss) */
   duration: number;
-  /** Optional icon override */
-  icon?: string;
 }
 
 /**
@@ -36,7 +35,7 @@ export interface ToastConfig {
  */
 interface ToastContextValue {
   /** Show a new toast notification */
-  showToast: (message: string, type?: ToastType, duration?: number, icon?: string) => void;
+  showToast: (message: string, type?: ToastType, duration?: number) => void;
   /** Dismiss a specific toast by ID */
   dismissToast: (id: string) => void;
   /** Dismiss all toasts */
@@ -66,19 +65,20 @@ export function useToast(): ToastContextValue {
 }
 
 /**
- * Get default icon for toast type
+ * Get default icon component for toast type
  */
-function getDefaultIcon(type: ToastType): string {
+function getDefaultIcon(type: ToastType): React.ReactNode {
+  const iconClass = 'toast-icon size-5';
   switch (type) {
     case 'success':
-      return 'check_circle';
+      return <CheckCircle2 className={iconClass} />;
     case 'error':
-      return 'error';
+      return <AlertCircle className={iconClass} />;
     case 'warning':
-      return 'warning';
+      return <AlertTriangle className={iconClass} />;
     case 'info':
     default:
-      return 'info';
+      return <Info className={iconClass} />;
   }
 }
 
@@ -114,12 +114,10 @@ function ToastItem({ toast, onDismiss }: { toast: ToastConfig; onDismiss: (id: s
       role="alert"
       aria-live="polite"
     >
-      <span className="material-symbols-outlined toast-icon">
-        {toast.icon ?? getDefaultIcon(toast.type)}
-      </span>
+      {getDefaultIcon(toast.type)}
       <span className="toast-message">{toast.message}</span>
       <button className="toast-dismiss" onClick={handleDismiss} aria-label="Dismiss notification">
-        <span className="material-symbols-outlined">close</span>
+        <X className="size-4" />
       </button>
     </div>
   );
@@ -141,17 +139,14 @@ function ToastItem({ toast, onDismiss }: { toast: ToastConfig; onDismiss: (id: s
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastConfig[]>([]);
 
-  const showToast = useCallback(
-    (message: string, type?: ToastType, duration?: number, icon?: string) => {
-      const toastType = type ?? 'info';
-      const toastDuration = duration ?? 4000;
-      const id = `toast-${String(Date.now())}-${Math.random().toString(36).slice(2, 9)}`;
-      const newToast: ToastConfig = { id, message, type: toastType, duration: toastDuration, icon };
+  const showToast = useCallback((message: string, type?: ToastType, duration?: number) => {
+    const toastType = type ?? 'info';
+    const toastDuration = duration ?? 4000;
+    const id = `toast-${String(Date.now())}-${Math.random().toString(36).slice(2, 9)}`;
+    const newToast: ToastConfig = { id, message, type: toastType, duration: toastDuration };
 
-      setToasts(prev => [...prev, newToast]);
-    },
-    []
-  );
+    setToasts(prev => [...prev, newToast]);
+  }, []);
 
   const dismissToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id));
@@ -188,21 +183,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function Toast({
   message,
   type = 'info',
-  icon,
   onDismiss,
 }: {
   message: string;
   type?: ToastType;
-  icon?: string;
   onDismiss?: () => void;
 }) {
   return (
     <div className={`toast toast-${type} toast-enter`} role="alert">
-      <span className="material-symbols-outlined toast-icon">{icon ?? getDefaultIcon(type)}</span>
+      {getDefaultIcon(type)}
       <span className="toast-message">{message}</span>
       {onDismiss && (
         <button className="toast-dismiss" onClick={onDismiss} aria-label="Dismiss notification">
-          <span className="material-symbols-outlined">close</span>
+          <X className="size-4" />
         </button>
       )}
     </div>
