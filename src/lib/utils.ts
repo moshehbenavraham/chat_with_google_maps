@@ -18,6 +18,18 @@
  * limitations under the License.
  */
 
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/**
+ * Combines class names with Tailwind CSS conflict resolution.
+ * Uses clsx for conditional class construction and tailwind-merge for
+ * intelligent merging of Tailwind utility classes.
+ */
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+
 type GetAudioContextOptions = AudioContextOptions & {
   id?: string;
 };

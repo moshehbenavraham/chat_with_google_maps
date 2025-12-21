@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-import cn from 'classnames';
+import { cn } from '@/lib/utils';
 import React, { memo, useEffect, useRef, useState, type FormEvent, type Ref } from 'react';
 import { AudioRecorder } from '@/lib/audio/audio-recorder';
 import { useLogStore, useUI, useSettings } from '@/stores';
