@@ -4,6 +4,8 @@
  */
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeInWithShake, transitions } from '@/lib/animations';
 
 export interface ExtendedErrorType {
   code?: number;
@@ -42,31 +44,38 @@ export default function ErrorScreen() {
     tryAgainOption = false;
   }
 
-  if (!error) {
-    return <div className="hidden" />;
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center h-dvh w-full bg-black text-white gap-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99991]">
-      <div className="text-5xl">:(</div>
-      <div className="w-full text-center max-w-[650px] px-2 text-[22px] leading-tight opacity-50">
-        {errorMessage}
-      </div>
-      {tryAgainOption ? (
-        <button
-          className="text-white text-2xl cursor-pointer"
-          onClick={() => {
-            setError(null);
-          }}
+    <AnimatePresence>
+      {error && (
+        <motion.div
+          className="flex flex-col items-center justify-center h-dvh w-full bg-black text-white gap-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99991]"
+          variants={fadeInWithShake}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={transitions.modalIn}
         >
-          Close
-        </button>
-      ) : null}
-      {rawMessage ? (
-        <div className="w-full text-center max-w-[650px] px-2 text-[15px] leading-tight opacity-40">
-          {rawMessage}
-        </div>
-      ) : null}
-    </div>
+          <div className="text-5xl">:(</div>
+          <div className="w-full text-center max-w-[650px] px-2 text-[22px] leading-tight opacity-50">
+            {errorMessage}
+          </div>
+          {tryAgainOption ? (
+            <button
+              className="text-white text-2xl cursor-pointer"
+              onClick={() => {
+                setError(null);
+              }}
+            >
+              Close
+            </button>
+          ) : null}
+          {rawMessage ? (
+            <div className="w-full text-center max-w-[650px] px-2 text-[15px] leading-tight opacity-40">
+              {rawMessage}
+            </div>
+          ) : null}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

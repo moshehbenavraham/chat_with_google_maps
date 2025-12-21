@@ -6,11 +6,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Modality, type LiveServerContent, type Part } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { motion } from 'framer-motion';
 
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import { useSettings, useLogStore, useTools, type ConversationTurn, useUI } from '@/stores';
 import { SourcesPopover } from '@/components/sources-popover/sources-popover';
 import { GroundingWidget } from '@/components/GroundingWidget';
+import { AnimatedSpinner } from '@/components/ui/AnimatedSpinner';
+import { staggerItem, transitions } from '@/lib/animations';
 
 const formatTimestamp = (date: Date) => {
   const pad = (num: number, size = 2) => num.toString().padStart(size, '0');
@@ -269,7 +272,14 @@ export default function StreamingConsole() {
           {displayedTurns.map(t => {
             if (t.role === 'system') {
               return (
-                <div key={t.timestamp.toISOString()} className={`transcription-entry system`}>
+                <motion.div
+                  key={t.timestamp.toISOString()}
+                  className={`transcription-entry system`}
+                  variants={staggerItem}
+                  initial="initial"
+                  animate="animate"
+                  transition={transitions.modalIn}
+                >
                   <div className="transcription-header">
                     <div className="transcription-source">System</div>
                     <div className="transcription-timestamp">{formatTimestamp(t.timestamp)}</div>
@@ -277,7 +287,7 @@ export default function StreamingConsole() {
                   <div className="transcription-text-content">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.text}</ReactMarkdown>
                   </div>
-                </div>
+                </motion.div>
               );
             }
             const widgetToken =
@@ -332,9 +342,13 @@ export default function StreamingConsole() {
             const hasSources = sources.length > 0;
 
             return (
-              <div
+              <motion.div
                 key={t.timestamp.toISOString()}
                 className={`transcription-entry ${t.role} ${!t.isFinal ? 'interim' : ''}`}
+                variants={staggerItem}
+                initial="initial"
+                animate="animate"
+                transition={transitions.modalIn}
               >
                 <div className="avatar">
                   <span className="icon">{t.role === 'user' ? 'person' : 'auto_awesome'}</span>
@@ -354,14 +368,20 @@ export default function StreamingConsole() {
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
           {isAwaitingFunctionResponse && (
-            <div className="spinner-container">
-              <div className="spinner"></div>
+            <motion.div
+              className="spinner-container"
+              variants={staggerItem}
+              initial="initial"
+              animate="animate"
+              transition={transitions.modalIn}
+            >
+              <AnimatedSpinner size={24} label="Calling tool..." />
               <p>Calling tool...</p>
-            </div>
+            </motion.div>
           )}
         </div>
       )}

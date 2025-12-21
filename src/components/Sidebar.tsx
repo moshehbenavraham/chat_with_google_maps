@@ -3,8 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React, { useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useSettings, useUI, useLogStore, useTools, useMapStore, personas } from '@/stores';
 import { cn } from '@/lib/utils';
+import { transitions } from '@/lib/animations';
 import {
   AVAILABLE_VOICES_FULL,
   AVAILABLE_VOICES_LIMITED,
@@ -79,7 +81,12 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className={cn('sidebar', { open: isSidebarOpen })}>
+      <motion.aside
+        className={cn('sidebar', { open: isSidebarOpen })}
+        initial={{ x: '100%' }}
+        animate={{ x: isSidebarOpen ? 0 : '100%' }}
+        transition={transitions.slide}
+      >
         <div className="flex justify-between items-center p-5 border-b border-gray-800 shrink-0">
           <h3 className="text-xl">Settings</h3>
           <button onClick={toggleSidebar} className="text-2xl">
@@ -175,7 +182,7 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 }

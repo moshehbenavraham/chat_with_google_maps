@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import ErrorScreen from './ErrorScreen';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 
@@ -37,11 +37,12 @@ describe('ErrorScreen', () => {
   });
 
   it('renders nothing when there is no error', () => {
-    const { container } = render(<ErrorScreen />);
+    render(<ErrorScreen />);
 
-    // Component returns a hidden div when no error
-    const hiddenDiv = container.querySelector('div.hidden');
-    expect(hiddenDiv).toBeInTheDocument();
+    // Component returns an empty AnimatePresence when no error
+    // Error content should not be visible
+    expect(screen.queryByText(':(')).not.toBeInTheDocument();
+    expect(screen.queryByText('Something went wrong. Please try again.')).not.toBeInTheDocument();
   });
 
   it('registers error listener on mount', () => {
@@ -125,7 +126,7 @@ describe('ErrorScreen', () => {
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
 
-  it('clears error when close button is clicked', () => {
+  it('clears error when close button is clicked', async () => {
     render(<ErrorScreen />);
 
     expect(capturedErrorHandler).toBeDefined();
@@ -141,10 +142,14 @@ describe('ErrorScreen', () => {
     expect(screen.getByText('Test error')).toBeInTheDocument();
 
     // Click close button
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    });
 
-    // Error message should be gone, hidden div should return
-    expect(screen.queryByText('Test error')).not.toBeInTheDocument();
+    // Wait for AnimatePresence exit animation to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Something went wrong. Please try again.')).not.toBeInTheDocument();
+    });
   });
 
   it('displays sad face emoticon', () => {

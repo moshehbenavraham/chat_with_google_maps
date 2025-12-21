@@ -20,9 +20,11 @@
 
 import { cn } from '@/lib/utils';
 import React, { memo, useEffect, useRef, useState, type FormEvent, type Ref } from 'react';
+import { motion } from 'framer-motion';
 import { AudioRecorder } from '@/lib/audio/audio-recorder';
 import { useLogStore, useUI, useSettings } from '@/stores';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
+import { buttonTap } from '@/lib/animations';
 
 // Hook to detect screen size for responsive component rendering
 const useMediaQuery = (query: string) => {
@@ -167,17 +169,18 @@ function ControlTray({ trayRef }: ControlTrayProps) {
           'text-entry-visible-landscape': isLandscape && isTextEntryVisible,
         })}
       >
-        <button
+        <motion.button
           ref={connectButtonRef}
           className={cn('action-button connect-toggle', { connected })}
           onClick={connected ? disconnect : connect}
           title={connectButtonTitle}
+          {...buttonTap}
         >
           <span className="material-symbols-outlined filled">
             {connected ? 'pause' : 'play_arrow'}
           </span>
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="button"
           aria-label={!speakerMuted ? 'Audio output on' : 'Audio output off'}
           className={cn('action-button', {
@@ -188,34 +191,37 @@ function ControlTray({ trayRef }: ControlTrayProps) {
             setSpeakerMuted(!speakerMuted);
           }}
           title={!speakerMuted ? 'Mute audio output' : 'Unmute audio output'}
+          {...buttonTap}
         >
           <span className="material-symbols-outlined">
             {!speakerMuted ? 'volume_up' : 'volume_off'}
           </span>
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           className={cn('action-button mic-button', {
             'mic-on': !muted,
             'mic-off': muted,
           })}
           onClick={handleMicClick}
           title={micButtonTitle}
+          {...buttonTap}
         >
           {!muted ? (
             <span className="material-symbols-outlined filled">mic</span>
           ) : (
             <span className="material-symbols-outlined filled">mic_off</span>
           )}
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           className={cn('action-button keyboard-toggle-button')}
           onClick={() => {
             setIsTextEntryVisible(!isTextEntryVisible);
           }}
           title="Toggle text input"
+          {...buttonTap}
         >
           <span className="icon">{isTextEntryVisible ? 'keyboard_hide' : 'keyboard'}</span>
-        </button>
+        </motion.button>
         {(!isMobile || isTextEntryVisible) && (
           <form className="prompt-form" onSubmit={handleTextSubmit}>
             <input
@@ -239,14 +245,15 @@ function ControlTray({ trayRef }: ControlTrayProps) {
             </button>
           </form>
         )}
-        <button
+        <motion.button
           className={cn('action-button')}
           onClick={handleSettingsClick}
           title="Settings"
           aria-label="Settings"
+          {...buttonTap}
         >
           <span className="icon">tune</span>
-        </button>
+        </motion.button>
       </nav>
     </section>
   );

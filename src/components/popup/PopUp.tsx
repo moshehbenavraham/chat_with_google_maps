@@ -4,6 +4,8 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
+import { backdropFade, scaleIn, transitions } from '@/lib/animations';
 import './PopUp.css';
 
 interface PopUpProps {
@@ -12,8 +14,22 @@ interface PopUpProps {
 
 const PopUp: React.FC<PopUpProps> = ({ onClose }) => {
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
+    <motion.div
+      className="popup-overlay"
+      variants={backdropFade}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={transitions.modalIn}
+    >
+      <motion.div
+        className="popup-content"
+        variants={scaleIn}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={transitions.modalIn}
+      >
         <h2>Welcome to the Interactive Day Planner</h2>
         <div className="popup-scrollable-content">
           <p>
@@ -61,8 +77,8 @@ const PopUp: React.FC<PopUpProps> = ({ onClose }) => {
           </ol>
         </div>
         <button onClick={onClose}>Got It, Let&apos;s Plan!</button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

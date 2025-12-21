@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { AnimatedSpinner } from './AnimatedSpinner';
 import './loading-skeleton.css';
 
 /**
@@ -71,7 +72,7 @@ export function LoadingScreen({ message = 'Loading...', showBranding = true }: L
           </div>
         )}
         <div className="loading-spinner-container">
-          <div className="loading-spinner" />
+          <AnimatedSpinner size={48} label={message} />
         </div>
         <p className="loading-message">{message}</p>
       </div>
