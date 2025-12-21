@@ -28,35 +28,12 @@
       />
     </noscript>
     <link rel="stylesheet" href="/src/index.css" />
-    <!-- 
-  "@headlessui/react": "https://aistudiocdn.com/@headlessui/react@^2.2.9", 
-  "@google/genai012": "https://esm.sh/@google/genai@^0.12.0",
-  -->
     <title>Native Audio Function Call Sandbox</title>
-    <script type="importmap">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@19.2.0",
-          "react/": "https://esm.sh/react@19.2.0/",
-          "react-dom": "https://esm.sh/react-dom@19.2.0",
-          "react-dom/": "https://esm.sh/react-dom@19.2.0/",
-          "@vis.gl/react-google-maps": "https://esm.sh/@vis.gl/react-google-maps@1.5.5?deps=react@19.2.0,react-dom@19.2.0",
-          "remark-gfm": "https://esm.sh/remark-gfm@^4.0.0",
-          "react-markdown": "https://esm.sh/react-markdown@^9.0.1",
-          "@google/genai": "https://esm.sh/@google/genai@^1.4.0",
-          "eventemitter3": "https://esm.sh/eventemitter3@^5.0.1",
-          "lodash": "https://esm.sh/lodash@^4.17.21",
-          "vite": "https://esm.sh/vite@^6.3.5",
-          "classnames": "https://esm.sh/classnames@^2.5.1",
-          "zustand": "https://esm.sh/zustand@^5.0.5",
-          "path": "https://esm.sh/path@^0.12.7",
-          "fast-deep-equal": "https://aistudiocdn.com/fast-deep-equal@^3.1.3",
-          "@headlessui/react": "https://esm.sh/@headlessui/react@2.2.7?deps=react@19.2.0,react-dom@19.2.0",
-          "zod": "https://aistudiocdn.com/zod@^4.1.12",
-          "nuqs": "https://aistudiocdn.com/nuqs@^2.7.1"
-        }
-      }
-    </script>
+    <!--
+      Import map removed for local development.
+      Vite handles all module resolution in dev mode.
+      The import map was causing dual React instances (esm.sh vs node_modules).
+    -->
   </head>
 
   <body>

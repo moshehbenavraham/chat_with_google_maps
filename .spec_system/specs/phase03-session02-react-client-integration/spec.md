@@ -124,32 +124,32 @@ The auth client communicates with the server at `/api/auth/*` endpoints. The `Au
 ## 7. Success Criteria
 
 ### Functional Requirements
-- [ ] Auth client exports `signIn`, `signUp`, `signOut`, `useSession` methods
-- [ ] `AuthProvider` provides `user`, `session`, `isLoading`, `isAuthenticated` via `useAuth()`
-- [ ] `SignInForm` renders email and password inputs with submit button
-- [ ] `SignUpForm` renders email, password, confirm password, and optional name inputs
-- [ ] User can create new account via sign-up form (database row created)
-- [ ] User can sign in with valid credentials (session cookie set)
-- [ ] User can sign out (session invalidated)
-- [ ] Invalid credentials show appropriate error message
-- [ ] Password mismatch prevented at form validation level
-- [ ] Loading spinner/state shown during auth API calls
+- [x] Auth client exports `signIn`, `signUp`, `signOut`, `useSession` methods
+- [x] `AuthProvider` provides `user`, `session`, `isLoading`, `isAuthenticated` via `useAuth()`
+- [x] `SignInForm` renders email and password inputs with submit button
+- [x] `SignUpForm` renders email, password, confirm password, and optional name inputs
+- [x] User can create new account via sign-up form (database row created)
+- [x] User can sign in with valid credentials (session cookie set)
+- [x] User can sign out (session invalidated)
+- [x] Invalid credentials show appropriate error message
+- [x] Password mismatch prevented at form validation level
+- [x] Loading spinner/state shown during auth API calls
 
 ### Testing Requirements
-- [ ] Unit tests for AuthProvider hook behavior
-- [ ] Unit tests for form validation logic
-- [ ] Manual test: full sign-up -> sign-in -> sign-out flow
-- [ ] Manual test: invalid email format rejected
-- [ ] Manual test: password too short rejected
-- [ ] Manual test: wrong password shows error
+- [x] Unit tests for AuthProvider hook behavior
+- [x] Unit tests for form validation logic
+- [x] Manual test: full sign-up -> sign-in -> sign-out flow
+- [x] Manual test: invalid email format rejected
+- [x] Manual test: password too short rejected
+- [x] Manual test: wrong password shows error
 
 ### Quality Gates
-- [ ] All files ASCII-encoded (0-127 characters only)
-- [ ] Unix LF line endings
-- [ ] Zero TypeScript errors (`npm run typecheck`)
-- [ ] Zero ESLint warnings (`npm run lint`)
-- [ ] Prettier formatting applied (`npm run format:check`)
-- [ ] All existing tests pass (`npm run test`)
+- [x] All files ASCII-encoded (0-127 characters only)
+- [x] Unix LF line endings
+- [x] Zero TypeScript errors (`npm run typecheck`)
+- [x] Zero ESLint warnings (`npm run lint`)
+- [x] Prettier formatting applied (`npm run format:check`)
+- [x] All existing tests pass (`npm run test`)
 
 ---
 

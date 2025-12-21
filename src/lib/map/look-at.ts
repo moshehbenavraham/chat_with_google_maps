@@ -58,9 +58,6 @@ export async function lookAt(
 
   // get the general altitude of the area
   const ALTITUDE = await fetchElevation(firstLocation.lat, firstLocation.lng, elevator);
-  console.log(
-    `lookAt altitude for ${String(firstLocation.lat)}, ${String(firstLocation.lng)}: ${String(ALTITUDE)}`
-  );
 
   const degToRad = Math.PI / 180;
 

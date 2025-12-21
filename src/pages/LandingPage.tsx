@@ -84,16 +84,6 @@ export function LandingPage() {
           </button>
         </section>
 
-        {/* Preview Section */}
-        <section className="landing-preview">
-          <div className="landing-preview-container">
-            <div className="landing-preview-placeholder">
-              <span className="icon">map</span>
-              <span>Interactive map and chat experience</span>
-            </div>
-          </div>
-        </section>
-
         {/* Features Section */}
         <section className="landing-features">
           <div className="landing-features-grid">

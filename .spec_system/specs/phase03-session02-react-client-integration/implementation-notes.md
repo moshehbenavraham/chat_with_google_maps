@@ -10,8 +10,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Tasks Completed | 24 / 25 |
-| Remaining | 1 (Manual testing) |
+| Tasks Completed | 25 / 25 |
+| Remaining | 0 |
 | Blockers | 0 |
 
 ---
@@ -224,20 +224,17 @@
 
 ---
 
-## Pending Items
+### T024 - Manual Testing
 
-### T024 - Manual Testing Required
+**Completed**: 2025-12-21
 
-To complete manual testing:
-
-1. Start database: `npm run db:start`
-2. Start dev servers: `npm run dev:all`
-3. Click "Sign In" button in top-right
-4. Test sign-up with new email
-5. Verify session in browser dev tools (cookies)
-6. Test sign-out
-7. Test sign-in with created account
-8. Test invalid credentials
+**Notes**:
+- Full sign-up -> sign-in -> sign-out flow verified
+- Invalid email format correctly rejected at form level
+- Password too short correctly rejected at form level
+- Wrong password shows appropriate error message
+- Session cookie properly set and cleared
+- Database row created for new user
 
 ---
 

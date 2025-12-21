@@ -208,7 +208,6 @@ export function useLiveApi({
                 toolResponse = await toolImplementation(fc.args ?? {}, toolContext);
               } else {
                 toolResponse = `Unknown tool called: ${fcName}.`;
-                console.warn(toolResponse);
               }
 
               // Prepare the response to send back to the model

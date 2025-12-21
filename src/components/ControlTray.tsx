@@ -122,7 +122,6 @@ function ControlTray({ trayRef }: ControlTrayProps) {
     setTextPrompt(''); // Clear input immediately
 
     if (!connected || !client) {
-      console.warn('Cannot send text message: not connected to live stream.');
       useLogStore.getState().addTurn({
         role: 'system',
         text: `Cannot send message. Please connect to the stream first.`,

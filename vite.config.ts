@@ -38,5 +38,19 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // React core libraries
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            // Google/Maps related libraries
+            'vendor-google': ['@google/genai', '@vis.gl/react-google-maps'],
+            // UI and utility libraries
+            'vendor-ui': ['react-markdown', 'remark-gfm', '@headlessui/react', 'lodash', 'zustand'],
+          },
+        },
+      },
+    },
   };
 });

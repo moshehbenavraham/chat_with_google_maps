@@ -268,9 +268,11 @@ else
     PREREQ_FAILED=true
 fi
 
-# Check docker-compose
-if check_command docker-compose || docker compose version &>/dev/null; then
-    log_success "Docker Compose available"
+# Check docker-compose (v1) or docker compose (v2)
+if command -v docker-compose &>/dev/null; then
+    log_success "Docker Compose (v1) available"
+elif docker compose version &>/dev/null; then
+    log_success "Docker Compose (v2) available"
 else
     log_error "Docker Compose not found"
     PREREQ_FAILED=true
@@ -359,6 +361,17 @@ else
         npm install --legacy-peer-deps
     fi
     log_success "Dependencies installed"
+
+    # Fix security vulnerabilities
+    log_info "Checking for security vulnerabilities..."
+    AUDIT_OUTPUT=$(npm audit 2>&1) || true
+    if echo "$AUDIT_OUTPUT" | grep -q "vulnerabilities"; then
+        log_warn "Security vulnerabilities detected. Running npm audit fix..."
+        npm audit fix --legacy-peer-deps 2>&1 || true
+        log_success "Security audit complete"
+    else
+        log_success "No vulnerabilities found"
+    fi
 fi
 
 # ============================================================================
