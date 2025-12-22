@@ -25,6 +25,7 @@ import type {
   SessionCostSummary,
 } from './types/live-trace.js';
 import { calculateAudioCost } from './cost-calculator.js';
+import { scoreVoiceSession } from './langfuse-scores.js';
 
 const log = createChildLogger('session-trace');
 
@@ -368,6 +369,15 @@ export function endSession(
       log.error({ sessionId, error }, 'Failed to update Langfuse trace');
     }
   }
+
+  // Score the voice session
+  scoreVoiceSession(session.traceId, {
+    completed: reason !== 'error' && reason !== 'timeout',
+    endReason: reason,
+    turnCount: summary.totalTurns,
+    toolCallCount: summary.totalToolCalls,
+    durationMs: summary.durationMs,
+  });
 
   // Cleanup
   activeSessions.delete(sessionId);

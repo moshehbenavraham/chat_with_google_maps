@@ -227,6 +227,7 @@ npm run langfuse:reset
 
 ## Related Documentation
 
+- [Integration Guide](./langfuse-integration.md) — Adding tracing to new code
 - [Langfuse Official Docs](https://langfuse.com/docs)
 - [Gemini Pricing](https://ai.google.dev/pricing)
 - [Local Deployment Guide](./LOCAL_DEPLOYMENT.md)

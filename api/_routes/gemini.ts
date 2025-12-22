@@ -13,6 +13,7 @@ import type { GeminiGroundingRequest } from '../_lib/types.js';
 import { createChildLogger, createTracedLogger } from '../_lib/logger.js';
 import { calculateCost } from '../_lib/cost-calculator.js';
 import type { GeminiUsageMetadata } from '../_lib/types/langfuse.js';
+import { scoreGroundingResponse } from '../_lib/langfuse-scores.js';
 
 // Import for Hono context type augmentation
 import '../_lib/types/langfuse.js';
@@ -147,6 +148,29 @@ async function callGeminiApi(
 const gemini = new Hono();
 
 /**
+ * Extract the count of place results from Gemini grounding response.
+ * Looks for groundingMetadata.groundingChunks which contain place results.
+ */
+function extractResultCount(response: unknown): number {
+  if (typeof response !== 'object' || response === null) return 0;
+
+  const resp = response as Record<string, unknown>;
+  const candidates = resp.candidates;
+  if (!Array.isArray(candidates) || candidates.length === 0) return 0;
+
+  const candidate = candidates[0] as Record<string, unknown>;
+  const groundingMetadata = candidate.groundingMetadata as Record<string, unknown> | undefined;
+  if (!groundingMetadata) return 0;
+
+  const groundingChunks = groundingMetadata.groundingChunks;
+  if (Array.isArray(groundingChunks)) {
+    return groundingChunks.length;
+  }
+
+  return 0;
+}
+
+/**
  * Extract usage metadata from Gemini API response.
  * Handles missing or malformed usageMetadata gracefully.
  */
@@ -187,6 +211,7 @@ gemini.post('/grounding', validateJsonBody, validateGeminiRequest, async c => {
   const tracedLog = createTracedLogger('gemini', traceId);
 
   const requestBody = buildGeminiRequestBody(request);
+  const startTime = Date.now();
 
   // Create generation span if tracing is active
   const generation = trace?.generation({
@@ -230,6 +255,17 @@ gemini.post('/grounding', validateJsonBody, validateGeminiRequest, async c => {
         totalCost: cost,
       },
     });
+
+    // Score the grounding response
+    if (traceId) {
+      const latencyMs = Date.now() - startTime;
+      const resultCount = extractResultCount(response);
+      scoreGroundingResponse(traceId, {
+        hasResults: resultCount > 0,
+        resultCount,
+        latencyMs,
+      });
+    }
 
     return c.json(response);
   } catch (error) {
