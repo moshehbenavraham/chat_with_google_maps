@@ -65,7 +65,7 @@ Every backend component must:
 | 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Complete |
 | 03 | Authentication (Better Auth) | 3 | Complete |
 | 04 | Frontend Overhaul | 6 | Complete |
-| 05 | AI Observability (Langfuse) | 4 | Planned |
+| 05 | AI Observability (Langfuse) | 4 | Complete |
 
 ## Phase 00: Developer Tooling & Quality Foundation
 
@@ -1379,17 +1379,17 @@ LANGFUSE_BASE_URL=http://localhost:3001
 - [x] All existing tests pass
 
 ### Phase 05: AI Observability
-- [ ] Langfuse running via Docker Compose (self-hosted)
-- [ ] Langfuse SDK integrated with Hono backend
-- [ ] REST API endpoints traced (`/api/gemini/grounding`)
-- [ ] WebSocket voice sessions traced with turn-by-turn spans
-- [ ] Tool calls tracked within conversation turns
-- [ ] Cost tracking per request (tokens + audio minutes)
-- [ ] User/session correlation for conversation grouping
-- [ ] Latency metrics visible in Langfuse dashboard
-- [ ] Cost aggregation by user/day/model available
-- [ ] Graceful degradation when Langfuse unavailable
-- [ ] Documentation for Langfuse dashboard usage
+- [x] Langfuse running via Docker Compose (self-hosted)
+- [x] Langfuse SDK integrated with Hono backend
+- [x] REST API endpoints traced (`/api/gemini/grounding`)
+- [x] WebSocket voice sessions traced with turn-by-turn spans
+- [x] Tool calls tracked within conversation turns
+- [x] Cost tracking per request (tokens + audio minutes)
+- [x] User/session correlation for conversation grouping
+- [x] Latency metrics visible in Langfuse dashboard
+- [x] Cost aggregation by user/day/model available
+- [x] Graceful degradation when Langfuse unavailable
+- [x] Documentation for Langfuse dashboard usage
 
 ## Open Source & Vendor Neutrality Checklist
 
@@ -1417,4 +1417,4 @@ The entire stack is **100% open source** with no vendor dependencies:
 - [x] **Frontend**: All UI libraries are open source with no vendor lock-in
 - [x] **Zero SaaS Dependencies**: No required third-party services
 - [x] **Deployment**: Documentation exists for at least 2 deployment targets
-- [ ] **Observability**: Langfuse is self-hostable via Docker, full data sovereignty
+- [x] **Observability**: Langfuse self-hostable via Docker, full data sovereignty

@@ -62,6 +62,12 @@ Browser                           Backend                      External Services
 - **Better Auth** - Open-source, vendor-neutral auth library
 - **better-auth/react** - React hooks for session management
 
+**AI Observability**
+
+- **Langfuse** - Open-source LLM observability (self-hosted via Docker)
+- Trace/span instrumentation for REST and WebSocket
+- Cost tracking and latency monitoring
+
 ## Project Structure
 
 ```
@@ -129,8 +135,13 @@ api/                              # Backend API (Hono)
 │   ├── health.ts                 # GET /api/health
 │   ├── db.ts                     # Database test endpoints
 │   ├── gemini.ts                 # Gemini API proxy
-│   └── maps.ts                   # Maps API proxy
+│   ├── maps.ts                   # Maps API proxy
+│   ├── live.ts                   # Gemini Live WebSocket proxy
+│   └── observability.ts          # Langfuse health/status endpoints
 ├── _lib/                         # Shared utilities
+│   ├── langfuse.ts               # Langfuse client wrapper
+│   ├── cost-calculator.ts        # Token/audio cost calculation
+│   └── logger.ts                 # Pino logger configuration
 └── _tests/                       # API tests
 
 drizzle/                          # Database migrations
@@ -167,13 +178,16 @@ The backend provides server-side API key protection and proxies requests to Goog
 
 **API Routes:**
 
-| Route                     | Method | Purpose                         |
-| ------------------------- | ------ | ------------------------------- |
-| `/api/health`             | GET    | Health check                    |
-| `/api/gemini/grounding`   | POST   | Maps grounding via Gemini       |
-| `/api/live/token`         | POST   | Ephemeral token for Gemini Live |
-| `/api/maps/place-details` | GET    | Place details proxy             |
-| `/api/maps/place-photo`   | GET    | Place photo proxy               |
+| Route                       | Method | Purpose                         |
+| --------------------------- | ------ | ------------------------------- |
+| `/api/health`               | GET    | Health check                    |
+| `/api/gemini/grounding`     | POST   | Maps grounding via Gemini       |
+| `/api/live/token`           | POST   | Ephemeral token for Gemini Live |
+| `/api/maps/place-details`   | GET    | Place details proxy             |
+| `/api/maps/place-photo`     | GET    | Place photo proxy               |
+| `/api/observability/health` | GET    | Langfuse connectivity check     |
+| `/api/observability/status` | GET    | Quick observability status      |
+| `/api/observability/costs`  | GET    | Cost aggregation (date range)   |
 
 **Deployment-agnostic design:**
 The `api/_app.ts` is pure Hono code with no platform dependencies. Adapters in `api/_adapters/` provide platform-specific entry points (Node.js, Vercel, Cloudflare Workers).
@@ -250,6 +264,42 @@ npm run db:start    # Start PostgreSQL Docker container
 npm run db:migrate  # Apply migrations
 npm run db:shell    # Connect with psql
 ```
+
+### AI Observability (Langfuse)
+
+The application uses Langfuse for comprehensive AI observability, enabling tracing of all AI interactions.
+
+**Why Langfuse?**
+
+- Open source (MIT license), fully self-hostable
+- Voice/WebSocket session support via async spans
+- Conversation tracing with session grouping
+- Cost tracking with token counting
+- Latency monitoring per span
+
+**Tracing Model:**
+
+```
+Voice Session Trace
+├── WebSocket Session Span
+│   ├── Turn 1 Generation (user speech -> AI response)
+│   │   └── Tool Span (navigate_to_location)
+│   ├── Turn 2 Generation
+│   └── Turn N Generation
+└── Session Summary (total turns, cost, duration)
+```
+
+**Local Development:**
+
+```bash
+npm run langfuse:start  # Start Langfuse Docker containers
+npm run langfuse:logs   # View Langfuse logs
+npm run langfuse:stop   # Stop Langfuse
+```
+
+Dashboard: http://localhost:3016
+
+See [Langfuse Dashboard Guide](./langfuse-dashboard.md) for detailed usage.
 
 ### Gemini Live API
 

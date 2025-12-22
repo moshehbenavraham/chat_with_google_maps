@@ -1,0 +1,39 @@
+AUDIT REPORT | Chat with Google Maps | 2025-12-22 14:29
+Git: clean | Stack(s): TypeScript 5.8.2 + React 19.2.0 + Vite + Hono
+
+[SETUP] pnpm | Linter: ok | Fmt: ok | Types: ok | Tests: ok
+  Tools: ESLint 9.39.2, Prettier 3.7.4, TypeScript 5.8.2, Vitest 4.0.16
+  Pre-commit: Husky + lint-staged
+
+[root]
+  Fmt: 0 fixed (182 files checked, all unchanged)
+  Lint: 0 issues
+  Types: 0 errors
+  Tests: 213/213 pass (100%)
+    - api/_lib/__tests__/logger.test.ts: 13 tests
+    - api/_lib/__tests__/langfuse.test.ts: 15 tests
+    - api/_middleware/__tests__/langfuse-trace.test.ts: 10 tests
+    - api/_lib/__tests__/cost-calculator.test.ts: 29 tests
+    - src/lib/__tests__/animations.test.ts: 16 tests
+    - src/types/guards.test.ts: 35 tests
+    - api/_tests/maps.test.ts: 7 tests
+    - src/lib/utils.test.ts: 14 tests
+    - api/_tests/gemini.test.ts: 15 tests
+    - src/components/auth/__tests__/AuthProvider.test.tsx: 10 tests
+    - api/_tests/health.test.ts: 11 tests
+    - api/_lib/__tests__/auth.test.ts: 16 tests
+    - src/components/ErrorScreen.test.tsx: 4 tests
+    - api/_db/__tests__/connection.test.ts: 1 test
+    - api/_db/__tests__/schema.test.ts: 4 tests
+    - api/_tests/db-test.test.ts: 2 tests
+    - api/_routes/__tests__/observability.test.ts: 2 tests
+    - api/_lib/__tests__/safe-langfuse.test.ts: 7 tests
+    - src/lib/__tests__/auth-validation.test.ts: 2 tests
+
+SUMMARY: P1 ok | P2 0/0 fixed (clean) | P3 pass (213/213)
+
+Notes:
+- MaxListenersExceededWarning observed during tests (Langfuse shutdown handlers)
+  This is informational only; all tests pass successfully.
+
+No action items required. Codebase is in excellent health.

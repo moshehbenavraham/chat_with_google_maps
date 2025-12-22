@@ -14,27 +14,32 @@
 | Vite Dev Server | 3003 | http://localhost:3003 |
 | API Server      | 3011 | http://localhost:3011 |
 | PostgreSQL      | 5438 | localhost:5438        |
+| Langfuse        | 3016 | http://localhost:3016 |
 
 ## Dev Scripts
 
-| Command                 | Purpose                                                         |
-| ----------------------- | --------------------------------------------------------------- |
-| `npm run dev`           | Start development server with hot reload                        |
-| `npm run build`         | Build for production                                            |
-| `npm run preview`       | Preview production build                                        |
-| `npm run lint`          | Run ESLint                                                      |
-| `npm run lint:fix`      | Run ESLint with auto-fix                                        |
-| `npm run format`        | Format code with Prettier                                       |
-| `npm run format:check`  | Check code formatting                                           |
-| `npm run typecheck`     | Run TypeScript type checking                                    |
-| `npm run test`          | Run tests                                                       |
-| `npm run test:watch`    | Run tests in watch mode                                         |
-| `npm run test:coverage` | Run tests with coverage report                                  |
-| `npm run quality`       | Run all quality checks (typecheck + lint + format:check + test) |
-| `npm run db:start`      | Start PostgreSQL container                                      |
-| `npm run db:stop`       | Stop PostgreSQL container                                       |
-| `npm run db:migrate`    | Apply database migrations                                       |
-| `npm run db:reset`      | Reset database (deletes data)                                   |
+| Command                  | Purpose                                                         |
+| ------------------------ | --------------------------------------------------------------- |
+| `npm run dev`            | Start development server with hot reload                        |
+| `npm run build`          | Build for production                                            |
+| `npm run preview`        | Preview production build                                        |
+| `npm run lint`           | Run ESLint                                                      |
+| `npm run lint:fix`       | Run ESLint with auto-fix                                        |
+| `npm run format`         | Format code with Prettier                                       |
+| `npm run format:check`   | Check code formatting                                           |
+| `npm run typecheck`      | Run TypeScript type checking                                    |
+| `npm run test`           | Run tests                                                       |
+| `npm run test:watch`     | Run tests in watch mode                                         |
+| `npm run test:coverage`  | Run tests with coverage report                                  |
+| `npm run quality`        | Run all quality checks (typecheck + lint + format:check + test) |
+| `npm run db:start`       | Start PostgreSQL container                                      |
+| `npm run db:stop`        | Stop PostgreSQL container                                       |
+| `npm run db:migrate`     | Apply database migrations                                       |
+| `npm run db:reset`       | Reset database (deletes data)                                   |
+| `npm run langfuse:start` | Start Langfuse observability containers                         |
+| `npm run langfuse:stop`  | Stop Langfuse containers                                        |
+| `npm run langfuse:logs`  | View Langfuse container logs                                    |
+| `npm run langfuse:reset` | Reset Langfuse (deletes all traces)                             |
 
 ## Development Workflow
 

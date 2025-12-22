@@ -59,19 +59,28 @@ npm run db:start
 npm run db:migrate
 ```
 
-### 7. Start Development
+### 7. Start Langfuse (Optional)
+
+```bash
+npm run langfuse:start
+```
+
+Dashboard available at http://localhost:3016 (first run requires account creation).
+
+### 8. Start Development
 
 ```bash
 npm run dev
 ```
 
-### 8. Verify Setup
+### 9. Verify Setup
 
 - [ ] App runs at `http://localhost:3003`
 - [ ] Tests pass: `npm run test`
 - [ ] Quality checks pass: `npm run quality`
 - [ ] 3D map loads and responds to voice
 - [ ] Can sign up and sign in
+- [ ] Langfuse dashboard at http://localhost:3016 (if started)
 
 ## Common Issues
 

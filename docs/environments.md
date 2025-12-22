@@ -21,13 +21,16 @@
 
 ### Optional
 
-| Variable            | Description                           |
-| ------------------- | ------------------------------------- |
-| `API_PORT`          | Backend port (default: 3011)          |
-| `POSTGRES_PORT`     | Local PostgreSQL port (default: 5438) |
-| `POSTGRES_USER`     | Local database username               |
-| `POSTGRES_PASSWORD` | Local database password               |
-| `POSTGRES_DB`       | Local database name                   |
+| Variable              | Description                              |
+| --------------------- | ---------------------------------------- |
+| `API_PORT`            | Backend port (default: 3011)             |
+| `POSTGRES_PORT`       | Local PostgreSQL port (default: 5438)    |
+| `POSTGRES_USER`       | Local database username                  |
+| `POSTGRES_PASSWORD`   | Local database password                  |
+| `POSTGRES_DB`         | Local database name                      |
+| `LANGFUSE_SECRET_KEY` | Langfuse API secret key                  |
+| `LANGFUSE_PUBLIC_KEY` | Langfuse API public key                  |
+| `LANGFUSE_BASE_URL`   | Langfuse server URL (default: localhost) |
 
 ### Generating Auth Secret
 
@@ -42,6 +45,7 @@ openssl rand -base64 32
 | API Keys    | `.env` file                        | Vercel environment variables |
 | API Server  | Node.js (localhost:3011)           | Vercel serverless functions  |
 | Database    | Docker PostgreSQL (localhost:5438) | Managed PostgreSQL           |
+| Langfuse    | Docker (localhost:3016)            | Self-hosted or cloud         |
 | Source Maps | Enabled                            | Disabled                     |
 | Hot Reload  | Yes                                | No                           |
 
