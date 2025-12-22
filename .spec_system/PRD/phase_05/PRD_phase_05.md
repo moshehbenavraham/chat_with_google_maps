@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 2-3 days
 
-**Progress**: 2/4 sessions (50%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
@@ -20,7 +20,7 @@ Implement comprehensive AI observability for the voice agent using Langfuse, an 
 |---------|------|--------|------------|-----------|
 | 01 | Langfuse Setup & Docker Deployment | Complete | 22 | 2025-12-22 |
 | 02 | REST API Tracing (Gemini Grounding) | Complete | 22 | 2025-12-22 |
-| 03 | WebSocket Voice Session Tracing | Not Started | ~25-30 | - |
+| 03 | WebSocket Voice Session Tracing | Complete | 24 | 2025-12-22 |
 | 04 | Cost Tracking & Observability Dashboard | Not Started | ~20-25 | - |
 
 ---
@@ -46,11 +46,24 @@ Implemented comprehensive tracing for REST API layer:
 - Token usage extraction from Gemini usageMetadata
 - Graceful degradation when Langfuse unavailable
 
+### Session 03: WebSocket Voice Session Tracing (2025-12-22)
+
+Implemented real-time voice session tracing with frontend-assisted event collection:
+- Created session trace manager with in-memory storage and auto-cleanup (30 min timeout)
+- Backend endpoints for receiving turn events (fire-and-forget with 204 response)
+- Frontend voice trace client with singleton pattern for non-blocking event posting
+- Token endpoint returns sessionId for trace correlation
+- Turn events recorded via inputTranscription/outputTranscription/turncomplete
+- Tool calls traced with timing information within turns
+- Session end captures summary metrics (turn count, tool calls, duration)
+- Graceful degradation when Langfuse unavailable
+- Pinned Langfuse to V2 (V3 requires ClickHouse)
+
 ---
 
 ## Upcoming Sessions
 
-- Session 03: WebSocket Voice Session Tracing
+- Session 04: Cost Tracking & Observability Dashboard
 
 ---
 

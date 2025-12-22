@@ -70,7 +70,7 @@ services:
   # Langfuse server for AI observability
   # Port 3016 assigned to this project in PORT-MAP
   langfuse-server:
-    image: langfuse/langfuse:latest
+    image: langfuse/langfuse:2
     container_name: chat_maps_langfuse
     restart: unless-stopped
     ports:

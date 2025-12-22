@@ -38,6 +38,7 @@ import {
   type FunctionResponse,
 } from '@google/genai';
 import { type ToolContext, toolRegistry } from '@/lib/tools/tool-registry';
+import { useVoiceTracing } from './use-voice-tracing';
 
 export interface UseLiveApiResults {
   client: GenAILiveClient | null;
@@ -79,6 +80,22 @@ export function useLiveApi({
   const clientRef = useRef<GenAILiveClient | null>(null);
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
+
+  // Voice tracing for Langfuse observability
+  const {
+    startSession: startTracingSession,
+    recordTurnStart,
+    recordTurnComplete,
+    recordToolCall,
+    recordToolResult,
+    endSession: endTracingSession,
+  } = useVoiceTracing();
+
+  // Turn tracking for tracing
+  const turnNumberRef = useRef(0);
+  const turnStartTimeRef = useRef<number>(0);
+  const currentUserTranscriptRef = useRef<string>('');
+  const currentAiTranscriptRef = useRef<string>('');
 
   const [volume, setVolume] = useState(0);
   const [connected, setConnected] = useState(false);
@@ -146,6 +163,10 @@ export function useLiveApi({
       const onClose = (event: CloseEvent) => {
         setConnected(false);
         stopAudioStreamer();
+
+        // End tracing session
+        void endTracingSession(event.reason.includes('error') ? 'error' : 'user_disconnect');
+
         const reason = "Session ended. Press 'Play' to start a new session. " + event.reason;
         useLogStore.getState().addTurn({
           role: 'agent',
@@ -160,6 +181,33 @@ export function useLiveApi({
         const lastTurn = turns[turns.length - 1];
         if (lastTurn && !lastTurn.isFinal) {
           updateLastTurn({ isFinal: true });
+        }
+      };
+
+      // Handle input transcription (user speaking) for tracing
+      const onInputTranscription = (text: string, isFinal: boolean) => {
+        if (isFinal && text.trim()) {
+          // New turn started with user speech
+          turnNumberRef.current += 1;
+          turnStartTimeRef.current = Date.now();
+          currentUserTranscriptRef.current = text;
+          currentAiTranscriptRef.current = '';
+          recordTurnStart(turnNumberRef.current, text);
+        }
+      };
+
+      // Handle output transcription (AI speaking) for tracing
+      const onOutputTranscription = (text: string, isFinal: boolean) => {
+        if (isFinal && text.trim()) {
+          currentAiTranscriptRef.current = text;
+        }
+      };
+
+      // Handle turn complete for tracing
+      const onTurnComplete = () => {
+        if (turnNumberRef.current > 0 && turnStartTimeRef.current > 0) {
+          const durationMs = Date.now() - turnStartTimeRef.current;
+          recordTurnComplete(turnNumberRef.current, currentAiTranscriptRef.current, durationMs);
         }
       };
 
@@ -201,6 +249,14 @@ export function useLiveApi({
               isFinal: true,
             });
 
+            // Record tool call for tracing
+            const toolStartTime = Date.now();
+            recordToolCall(
+              turnNumberRef.current,
+              fcName,
+              (fc.args ?? {}) as unknown as Record<string, unknown>
+            );
+
             let toolResponse: GenerateContentResponse | string = 'ok';
             try {
               const toolImplementation = fcName ? toolRegistry[fcName] : undefined;
@@ -209,6 +265,10 @@ export function useLiveApi({
               } else {
                 toolResponse = `Unknown tool called: ${fcName}.`;
               }
+
+              // Record tool result for tracing
+              const toolDuration = Date.now() - toolStartTime;
+              recordToolResult(turnNumberRef.current, fcName, toolResponse, toolDuration);
 
               // Prepare the response to send back to the model
               functionResponses.push({
@@ -219,6 +279,16 @@ export function useLiveApi({
             } catch (error) {
               const errorMessage = `Error executing tool ${fcName}.`;
               console.error(errorMessage, error);
+
+              // Record tool error for tracing
+              const toolDuration = Date.now() - toolStartTime;
+              recordToolResult(
+                turnNumberRef.current,
+                fcName,
+                { error: errorMessage },
+                toolDuration
+              );
+
               // Log error to UI
               useLogStore.getState().addTurn({
                 role: 'system',
@@ -267,6 +337,9 @@ export function useLiveApi({
       client.on('audio', onAudio);
       client.on('generationcomplete', onGenerationComplete);
       client.on('toolcall', onToolCallWrapper);
+      client.on('inputTranscription', onInputTranscription);
+      client.on('outputTranscription', onOutputTranscription);
+      client.on('turncomplete', onTurnComplete);
 
       // Return cleanup function
       return () => {
@@ -277,6 +350,9 @@ export function useLiveApi({
         client.off('audio', onAudio);
         client.off('toolcall', onToolCallWrapper);
         client.off('generationcomplete', onGenerationComplete);
+        client.off('inputTranscription', onInputTranscription);
+        client.off('outputTranscription', onOutputTranscription);
+        client.off('turncomplete', onTurnComplete);
       };
     },
     [
@@ -287,6 +363,11 @@ export function useLiveApi({
       padding,
       setHeldGroundedResponse,
       setHeldGroundingChunks,
+      recordTurnStart,
+      recordTurnComplete,
+      recordToolCall,
+      recordToolResult,
+      endTracingSession,
     ]
   );
 
@@ -295,6 +376,12 @@ export function useLiveApi({
     useMapStore.getState().clearMarkers();
     // Clear any previous auth errors
     setAuthError(null);
+
+    // Reset turn tracking for new session
+    turnNumberRef.current = 0;
+    turnStartTimeRef.current = 0;
+    currentUserTranscriptRef.current = '';
+    currentAiTranscriptRef.current = '';
 
     // Clean up previous client if exists
     if (cleanupListenersRef.current) {
@@ -307,7 +394,10 @@ export function useLiveApi({
 
     try {
       // Fetch a fresh ephemeral token from the backend
-      const { token } = await fetchLiveToken();
+      const { token, sessionId } = await fetchLiveToken();
+
+      // Start tracing session
+      startTracingSession(sessionId);
 
       // Create a new client with the ephemeral token
       const newClient = new GenAILiveClient(token, model);
@@ -333,7 +423,7 @@ export function useLiveApi({
       // Re-throw other errors
       throw error;
     }
-  }, [config, model, setupClientListeners]);
+  }, [config, model, setupClientListeners, startTracingSession]);
 
   const disconnect = useCallback(() => {
     if (cleanupListenersRef.current) {

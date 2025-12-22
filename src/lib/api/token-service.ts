@@ -14,6 +14,7 @@ import { jsonFetch, AuthenticationError } from './auth-fetch';
 export interface TokenResponse {
   token: string;
   expiresAt: string;
+  sessionId: string;
 }
 
 export interface TokenError {

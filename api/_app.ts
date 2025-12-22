@@ -5,6 +5,7 @@ import { gemini } from './_routes/gemini.js';
 import { maps } from './_routes/maps.js';
 import { dbTest } from './_routes/db-test.js';
 import { live } from './_routes/live.js';
+import { liveTrace } from './_routes/live-trace.js';
 import { traceTest } from './_routes/trace-test.js';
 import { errorHandler } from './_middleware/error-handler.js';
 import { requestLogger } from './_middleware/request-logger.js';
@@ -63,6 +64,7 @@ app.route('/api/health', health);
 app.route('/api/gemini', gemini);
 app.route('/api/maps', maps);
 app.route('/api/live', live);
+app.route('/api/live/trace', liveTrace);
 // Development route - consider protecting or removing in production
 app.route('/api/db/test', dbTest);
 // Langfuse trace verification endpoint

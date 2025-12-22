@@ -3,6 +3,8 @@
  *
  * Provides server-side generation of ephemeral tokens for the Gemini Live API.
  * This keeps the API key secure on the server while allowing client-side Live API access.
+ *
+ * Token requests also create Langfuse traces for session observability.
  */
 
 import { Hono } from 'hono';
@@ -10,6 +12,8 @@ import { GoogleGenAI } from '@google/genai';
 import { getGeminiApiKey } from '../_lib/env.js';
 import { ExternalApiError } from '../_lib/errors.js';
 import { createChildLogger } from '../_lib/logger.js';
+import { createSession } from '../_lib/session-trace-manager.js';
+import type { LiveTokenResponseWithSession } from '../_lib/types/live-trace.js';
 
 const log = createChildLogger('live');
 
@@ -85,24 +89,46 @@ const live = new Hono();
  *
  * Generate an ephemeral token for Gemini Live API access.
  * The token is single-use and expires after 30 minutes.
+ * Also creates a Langfuse trace for the session.
  *
  * Response:
  * {
  *   "token": "ephemeral-token-string",
- *   "expiresAt": "2025-01-01T00:30:00.000Z"
+ *   "expiresAt": "2025-01-01T00:30:00.000Z",
+ *   "sessionId": "uuid-v4-session-id"
  * }
  */
 live.post('/token', async c => {
   const apiKey = getGeminiApiKey();
   const client = createGenAIClient(apiKey);
 
-  log.info('Generating ephemeral token for Live API');
+  // Generate unique session ID
+  const sessionId = crypto.randomUUID();
+
+  log.info({ sessionId }, 'Generating ephemeral token for Live API');
 
   const result = await generateEphemeralToken(client);
 
-  log.info({ expiresAt: result.expiresAt }, 'Ephemeral token generated successfully');
+  // Create session trace (graceful degradation if Langfuse unavailable)
+  const traceResult = createSession(sessionId);
+  if (traceResult) {
+    log.info(
+      { sessionId, traceId: traceResult.traceId, expiresAt: result.expiresAt },
+      'Ephemeral token and session trace created'
+    );
+  } else {
+    log.info(
+      { sessionId, expiresAt: result.expiresAt },
+      'Ephemeral token generated (tracing disabled)'
+    );
+  }
 
-  return c.json(result);
+  const response: LiveTokenResponseWithSession = {
+    ...result,
+    sessionId,
+  };
+
+  return c.json(response);
 });
 
 export { live };
