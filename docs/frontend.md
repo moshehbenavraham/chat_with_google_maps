@@ -2,21 +2,27 @@
 
 ### Overview
 
-React 19 + TypeScript SPA built with Vite. Renders a left chat panel, a full-screen 3D map (`<gmp-map-3d>`), a settings sidebar, and overlays (welcome popup, error screen). No client-side routing.
+React 19 + TypeScript SPA built with Vite. Renders a left chat panel, a full-screen 3D map (`<gmp-map-3d>`), a settings sidebar, and overlays (welcome popup, error screen). Client-side routing via React Router with protected routes for authentication.
 
 ### Tech Stack
 
 - **Framework**: React 19, TypeScript, Vite
 - **State**: Zustand (`src/stores/index.ts`)
+- **Styling**: Tailwind CSS 4 (utility-first), `cn()` helper (clsx + tailwind-merge)
+- **Components**: shadcn/ui (Radix primitives) in `src/components/ui/`
+- **Animations**: Framer Motion
+- **Icons**: Lucide React (tree-shakeable SVG icons)
+- **Theming**: next-themes (dark/light mode with system preference)
 - **Gemini Live**: `@google/genai` via `src/lib/api/genai-live-client.ts`
 - **Maps**: `@vis.gl/react-google-maps` + Maps JS libraries (`places`, `geocoding`, `maps3d`, `elevation`)
-- **UI**: `classnames`, `react-markdown` + `remark-gfm`, `@headlessui/react` (SourcesPopover only)
+- **UI Utils**: `react-markdown` + `remark-gfm`
 
 ### Entry Points
 
-- `index.html` → defines `#root`, loads fonts (Space Mono, Material Symbols)
-- `src/main.tsx` → renders `<App />` into `#root`
-- `src/App.tsx` → wraps app in `APIProvider` + `LiveAPIProvider`
+- `index.html` - Defines `#root`, loads Space Mono font
+- `src/main.tsx` - Renders app with ThemeProvider wrapper
+- `src/App.tsx` - Wraps app in `APIProvider` + `LiveAPIProvider`
+- `src/router.tsx` - React Router with protected routes
 
 ### Dev Setup
 
@@ -92,23 +98,45 @@ Key files:
 
 ### Styling
 
-Global CSS in `src/index.css` (no Tailwind, no CSS Modules).
+Tailwind CSS 4 with CSS custom properties for design tokens.
 
-**Key tokens**: `--Neutral-*`, `--Blue-*`, `--Green-*`, `--Red-*`, `--breakpoint-md: 768px`
+**Configuration**:
 
-**Component CSS**: `PopUp.css`, `sources-popover.css`
+- `tailwind.config.ts` - Theme configuration with shadcn/ui colors
+- `postcss.config.js` - PostCSS integration
+- `src/index.css` - Tailwind imports and CSS variables
+
+**Utilities**:
+
+- `src/lib/utils.ts` - `cn()` function (clsx + tailwind-merge) for className composition
+
+**Component Library**:
+
+- `src/components/ui/` - shadcn/ui components (Button, Dialog, Card, etc.)
+
+**Theming**:
+
+- `src/providers/theme-provider.tsx` - next-themes provider
+- Dark/light mode toggle with system preference detection
+- Theme persists across sessions
+
+**Key CSS Variables**: `--background`, `--foreground`, `--primary`, `--secondary`, etc. (HSL format)
 
 **Layout**: Dark UI shell over light map. Left console overlays map (glass effect on mobile). Chat bubbles: agent (light), user (blue).
 
 ### Quick Reference
 
-| Change               | File(s)                                                 |
-| -------------------- | ------------------------------------------------------- |
-| Layout/composition   | `src/App.tsx`                                           |
-| Transcript/markdown  | `src/components/streaming-console/StreamingConsole.tsx` |
-| Controls             | `src/components/ControlTray.tsx`                        |
-| Settings             | `src/components/Sidebar.tsx`, `src/lib/constants.ts`    |
-| Tool declarations    | `src/lib/tools/itinerary-planner.ts`                    |
-| Tool implementations | `src/lib/tools/tool-registry.ts`                        |
-| Map behavior         | `src/lib/map/*`, `src/components/map-3d/*`              |
-| Theme tokens         | `src/index.css`                                         |
+| Change               | File(s)                                                  |
+| -------------------- | -------------------------------------------------------- |
+| Layout/composition   | `src/App.tsx`                                            |
+| Transcript/markdown  | `src/components/streaming-console/StreamingConsole.tsx`  |
+| Controls             | `src/components/ControlTray.tsx`                         |
+| Settings             | `src/components/Sidebar.tsx`, `src/lib/constants.ts`     |
+| Tool declarations    | `src/lib/tools/itinerary-planner.ts`                     |
+| Tool implementations | `src/lib/tools/tool-registry.ts`                         |
+| Map behavior         | `src/lib/map/*`, `src/components/map-3d/*`               |
+| UI components        | `src/components/ui/*` (shadcn/ui)                        |
+| Theme/dark mode      | `src/providers/theme-provider.tsx`, `tailwind.config.ts` |
+| CSS utilities        | `src/lib/utils.ts` (`cn()` helper)                       |
+| Animations           | `src/lib/animations.ts`, component-level Framer Motion   |
+| CSS variables        | `src/index.css`                                          |

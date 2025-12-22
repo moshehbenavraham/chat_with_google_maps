@@ -105,6 +105,11 @@ See [PRD](.spec_system/PRD/PRD.md) for current progress and roadmap.
 - React 19 + TypeScript
 - Vite (build tooling)
 - Zustand (state management)
+- Tailwind CSS 4 (utility-first styling)
+- shadcn/ui (accessible Radix primitives)
+- Framer Motion (animations)
+- Lucide React (icons)
+- next-themes (dark/light mode)
 - @vis.gl/react-google-maps
 - @google/genai (Gemini SDK)
 

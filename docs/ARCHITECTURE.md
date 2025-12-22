@@ -38,6 +38,11 @@ Browser                           Backend                      External Services
 - **TypeScript** - Type safety
 - **Vite** - Build tool and dev server
 - **Zustand** - Lightweight state management
+- **Tailwind CSS 4** - Utility-first styling
+- **shadcn/ui** - Accessible Radix primitives
+- **Framer Motion** - Production animations
+- **Lucide React** - Tree-shakeable icons
+- **next-themes** - Dark/light mode management
 - **@vis.gl/react-google-maps** - Google Maps React integration
 - **@google/genai** - Gemini API SDK
 
