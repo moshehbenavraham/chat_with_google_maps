@@ -150,3 +150,28 @@ export function createChildLogger(component: string): pino.Logger {
 
 // Re-export Logger type
 export type { Logger } from 'pino';
+
+/**
+ * Create a child logger with Langfuse trace ID for correlation.
+ *
+ * Use this in route handlers to include the trace ID in all log entries,
+ * enabling easy correlation between application logs and Langfuse traces.
+ *
+ * @param component - The component name for the logger
+ * @param traceId - The Langfuse trace ID (from c.get('traceId'))
+ * @returns A child logger with the trace ID included
+ *
+ * @example
+ * ```typescript
+ * const traceId = c.get('traceId');
+ * const log = createTracedLogger('gemini', traceId);
+ * log.info('Processing request'); // Includes traceId in log entry
+ * ```
+ */
+export function createTracedLogger(component: string, traceId: string | null): pino.Logger {
+  const child = logger.child({ component });
+  if (traceId) {
+    return child.child({ traceId });
+  }
+  return child;
+}

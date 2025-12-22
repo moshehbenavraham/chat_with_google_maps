@@ -8,6 +8,7 @@ import { live } from './_routes/live.js';
 import { traceTest } from './_routes/trace-test.js';
 import { errorHandler } from './_middleware/error-handler.js';
 import { requestLogger } from './_middleware/request-logger.js';
+import { langfuseTrace } from './_middleware/langfuse-trace.js';
 import { requireAuth } from './_middleware/auth-guard.js';
 import { auth } from './_lib/auth.js';
 
@@ -45,6 +46,10 @@ app.on(['GET', 'POST'], '/api/auth/**', c => {
 
 // Add request logging middleware (after CORS, before routes)
 app.use('*', requestLogger);
+
+// Add Langfuse tracing middleware (after logging, before routes)
+// Creates traces for all requests, making them available via c.get('trace')
+app.use('*', langfuseTrace);
 
 // Apply auth middleware to protected routes (before mounting)
 app.use('/api/gemini/*', requireAuth);

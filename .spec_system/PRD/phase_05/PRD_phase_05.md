@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 2-3 days
 
-**Progress**: 1/4 sessions (25%)
+**Progress**: 2/4 sessions (50%)
 
 ---
 
@@ -19,7 +19,7 @@ Implement comprehensive AI observability for the voice agent using Langfuse, an 
 | Session | Name | Status | Est. Tasks | Validated |
 |---------|------|--------|------------|-----------|
 | 01 | Langfuse Setup & Docker Deployment | Complete | 22 | 2025-12-22 |
-| 02 | REST API Tracing (Gemini Grounding) | Not Started | ~20-25 | - |
+| 02 | REST API Tracing (Gemini Grounding) | Complete | 22 | 2025-12-22 |
 | 03 | WebSocket Voice Session Tracing | Not Started | ~25-30 | - |
 | 04 | Cost Tracking & Observability Dashboard | Not Started | ~20-25 | - |
 
@@ -36,11 +36,21 @@ Established foundational AI observability infrastructure:
 - Added test trace endpoint for verification (/api/trace-test)
 - NPM scripts for lifecycle management (langfuse:start, stop, logs, reset)
 
+### Session 02: REST API Tracing (Gemini Grounding) (2025-12-22)
+
+Implemented comprehensive tracing for REST API layer:
+- Created Langfuse tracing middleware for automatic trace creation on all API requests
+- Instrumented Gemini grounding endpoint with generation spans capturing input/output
+- Implemented cost calculator utility with Gemini pricing (2.5-flash, 2.0-flash, 1.5-flash, 1.5-pro)
+- Added trace ID correlation with Pino logger for unified debugging
+- Token usage extraction from Gemini usageMetadata
+- Graceful degradation when Langfuse unavailable
+
 ---
 
 ## Upcoming Sessions
 
-- Session 02: REST API Tracing (Gemini Grounding)
+- Session 03: WebSocket Voice Session Tracing
 
 ---
 

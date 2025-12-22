@@ -143,3 +143,7 @@ function registerShutdownHandlers(): void {
 
 // Register handlers on module load
 registerShutdownHandlers();
+
+// Re-export types for convenience
+export type { LangfuseTraceClient, LangfuseGenerationClient } from 'langfuse';
+export type { GeminiUsageMetadata, LangfuseUsage } from './types/langfuse.js';

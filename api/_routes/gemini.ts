@@ -10,9 +10,17 @@ import { getGeminiApiKey } from '../_lib/env.js';
 import { ExternalApiError, TimeoutError } from '../_lib/errors.js';
 import { validateJsonBody, validateGeminiRequest } from '../_middleware/validate-request.js';
 import type { GeminiGroundingRequest } from '../_lib/types.js';
-import { createChildLogger } from '../_lib/logger.js';
+import { createChildLogger, createTracedLogger } from '../_lib/logger.js';
+import { calculateCost } from '../_lib/cost-calculator.js';
+import type { GeminiUsageMetadata } from '../_lib/types/langfuse.js';
+
+// Import for Hono context type augmentation
+import '../_lib/types/langfuse.js';
 
 const log = createChildLogger('gemini');
+
+/** Model name used for this endpoint */
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 /** Timeout for external API calls (30 seconds) */
 const API_TIMEOUT_MS = 30000;
@@ -139,19 +147,106 @@ async function callGeminiApi(
 const gemini = new Hono();
 
 /**
+ * Extract usage metadata from Gemini API response.
+ * Handles missing or malformed usageMetadata gracefully.
+ */
+function extractUsageMetadata(response: unknown): GeminiUsageMetadata {
+  if (typeof response === 'object' && response !== null && 'usageMetadata' in response) {
+    const usage = (response as { usageMetadata: unknown }).usageMetadata;
+    if (typeof usage === 'object' && usage !== null) {
+      const meta = usage as Record<string, unknown>;
+      return {
+        promptTokenCount: typeof meta.promptTokenCount === 'number' ? meta.promptTokenCount : 0,
+        candidatesTokenCount:
+          typeof meta.candidatesTokenCount === 'number' ? meta.candidatesTokenCount : 0,
+        totalTokenCount: typeof meta.totalTokenCount === 'number' ? meta.totalTokenCount : 0,
+      };
+    }
+  }
+  return { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 };
+}
+
+/**
  * POST /api/gemini/grounding
  *
  * Proxy endpoint for maps grounding requests to Gemini REST API.
  * Validates request, adds API key server-side, and returns response.
+ *
+ * Instrumented with Langfuse tracing:
+ * - Creates a generation span for the Gemini API call
+ * - Records input (prompt, location), output (response), and token usage
+ * - Calculates and records cost based on token usage
  */
 gemini.post('/grounding', validateJsonBody, validateGeminiRequest, async c => {
   const request = c.get('validatedRequest');
   const apiKey = getGeminiApiKey();
+  const trace = c.get('trace');
+  const traceId = c.get('traceId');
+
+  // Use traced logger for correlation
+  const tracedLog = createTracedLogger('gemini', traceId);
 
   const requestBody = buildGeminiRequestBody(request);
-  const response = await callGeminiApi(requestBody, apiKey);
 
-  return c.json(response);
+  // Create generation span if tracing is active
+  const generation = trace?.generation({
+    name: 'gemini-grounding',
+    model: GEMINI_MODEL,
+    input: {
+      prompt: request.prompt,
+      lat: request.lat,
+      lng: request.lng,
+      systemInstruction: request.systemInstruction ?? DEFAULT_SYSTEM_INSTRUCTION,
+    },
+    modelParameters: {
+      thinkingBudget: 0,
+      enableWidget: request.enableWidget ?? true,
+    },
+  });
+
+  try {
+    const response = await callGeminiApi(requestBody, apiKey);
+
+    // Extract token usage from response
+    const usage = extractUsageMetadata(response);
+    const inputTokens = usage.promptTokenCount ?? 0;
+    const outputTokens = usage.candidatesTokenCount ?? 0;
+
+    // Calculate cost
+    const cost = calculateCost(GEMINI_MODEL, inputTokens, outputTokens);
+
+    // Log with trace correlation
+    tracedLog.info(
+      { inputTokens, outputTokens, cost: cost.toFixed(8) },
+      'Gemini grounding request completed'
+    );
+
+    // Finalize generation span with success
+    generation?.end({
+      output: response,
+      usage: {
+        input: inputTokens,
+        output: outputTokens,
+        totalCost: cost,
+      },
+    });
+
+    return c.json(response);
+  } catch (error) {
+    // Log error with trace correlation
+    tracedLog.error(
+      { error: error instanceof Error ? error.message : String(error) },
+      'Gemini grounding request failed'
+    );
+
+    // Finalize generation span with error
+    generation?.end({
+      output: { error: error instanceof Error ? error.message : 'Unknown error' },
+      level: 'ERROR',
+    });
+
+    throw error;
+  }
 });
 
 export { gemini };

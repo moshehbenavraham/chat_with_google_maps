@@ -65,7 +65,8 @@
     "phase04-session04-shadcn-components",
     "phase04-session05-lucide-icons",
     "phase04-session06-theme-system",
-    "phase05-session01-langfuse-setup"
+    "phase05-session01-langfuse-setup",
+    "phase05-session02-rest-api-tracing"
   ],
   "next_session_history": [
     {
@@ -186,6 +187,11 @@
     {
       "date": "2025-12-22",
       "session": "phase05-session01-langfuse-setup",
+      "status": "completed"
+    },
+    {
+      "date": "2025-12-22",
+      "session": "phase05-session02-rest-api-tracing",
       "status": "completed"
     }
   ]
