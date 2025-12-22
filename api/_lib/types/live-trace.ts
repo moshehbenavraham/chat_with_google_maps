@@ -109,6 +109,22 @@ export interface LiveTraceEndRequest {
 }
 
 /**
+ * Cost summary for a completed session.
+ */
+export interface SessionCostSummary {
+  /** Total cost in USD */
+  totalCost: number;
+  /** Model used */
+  model: string;
+  /** Audio minutes billed */
+  audioMinutes: number;
+  /** Input tokens billed */
+  inputTokens: number;
+  /** Output tokens billed */
+  outputTokens: number;
+}
+
+/**
  * Summary metrics for a completed session.
  */
 export interface SessionSummary {
@@ -118,6 +134,8 @@ export interface SessionSummary {
   totalToolCalls: number;
   /** Total session duration in milliseconds */
   durationMs: number;
+  /** Cost summary if tracking was enabled */
+  cost?: SessionCostSummary;
 }
 
 /**
@@ -140,6 +158,20 @@ export interface LiveTokenResponseWithSession {
 }
 
 /**
+ * Cost tracking state for a session.
+ */
+export interface SessionCostTracking {
+  /** Model used for the session (e.g., 'gemini-2.0-flash-live') */
+  model: string;
+  /** Accumulated audio minutes in this session */
+  audioMinutes: number;
+  /** Accumulated input tokens (for text portions) */
+  inputTokens: number;
+  /** Accumulated output tokens (for text portions) */
+  outputTokens: number;
+}
+
+/**
  * Internal session state tracked by SessionTraceManager.
  */
 export interface TrackedSession {
@@ -155,4 +187,6 @@ export interface TrackedSession {
   toolCallCount: number;
   /** User ID if authenticated */
   userId?: string;
+  /** Cost tracking state */
+  costTracking?: SessionCostTracking;
 }

@@ -19,6 +19,19 @@ export interface GeminiPricing {
 }
 
 /**
+ * Pricing structure for audio-based Gemini models.
+ * Costs are per minute of audio.
+ */
+export interface GeminiAudioPricing {
+  /** Cost per minute of audio in USD (bidirectional) */
+  perMinute: number;
+  /** Optional: Cost per input token for text portions */
+  inputToken?: number;
+  /** Optional: Cost per output token for text portions */
+  outputToken?: number;
+}
+
+/**
  * Gemini model pricing table.
  *
  * Pricing from Google AI pricing (as of Jan 2025):
@@ -55,6 +68,33 @@ export const GEMINI_PRICING: Record<string, GeminiPricing> = {
 const DEFAULT_PRICING: GeminiPricing = {
   input: 0.075 / 1_000_000,
   output: 0.3 / 1_000_000,
+};
+
+/**
+ * Audio pricing for Gemini Live API models.
+ *
+ * Pricing from Google AI pricing (as of Jan 2025):
+ * - gemini-2.0-flash-live: $0.40 per minute (bidirectional audio)
+ *   Input tokens: $0.075 per 1M, Output tokens: $0.30 per 1M (for text)
+ *
+ * Note: Audio pricing is bidirectional - covers both input and output audio.
+ */
+export const GEMINI_AUDIO_PRICING: Record<string, GeminiAudioPricing> = {
+  'gemini-2.0-flash-live': {
+    perMinute: 0.4,
+    inputToken: 0.075 / 1_000_000,
+    outputToken: 0.3 / 1_000_000,
+  },
+};
+
+/**
+ * Default audio pricing for unknown audio models.
+ * Uses gemini-2.0-flash-live pricing as default.
+ */
+const DEFAULT_AUDIO_PRICING: GeminiAudioPricing = {
+  perMinute: 0.4,
+  inputToken: 0.075 / 1_000_000,
+  outputToken: 0.3 / 1_000_000,
 };
 
 /**
@@ -105,4 +145,70 @@ export function getModelPricing(model: string): GeminiPricing | null {
  */
 export function hasKnownPricing(model: string): boolean {
   return model in GEMINI_PRICING;
+}
+
+/**
+ * Calculate the cost of an audio session based on duration.
+ *
+ * For voice sessions using Gemini Live API, audio is billed per minute.
+ * Optionally includes token costs for any text portions of the session.
+ *
+ * @param model - The model name (e.g., 'gemini-2.0-flash-live')
+ * @param audioMinutes - Duration of audio in minutes (can be fractional)
+ * @param inputTokens - Optional: Number of input tokens for text portions
+ * @param outputTokens - Optional: Number of output tokens for text portions
+ * @returns Total cost in USD
+ *
+ * @example
+ * ```typescript
+ * // Audio-only session (5 minutes)
+ * const cost = calculateAudioCost('gemini-2.0-flash-live', 5);
+ * console.log(`Session cost: $${cost.toFixed(6)}`); // $2.00
+ *
+ * // Audio + text session
+ * const cost = calculateAudioCost('gemini-2.0-flash-live', 5, 1000, 500);
+ * ```
+ */
+export function calculateAudioCost(
+  model: string,
+  audioMinutes: number,
+  inputTokens = 0,
+  outputTokens = 0
+): number {
+  // Handle zero or negative duration
+  if (audioMinutes <= 0 && inputTokens <= 0 && outputTokens <= 0) {
+    return 0;
+  }
+
+  // Get audio pricing for the model, or use default
+  const pricing: GeminiAudioPricing = GEMINI_AUDIO_PRICING[model] ?? DEFAULT_AUDIO_PRICING;
+
+  // Calculate audio cost
+  const audioCost = Math.max(0, audioMinutes) * pricing.perMinute;
+
+  // Calculate token costs if applicable
+  const inputCost = pricing.inputToken ? Math.max(0, inputTokens) * pricing.inputToken : 0;
+  const outputCost = pricing.outputToken ? Math.max(0, outputTokens) * pricing.outputToken : 0;
+
+  return audioCost + inputCost + outputCost;
+}
+
+/**
+ * Get the audio pricing for a specific model.
+ *
+ * @param model - The model name
+ * @returns The audio pricing object, or null if model not found
+ */
+export function getAudioModelPricing(model: string): GeminiAudioPricing | null {
+  return GEMINI_AUDIO_PRICING[model] ?? null;
+}
+
+/**
+ * Check if a model has known audio pricing.
+ *
+ * @param model - The model name
+ * @returns True if audio pricing is known for this model
+ */
+export function hasKnownAudioPricing(model: string): boolean {
+  return model in GEMINI_AUDIO_PRICING;
 }

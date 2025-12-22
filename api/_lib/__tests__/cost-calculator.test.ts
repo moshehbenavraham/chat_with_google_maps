@@ -11,6 +11,10 @@ import {
   getModelPricing,
   hasKnownPricing,
   GEMINI_PRICING,
+  calculateAudioCost,
+  getAudioModelPricing,
+  hasKnownAudioPricing,
+  GEMINI_AUDIO_PRICING,
 } from '../cost-calculator.js';
 
 describe('cost-calculator', () => {
@@ -119,6 +123,100 @@ describe('cost-calculator', () => {
     it('should return false for unknown model', () => {
       expect(hasKnownPricing('unknown-model')).toBe(false);
       expect(hasKnownPricing('')).toBe(false);
+    });
+  });
+
+  describe('GEMINI_AUDIO_PRICING', () => {
+    it('should have pricing for gemini-2.0-flash-live', () => {
+      const pricing = GEMINI_AUDIO_PRICING['gemini-2.0-flash-live'];
+      expect(pricing).toBeDefined();
+      expect(pricing?.perMinute).toBe(0.4);
+    });
+
+    it('should include token pricing for text portions', () => {
+      const pricing = GEMINI_AUDIO_PRICING['gemini-2.0-flash-live'];
+      expect(pricing?.inputToken).toBeGreaterThan(0);
+      expect(pricing?.outputToken).toBeGreaterThan(0);
+    });
+  });
+
+  describe('calculateAudioCost', () => {
+    it('should return zero for zero minutes and tokens', () => {
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 0, 0, 0);
+      expect(cost).toBe(0);
+    });
+
+    it('should return zero for negative minutes', () => {
+      const cost = calculateAudioCost('gemini-2.0-flash-live', -5);
+      expect(cost).toBe(0);
+    });
+
+    it('should calculate cost for audio only', () => {
+      // gemini-2.0-flash-live: $0.40 per minute
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 5);
+      // Expected: 5 * 0.40 = 2.00
+      expect(cost).toBe(2.0);
+    });
+
+    it('should calculate cost for fractional minutes', () => {
+      // 30 seconds = 0.5 minutes
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 0.5);
+      // Expected: 0.5 * 0.40 = 0.20
+      expect(cost).toBeCloseTo(0.2, 10);
+    });
+
+    it('should calculate combined audio and token cost', () => {
+      // 1 minute audio + 1000 input + 500 output tokens
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 1, 1000, 500);
+      // Audio: 1 * 0.40 = 0.40
+      // Input: 1000 * 0.075/1M = 0.000075
+      // Output: 500 * 0.30/1M = 0.00015
+      // Total: 0.400225
+      expect(cost).toBeCloseTo(0.400225, 8);
+    });
+
+    it('should use default pricing for unknown audio model', () => {
+      // Unknown model should use gemini-2.0-flash-live pricing as default
+      const cost = calculateAudioCost('unknown-audio-model', 1);
+      const expectedCost = calculateAudioCost('gemini-2.0-flash-live', 1);
+      expect(cost).toBe(expectedCost);
+    });
+
+    it('should handle large audio durations', () => {
+      // 60 minutes (1 hour)
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 60);
+      // Expected: 60 * 0.40 = 24.00
+      expect(cost).toBe(24.0);
+    });
+
+    it('should calculate cost correctly for tokens only (zero audio)', () => {
+      const cost = calculateAudioCost('gemini-2.0-flash-live', 0, 1000, 500);
+      // Expected: just token costs
+      expect(cost).toBeCloseTo(0.000225, 8);
+    });
+  });
+
+  describe('getAudioModelPricing', () => {
+    it('should return pricing for known audio model', () => {
+      const pricing = getAudioModelPricing('gemini-2.0-flash-live');
+      expect(pricing).not.toBeNull();
+      expect(pricing?.perMinute).toBe(0.4);
+    });
+
+    it('should return null for unknown audio model', () => {
+      const pricing = getAudioModelPricing('unknown-model');
+      expect(pricing).toBeNull();
+    });
+  });
+
+  describe('hasKnownAudioPricing', () => {
+    it('should return true for known audio model', () => {
+      expect(hasKnownAudioPricing('gemini-2.0-flash-live')).toBe(true);
+    });
+
+    it('should return false for unknown audio model', () => {
+      expect(hasKnownAudioPricing('unknown-model')).toBe(false);
+      expect(hasKnownAudioPricing('gemini-2.5-flash')).toBe(false); // text model
     });
   });
 });

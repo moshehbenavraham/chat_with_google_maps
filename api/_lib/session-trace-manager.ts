@@ -21,7 +21,10 @@ import type {
   ToolResultData,
   SessionSummary,
   SessionEndReason,
+  SessionCostTracking,
+  SessionCostSummary,
 } from './types/live-trace.js';
+import { calculateAudioCost } from './cost-calculator.js';
 
 const log = createChildLogger('session-trace');
 
@@ -52,6 +55,9 @@ const turnStartTimes = new Map<string, number>();
  */
 let cleanupTimer: ReturnType<typeof setInterval> | null = null;
 
+/** Default model for voice sessions */
+const DEFAULT_VOICE_MODEL = 'gemini-2.0-flash-live';
+
 /**
  * Create a new session trace.
  *
@@ -61,11 +67,13 @@ let cleanupTimer: ReturnType<typeof setInterval> | null = null;
  *
  * @param sessionId - Unique session identifier
  * @param userId - Optional user ID for authenticated sessions
+ * @param model - Optional model name for cost tracking (default: gemini-2.0-flash-live)
  * @returns The session ID and trace ID, or null if Langfuse unavailable
  */
 export function createSession(
   sessionId: string,
-  userId?: string
+  userId?: string,
+  model: string = DEFAULT_VOICE_MODEL
 ): { sessionId: string; traceId: string } | null {
   const langfuse = getLangfuse();
 
@@ -93,6 +101,14 @@ export function createSession(
     tags: ['voice', 'live-api', 'websocket'],
   });
 
+  // Initialize cost tracking state
+  const costTracking: SessionCostTracking = {
+    model,
+    audioMinutes: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+  };
+
   // Store session data
   const session: TrackedSession = {
     sessionId,
@@ -101,6 +117,7 @@ export function createSession(
     currentTurn: 0,
     toolCallCount: 0,
     userId,
+    costTracking,
   };
 
   activeSessions.set(sessionId, session);
@@ -301,23 +318,55 @@ export function endSession(
   }
 
   const durationMs = Date.now() - session.startedAt.getTime();
+
+  // Calculate cost if tracking is enabled
+  let costSummary: SessionCostSummary | undefined;
+  if (session.costTracking) {
+    const { model, audioMinutes, inputTokens, outputTokens } = session.costTracking;
+
+    // For audio sessions, use session duration as audio minutes if not tracked
+    // Convert milliseconds to minutes
+    const effectiveAudioMinutes = audioMinutes > 0 ? audioMinutes : durationMs / 60000;
+
+    const totalCost = calculateAudioCost(model, effectiveAudioMinutes, inputTokens, outputTokens);
+
+    costSummary = {
+      totalCost,
+      model,
+      audioMinutes: effectiveAudioMinutes,
+      inputTokens,
+      outputTokens,
+    };
+  }
+
   const summary: SessionSummary = {
     totalTurns: session.currentTurn,
     totalToolCalls: session.toolCallCount,
     durationMs,
+    cost: costSummary,
   };
 
-  // Update trace with final metadata
+  // Update trace with final metadata (graceful degradation)
   if (trace) {
-    trace.update({
-      output: summary,
-      metadata: {
-        endReason: reason,
-        totalTurns: summary.totalTurns,
-        totalToolCalls: summary.totalToolCalls,
-        durationMs: summary.durationMs,
-      },
-    });
+    try {
+      trace.update({
+        output: summary,
+        metadata: {
+          endReason: reason,
+          totalTurns: summary.totalTurns,
+          totalToolCalls: summary.totalToolCalls,
+          durationMs: summary.durationMs,
+          ...(costSummary && {
+            totalCost: costSummary.totalCost,
+            audioMinutes: costSummary.audioMinutes,
+            model: costSummary.model,
+          }),
+        },
+      });
+    } catch (error) {
+      // Log but don't throw - graceful degradation
+      log.error({ sessionId, error }, 'Failed to update Langfuse trace');
+    }
   }
 
   // Cleanup
@@ -349,6 +398,49 @@ export function getActiveSessionCount(): number {
  */
 export function hasSession(sessionId: string): boolean {
   return activeSessions.has(sessionId);
+}
+
+/**
+ * Update cost tracking for a session.
+ *
+ * Call this to accumulate audio minutes or token usage during a session.
+ * These values will be used to calculate total cost when session ends.
+ *
+ * @param sessionId - Session identifier
+ * @param updates - Partial cost tracking updates
+ */
+export function updateSessionCost(
+  sessionId: string,
+  updates: Partial<Omit<SessionCostTracking, 'model'>>
+): void {
+  const session = activeSessions.get(sessionId);
+  if (!session?.costTracking) {
+    log.debug({ sessionId }, 'Session not found or cost tracking not enabled');
+    return;
+  }
+
+  if (updates.audioMinutes !== undefined) {
+    session.costTracking.audioMinutes += updates.audioMinutes;
+  }
+  if (updates.inputTokens !== undefined) {
+    session.costTracking.inputTokens += updates.inputTokens;
+  }
+  if (updates.outputTokens !== undefined) {
+    session.costTracking.outputTokens += updates.outputTokens;
+  }
+
+  log.debug({ sessionId, updates }, 'Session cost updated');
+}
+
+/**
+ * Get current session cost tracking state.
+ *
+ * @param sessionId - Session identifier
+ * @returns Cost tracking state or null if session not found
+ */
+export function getSessionCostTracking(sessionId: string): SessionCostTracking | null {
+  const session = activeSessions.get(sessionId);
+  return session?.costTracking ?? null;
 }
 
 /**

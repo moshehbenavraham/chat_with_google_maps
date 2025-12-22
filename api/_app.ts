@@ -7,6 +7,7 @@ import { dbTest } from './_routes/db-test.js';
 import { live } from './_routes/live.js';
 import { liveTrace } from './_routes/live-trace.js';
 import { traceTest } from './_routes/trace-test.js';
+import { observability } from './_routes/observability.js';
 import { errorHandler } from './_middleware/error-handler.js';
 import { requestLogger } from './_middleware/request-logger.js';
 import { langfuseTrace } from './_middleware/langfuse-trace.js';
@@ -69,6 +70,8 @@ app.route('/api/live/trace', liveTrace);
 app.route('/api/db/test', dbTest);
 // Langfuse trace verification endpoint
 app.route('/api/trace-test', traceTest);
+// Observability endpoints (health, costs)
+app.route('/api/observability', observability);
 
 // 404 handler for unmatched routes
 app.notFound(c => {
