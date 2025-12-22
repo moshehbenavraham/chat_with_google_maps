@@ -10,6 +10,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/components/auth';
+import { Mic, Globe, Zap, Code, FileText } from 'lucide-react';
 import './landing.css';
 
 /**
@@ -89,7 +90,7 @@ export function LandingPage() {
           <div className="landing-features-grid">
             <article className="landing-feature">
               <div className="landing-feature-icon voice">
-                <span className="icon">mic</span>
+                <Mic className="w-8 h-8" />
               </div>
               <h3 className="landing-feature-title">Voice Control</h3>
               <p className="landing-feature-description">
@@ -100,7 +101,7 @@ export function LandingPage() {
 
             <article className="landing-feature">
               <div className="landing-feature-icon maps">
-                <span className="icon">public</span>
+                <Globe className="w-8 h-8" />
               </div>
               <h3 className="landing-feature-title">3D Maps</h3>
               <p className="landing-feature-description">
@@ -111,7 +112,7 @@ export function LandingPage() {
 
             <article className="landing-feature">
               <div className="landing-feature-icon realtime">
-                <span className="icon">bolt</span>
+                <Zap className="w-8 h-8" />
               </div>
               <h3 className="landing-feature-title">Real-time Grounding</h3>
               <p className="landing-feature-description">
@@ -135,7 +136,7 @@ export function LandingPage() {
             rel="noopener noreferrer"
             className="landing-footer-link"
           >
-            <span className="icon">code</span>
+            <Code className="w-4 h-4" />
             GitHub
           </a>
           <a
@@ -145,7 +146,7 @@ export function LandingPage() {
               e.preventDefault();
             }}
           >
-            <span className="icon">description</span>
+            <FileText className="w-4 h-4" />
             Docs
           </a>
         </div>

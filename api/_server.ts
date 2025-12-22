@@ -3,6 +3,8 @@ import { serve } from '@hono/node-server';
 // Note: _app.ts handles all route imports from underscore-prefixed directories
 import { app } from './_app.js';
 import { createChildLogger } from './_lib/logger.js';
+// Import langfuse module early to register shutdown handlers
+import './_lib/langfuse.js';
 
 const log = createChildLogger('server');
 

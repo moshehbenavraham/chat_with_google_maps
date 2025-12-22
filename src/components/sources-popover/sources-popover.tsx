@@ -7,6 +7,7 @@ import React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ExternalLink } from 'lucide-react';
 
 interface SourceLink {
   uri: string;
@@ -35,13 +36,15 @@ export function SourcesPopover({
           variant="secondary"
           size="sm"
           className={cn(
-            'px-3 py-1.5 rounded-lg text-sm font-medium',
-            'bg-[var(--Neutral-90)] text-[var(--Neutral-60)]',
-            'hover:bg-[var(--Neutral-80)]',
+            'inline-flex items-center gap-1.5 px-5 py-1.5 rounded-lg text-sm font-medium',
+            'bg-[var(--Neutral-10)] text-[var(--Neutral-90)]',
+            'border-2 border-[var(--Neutral-50)]',
+            'hover:bg-[var(--Neutral-20)] hover:border-[var(--Neutral-60)]',
             'transition-all duration-200 ease-in-out',
             className
           )}
         >
+          <ExternalLink className="w-3.5 h-3.5" />
           {buttonText}
         </Button>
       </PopoverTrigger>

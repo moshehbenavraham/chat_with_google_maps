@@ -7,6 +7,7 @@ import { Modality, type LiveServerContent, type Part } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion } from 'framer-motion';
+import { User, Sparkles } from 'lucide-react';
 
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import { useSettings, useLogStore, useTools, type ConversationTurn, useUI } from '@/stores';
@@ -351,7 +352,11 @@ export default function StreamingConsole() {
                 transition={transitions.modalIn}
               >
                 <div className="avatar">
-                  <span className="icon">{t.role === 'user' ? 'person' : 'auto_awesome'}</span>
+                  {t.role === 'user' ? (
+                    <User className="w-5 h-5" />
+                  ) : (
+                    <Sparkles className="w-5 h-5" />
+                  )}
                 </div>
                 <div className="message-bubble">
                   <div className="transcription-text-content">

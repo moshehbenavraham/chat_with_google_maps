@@ -5,6 +5,7 @@ import { gemini } from './_routes/gemini.js';
 import { maps } from './_routes/maps.js';
 import { dbTest } from './_routes/db-test.js';
 import { live } from './_routes/live.js';
+import { traceTest } from './_routes/trace-test.js';
 import { errorHandler } from './_middleware/error-handler.js';
 import { requestLogger } from './_middleware/request-logger.js';
 import { requireAuth } from './_middleware/auth-guard.js';
@@ -59,6 +60,8 @@ app.route('/api/maps', maps);
 app.route('/api/live', live);
 // Development route - consider protecting or removing in production
 app.route('/api/db/test', dbTest);
+// Langfuse trace verification endpoint
+app.route('/api/trace-test', traceTest);
 
 // 404 handler for unmatched routes
 app.notFound(c => {

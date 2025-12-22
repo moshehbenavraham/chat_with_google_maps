@@ -1,5 +1,6 @@
 # Docker Compose configuration for local development
 # Database: npm run db:start | db:stop | db:reset | db:logs | db:shell
+# Langfuse: npm run langfuse:start | langfuse:stop | langfuse:logs | langfuse:reset
 # API: docker compose up api
 
 services:
@@ -45,6 +46,54 @@ services:
       retries: 3
       start_period: 10s
 
+  # Langfuse PostgreSQL database (separate from main db)
+  # Port 5440 assigned to this project in PORT-MAP
+  langfuse-db:
+    image: postgres:16-alpine
+    container_name: chat_maps_langfuse_db
+    restart: unless-stopped
+    ports:
+      - '5440:5432'
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse_dev_password
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U langfuse -d langfuse']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Langfuse server for AI observability
+  # Port 3016 assigned to this project in PORT-MAP
+  langfuse-server:
+    image: langfuse/langfuse:latest
+    container_name: chat_maps_langfuse
+    restart: unless-stopped
+    ports:
+      - '3016:3000'
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse_dev_password@langfuse-db:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3016
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-langfuse-local-dev-secret-change-in-production}
+      SALT: ${LANGFUSE_SALT:-langfuse-local-dev-salt-change-in-production}
+      TELEMETRY_ENABLED: 'false'
+      LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: 'false'
+    depends_on:
+      langfuse-db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:3000/api/public/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
 volumes:
   pgdata:
     name: chat_maps_pgdata
+  langfuse_pgdata:
+    name: chat_maps_langfuse_pgdata

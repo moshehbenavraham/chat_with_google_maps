@@ -1,7 +1,7 @@
 {
   "name": "copy-of-chat-with-maps-live",
   "private": true,
-  "version": "0.0.21",
+  "version": "0.0.22",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -30,7 +30,11 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "langfuse:start": "docker compose up -d langfuse-server langfuse-db",
+    "langfuse:stop": "docker compose stop langfuse-server langfuse-db",
+    "langfuse:logs": "docker compose logs -f langfuse-server",
+    "langfuse:reset": "docker compose down langfuse-server langfuse-db -v && docker compose up -d langfuse-server langfuse-db"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -60,6 +64,7 @@
     "fast-deep-equal": "^3.1.3",
     "framer-motion": "^12.23.26",
     "hono": "^4.11.1",
+    "langfuse": "^3.38.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.562.0",
     "next-themes": "^0.4.6",

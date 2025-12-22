@@ -65,6 +65,7 @@ Every backend component must:
 | 02 | Database Layer (PostgreSQL + Drizzle) | 4 | Complete |
 | 03 | Authentication (Better Auth) | 3 | Complete |
 | 04 | Frontend Overhaul | 6 | Complete |
+| 05 | AI Observability (Langfuse) | 4 | Planned |
 
 ## Phase 00: Developer Tooling & Quality Foundation
 
@@ -762,6 +763,533 @@ Use `/nextsession` to get recommendations for sessions to implement.
 
 ---
 
+## Phase 05: AI Observability (Langfuse)
+
+### Overview
+
+Implement comprehensive AI observability for the voice agent using Langfuse, an open-source LLM observability platform. This enables tracing of all AI interactions including real-time voice sessions via WebSocket, cost tracking, latency monitoring, and conversation debugging while remaining **fully self-hostable**.
+
+### Why Langfuse (Research Summary)
+
+| Platform | Open Source | Self-Hostable | WebSocket Support | JS SDK | Cost Tracking |
+|----------|-------------|---------------|-------------------|--------|---------------|
+| **Langfuse** ✅ | Yes (MIT) | Yes (Docker) | Yes | Yes | Yes |
+| OpenLLMetry | Yes | Partial | Limited | Yes | Limited |
+| Helicone | Yes | Yes | No (proxy-based) | Yes | Yes |
+| Phoenix (Arize) | Yes | Yes | Limited | Partial | No |
+| LangSmith | No | No | Yes | Yes | Yes |
+
+**Langfuse Advantages:**
+- **Open Source**: MIT license, full code access, active development
+- **Self-Hostable**: Docker Compose deployment, full data sovereignty
+- **Voice/Streaming Support**: Async spans work with WebSocket sessions
+- **Conversation Tracing**: Group related calls into sessions/traces
+- **Cost Tracking**: Automatic token counting and cost calculation
+- **Latency Monitoring**: Built-in duration tracking per span
+- **Gemini Compatible**: Works with any LLM provider via manual instrumentation
+- **Low Overhead**: Async flush, minimal latency impact
+
+### Objectives
+
+1. Deploy Langfuse locally via Docker Compose
+2. Create Langfuse client wrapper for Hono backend
+3. Trace REST API calls (Gemini grounding endpoint)
+4. Trace WebSocket voice sessions with turn-by-turn spans
+5. Implement cost tracking per conversation
+6. Add user/session correlation for conversation grouping
+7. Create observability dashboard integration
+
+### Observability Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         AI Observability Stack                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   React Client                    Hono Backend                           │
+│   ┌─────────────┐                ┌──────────────────────────────────┐   │
+│   │ Voice Agent │◄──WebSocket───►│ /api/live/*                      │   │
+│   │             │                │   └── Langfuse trace (session)   │   │
+│   │ Chat UI     │◄───REST───────►│ /api/gemini/grounding            │   │
+│   │             │                │   └── Langfuse trace (generation)│   │
+│   └─────────────┘                └──────────────────────────────────┘   │
+│                                              │                           │
+│                                              ▼                           │
+│                                  ┌──────────────────────┐               │
+│                                  │     Langfuse         │               │
+│                                  │  (Self-Hosted)       │               │
+│                                  ├──────────────────────┤               │
+│                                  │ ├── Traces           │               │
+│                                  │ │   ├── Sessions     │               │
+│                                  │ │   ├── Generations  │               │
+│                                  │ │   └── Spans        │               │
+│                                  │ ├── Costs            │               │
+│                                  │ ├── Latency Metrics  │               │
+│                                  │ └── User Analytics   │               │
+│                                  └──────────────────────┘               │
+│                                              │                           │
+│                                              ▼                           │
+│                                  ┌──────────────────────┐               │
+│                                  │    PostgreSQL        │               │
+│                                  │  (Langfuse Data)     │               │
+│                                  └──────────────────────┘               │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Voice Session Tracing Model
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Trace: Voice Conversation (session_id: abc123)                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │ Span: WebSocket Session                                         │    │
+│  │ metadata: { user_id, session_start, audio_config }              │    │
+│  │                                                                  │    │
+│  │  ┌────────────────────────────────────────────────────────┐     │    │
+│  │  │ Generation: Turn 1 (User Speech → AI Response)         │     │    │
+│  │  │ input: { audio_transcript, tool_calls }                │     │    │
+│  │  │ output: { response_text, map_actions }                 │     │    │
+│  │  │ metrics: { latency_ms, input_tokens, output_tokens }   │     │    │
+│  │  └────────────────────────────────────────────────────────┘     │    │
+│  │                                                                  │    │
+│  │  ┌────────────────────────────────────────────────────────┐     │    │
+│  │  │ Span: Tool Execution (navigate_to_location)            │     │    │
+│  │  │ input: { lat, lng, place_name }                        │     │    │
+│  │  │ output: { success, camera_position }                   │     │    │
+│  │  └────────────────────────────────────────────────────────┘     │    │
+│  │                                                                  │    │
+│  │  ┌────────────────────────────────────────────────────────┐     │    │
+│  │  │ Generation: Turn 2 (User Speech → AI Response)         │     │    │
+│  │  │ ...                                                    │     │    │
+│  │  └────────────────────────────────────────────────────────┘     │    │
+│  │                                                                  │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+│                                                                          │
+│  Summary: 5 turns, 2 tool calls, $0.0034 total cost, 1847ms avg latency │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Sessions (To Be Defined)
+
+Use `/nextsession` to get recommendations for sessions to implement.
+
+### Implementation Steps
+
+#### Session 1: Langfuse Setup & Docker Deployment
+
+**Objective**: Deploy Langfuse locally and create the client wrapper.
+
+**Tasks**:
+1. Add Langfuse services to `docker-compose.yml`:
+   ```yaml
+   services:
+     langfuse-server:
+       image: langfuse/langfuse:latest
+       depends_on:
+         - langfuse-db
+       ports:
+         - "3001:3000"
+       environment:
+         - DATABASE_URL=postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+         - NEXTAUTH_SECRET=your-secret-key
+         - SALT=your-salt
+         - NEXTAUTH_URL=http://localhost:3001
+         - TELEMETRY_ENABLED=false
+
+     langfuse-db:
+       image: postgres:16-alpine
+       environment:
+         - POSTGRES_USER=langfuse
+         - POSTGRES_PASSWORD=langfuse
+         - POSTGRES_DB=langfuse
+       volumes:
+         - langfuse_pgdata:/var/lib/postgresql/data
+
+   volumes:
+     langfuse_pgdata:
+   ```
+2. Install Langfuse SDK: `npm install langfuse`
+3. Create `/api/_lib/langfuse.ts` with client configuration:
+   ```typescript
+   import { Langfuse } from 'langfuse';
+   import { createChildLogger } from './logger.js';
+
+   const log = createChildLogger('langfuse');
+
+   export const langfuse = new Langfuse({
+     secretKey: process.env.LANGFUSE_SECRET_KEY,
+     publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+     baseUrl: process.env.LANGFUSE_BASE_URL ?? 'http://localhost:3001',
+     flushAt: 1, // Flush after each event in dev
+     flushInterval: 1000,
+   });
+
+   // Ensure traces are flushed on shutdown
+   process.on('beforeExit', async () => {
+     await langfuse.shutdownAsync();
+   });
+
+   export { Langfuse };
+   ```
+4. Add environment variables to `.env.local`:
+   ```
+   LANGFUSE_SECRET_KEY=sk-lf-...
+   LANGFUSE_PUBLIC_KEY=pk-lf-...
+   LANGFUSE_BASE_URL=http://localhost:3001
+   ```
+5. Verify Langfuse UI accessible at `http://localhost:3001`
+6. Create first test trace via API endpoint
+
+**Success Criteria**:
+- Langfuse running via Docker Compose
+- SDK initialized and connected
+- Test trace visible in Langfuse dashboard
+
+#### Session 2: REST API Tracing (Gemini Grounding)
+
+**Objective**: Instrument the `/api/gemini/grounding` endpoint with full tracing.
+
+**Tasks**:
+1. Create tracing middleware for Hono:
+   ```typescript
+   // api/_middleware/langfuse-trace.ts
+   import type { MiddlewareHandler } from 'hono';
+   import { langfuse } from '../_lib/langfuse.js';
+
+   export const langfuseTrace: MiddlewareHandler = async (c, next) => {
+     const trace = langfuse.trace({
+       name: c.req.path,
+       userId: c.get('userId'), // from auth middleware
+       metadata: {
+         method: c.req.method,
+         userAgent: c.req.header('user-agent'),
+       },
+     });
+
+     c.set('langfuseTrace', trace);
+
+     try {
+       await next();
+     } finally {
+       trace.update({
+         output: { status: c.res.status },
+       });
+     }
+   };
+   ```
+2. Instrument Gemini grounding calls:
+   ```typescript
+   // In gemini.ts route
+   const generation = trace.generation({
+     name: 'gemini-grounding',
+     model: 'gemini-2.0-flash',
+     input: { prompt, location: { lat, lng } },
+     modelParameters: { temperature: 0.7 },
+   });
+
+   const result = await callGeminiApi(prompt, lat, lng);
+
+   generation.end({
+     output: result,
+     usage: {
+       input: result.usageMetadata?.promptTokenCount,
+       output: result.usageMetadata?.candidatesTokenCount,
+     },
+   });
+   ```
+3. Add cost calculation based on Gemini pricing
+4. Correlate with existing Pino request logger (add trace ID)
+5. Test with sample grounding queries
+6. Verify traces appear with correct metadata
+
+**Success Criteria**:
+- All grounding requests traced
+- Token usage tracked
+- Costs calculated
+- Latency visible in dashboard
+
+#### Session 3: WebSocket Voice Session Tracing
+
+**Objective**: Instrument real-time voice sessions with turn-by-turn tracing.
+
+**Tasks**:
+1. Create session-level trace on WebSocket connection:
+   ```typescript
+   // api/_routes/live.ts
+   const sessionTrace = langfuse.trace({
+     name: 'voice-session',
+     userId: userId,
+     sessionId: sessionId, // correlate all turns
+     metadata: {
+       audioConfig: config,
+       startTime: new Date().toISOString(),
+     },
+   });
+   ```
+2. Create span for each conversation turn:
+   ```typescript
+   const turnSpan = sessionTrace.span({
+     name: `turn-${turnNumber}`,
+     input: {
+       userTranscript: transcribedText,
+       audioLengthMs: audioLength,
+     },
+   });
+   ```
+3. Track tool calls within turns:
+   ```typescript
+   const toolSpan = turnSpan.span({
+     name: `tool-${toolName}`,
+     input: toolArgs,
+   });
+   // Execute tool
+   toolSpan.end({ output: toolResult });
+   ```
+4. Record AI response generation:
+   ```typescript
+   const generation = turnSpan.generation({
+     name: 'gemini-live-response',
+     model: 'gemini-2.0-flash-live',
+     input: { context, userMessage },
+   });
+   // Stream response
+   generation.end({
+     output: fullResponse,
+     usage: { input: inputTokens, output: outputTokens },
+   });
+   ```
+5. Handle session end and calculate totals:
+   ```typescript
+   sessionTrace.update({
+     output: {
+       totalTurns: turnCount,
+       totalToolCalls: toolCallCount,
+       sessionDurationMs: Date.now() - startTime,
+     },
+   });
+   await langfuse.flushAsync();
+   ```
+6. Test with complete voice conversation flow
+
+**Success Criteria**:
+- Voice sessions grouped as single trace
+- Individual turns visible as spans
+- Tool calls tracked within turns
+- Session-level metrics aggregated
+
+#### Session 4: Cost Tracking & Observability Dashboard
+
+**Objective**: Implement comprehensive cost tracking and integrate with observability dashboard.
+
+**Tasks**:
+1. Create cost calculation utility:
+   ```typescript
+   // api/_lib/cost-calculator.ts
+   const GEMINI_PRICING = {
+     'gemini-2.0-flash': {
+       input: 0.075 / 1_000_000,  // $0.075 per 1M input tokens
+       output: 0.30 / 1_000_000,  // $0.30 per 1M output tokens
+     },
+     'gemini-2.0-flash-live': {
+       input: 0.075 / 1_000_000,
+       output: 0.30 / 1_000_000,
+       audio: 0.40 / 60,  // $0.40 per minute of audio
+     },
+   };
+
+   export function calculateCost(
+     model: string,
+     inputTokens: number,
+     outputTokens: number,
+     audioMinutes?: number
+   ): number {
+     const pricing = GEMINI_PRICING[model];
+     let cost = (inputTokens * pricing.input) + (outputTokens * pricing.output);
+     if (audioMinutes && pricing.audio) {
+       cost += audioMinutes * pricing.audio;
+     }
+     return cost;
+   }
+   ```
+2. Store costs in Langfuse generations:
+   ```typescript
+   generation.end({
+     output: result,
+     usage: {
+       input: inputTokens,
+       output: outputTokens,
+       totalCost: calculateCost(model, inputTokens, outputTokens),
+     },
+   });
+   ```
+3. Create daily/weekly cost aggregation endpoint:
+   ```typescript
+   // GET /api/observability/costs
+   app.get('/observability/costs', authGuard, async (c) => {
+     const costs = await langfuse.getMetrics({
+       startDate: sevenDaysAgo,
+       groupBy: 'day',
+     });
+     return c.json(costs);
+   });
+   ```
+4. Add user-level cost tracking (per userId)
+5. Create alerts for cost thresholds (optional)
+6. Document Langfuse dashboard usage:
+   - Trace explorer for debugging
+   - Latency percentiles (p50, p95, p99)
+   - Cost breakdown by model/user
+   - Error rate monitoring
+7. Add health check for Langfuse connectivity
+
+**Success Criteria**:
+- Accurate cost tracking per request
+- Cost aggregation by user/day/model
+- Dashboard shows latency metrics
+- Error tracking integrated
+
+### Code Preview
+
+```typescript
+// api/_lib/langfuse.ts
+import { Langfuse } from 'langfuse';
+
+const isDev = process.env.NODE_ENV !== 'production';
+
+export const langfuse = new Langfuse({
+  secretKey: process.env.LANGFUSE_SECRET_KEY!,
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY!,
+  baseUrl: process.env.LANGFUSE_BASE_URL,
+  flushAt: isDev ? 1 : 15,
+  flushInterval: isDev ? 1000 : 5000,
+});
+
+// Graceful shutdown
+const shutdown = async () => {
+  await langfuse.shutdownAsync();
+};
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+```
+
+```typescript
+// api/_middleware/langfuse-trace.ts
+import type { MiddlewareHandler } from 'hono';
+import { langfuse } from '../_lib/langfuse.js';
+
+export const langfuseTrace: MiddlewareHandler = async (c, next) => {
+  const trace = langfuse.trace({
+    name: `${c.req.method} ${c.req.path}`,
+    userId: c.get('session')?.userId,
+    sessionId: c.req.header('x-session-id'),
+    metadata: {
+      ip: c.req.header('x-forwarded-for'),
+    },
+  });
+
+  c.set('trace', trace);
+
+  const start = Date.now();
+  try {
+    await next();
+  } finally {
+    trace.update({
+      output: { status: c.res.status, durationMs: Date.now() - start },
+    });
+  }
+};
+```
+
+```typescript
+// Example: Tracing a voice turn
+async function traceVoiceTurn(
+  sessionTrace: LangfuseTraceClient,
+  turnNumber: number,
+  userInput: string,
+  aiResponse: string,
+  toolCalls: ToolCall[],
+  tokenUsage: TokenUsage
+) {
+  const turnSpan = sessionTrace.span({
+    name: `voice-turn-${turnNumber}`,
+    input: { userTranscript: userInput },
+  });
+
+  // Track each tool call
+  for (const tool of toolCalls) {
+    const toolSpan = turnSpan.span({
+      name: `tool-${tool.name}`,
+      input: tool.args,
+    });
+    toolSpan.end({ output: tool.result });
+  }
+
+  // Track the generation
+  turnSpan.generation({
+    name: 'gemini-response',
+    model: 'gemini-2.0-flash-live',
+    input: userInput,
+    output: aiResponse,
+    usage: {
+      input: tokenUsage.input,
+      output: tokenUsage.output,
+      totalCost: calculateCost('gemini-2.0-flash-live', tokenUsage.input, tokenUsage.output),
+    },
+  });
+
+  turnSpan.end({ output: { responseLength: aiResponse.length } });
+}
+```
+
+### Dependencies Summary
+
+**Add**:
+```json
+{
+  "langfuse": "^3.x"
+}
+```
+
+**Docker Services**:
+```yaml
+# Added to docker-compose.yml
+langfuse-server:
+  image: langfuse/langfuse:latest
+  ports: ["3001:3000"]
+langfuse-db:
+  image: postgres:16-alpine
+```
+
+**Environment Variables**:
+```
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_BASE_URL=http://localhost:3001
+```
+
+### Risk Mitigation
+
+| Risk | Mitigation |
+|------|------------|
+| Performance overhead from tracing | Async flush, batch events, sample high-traffic endpoints |
+| WebSocket complexity | Start with REST tracing, incrementally add WS support |
+| Cost tracking accuracy | Verify against Gemini billing, add margin of error |
+| Data volume in Langfuse DB | Configure retention policies, archive old traces |
+| Langfuse service downtime | Graceful degradation - app works without tracing |
+
+### References
+
+- [Langfuse Documentation](https://langfuse.com/docs)
+- [Langfuse Self-Hosting Guide](https://langfuse.com/docs/deployment/self-host)
+- [Langfuse JS/TS SDK](https://langfuse.com/docs/sdk/typescript)
+- [Langfuse Tracing Concepts](https://langfuse.com/docs/tracing)
+- [Gemini API Pricing](https://ai.google.dev/pricing)
+- [GitHub: langfuse/langfuse](https://github.com/langfuse/langfuse)
+
+---
+
 ## Technical Stack
 
 ### Frontend (Existing)
@@ -793,6 +1321,11 @@ Use `/nextsession` to get recommendations for sessions to implement.
 - Framer Motion 12 (animations)
 - Lucide React (tree-shakeable icons)
 - next-themes (dark/light mode)
+
+### AI Observability (Phase 05)
+- Langfuse (open-source LLM observability, self-hosted)
+- Trace/span instrumentation for REST and WebSocket
+- Cost tracking and latency monitoring
 
 ## Success Criteria
 
@@ -845,6 +1378,19 @@ Use `/nextsession` to get recommendations for sessions to implement.
 - [x] No TypeScript errors
 - [x] All existing tests pass
 
+### Phase 05: AI Observability
+- [ ] Langfuse running via Docker Compose (self-hosted)
+- [ ] Langfuse SDK integrated with Hono backend
+- [ ] REST API endpoints traced (`/api/gemini/grounding`)
+- [ ] WebSocket voice sessions traced with turn-by-turn spans
+- [ ] Tool calls tracked within conversation turns
+- [ ] Cost tracking per request (tokens + audio minutes)
+- [ ] User/session correlation for conversation grouping
+- [ ] Latency metrics visible in Langfuse dashboard
+- [ ] Cost aggregation by user/day/model available
+- [ ] Graceful degradation when Langfuse unavailable
+- [ ] Documentation for Langfuse dashboard usage
+
 ## Open Source & Vendor Neutrality Checklist
 
 The entire stack is **100% open source** with no vendor dependencies:
@@ -860,6 +1406,7 @@ The entire stack is **100% open source** with no vendor dependencies:
 | Framer Motion | MIT | ✅ |
 | Lucide React | ISC | ✅ |
 | next-themes | MIT | ✅ |
+| Langfuse | MIT | ✅ |
 
 **Verification Criteria:**
 
@@ -870,3 +1417,4 @@ The entire stack is **100% open source** with no vendor dependencies:
 - [x] **Frontend**: All UI libraries are open source with no vendor lock-in
 - [x] **Zero SaaS Dependencies**: No required third-party services
 - [x] **Deployment**: Documentation exists for at least 2 deployment targets
+- [ ] **Observability**: Langfuse is self-hostable via Docker, full data sovereignty

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useSettings, useUI, useLogStore, useTools, useMapStore, personas } from '@/stores';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Download, RefreshCw } from 'lucide-react';
 import {
   AVAILABLE_VOICES_FULL,
   AVAILABLE_VOICES_LIMITED,
@@ -184,7 +185,7 @@ export default function Sidebar() {
               title="Export session logs"
               className="flex-1 p-3 rounded-lg font-medium flex items-center justify-center gap-2 bg-[var(--gray-800)] text-[var(--gray-200)] hover:bg-[var(--gray-700)] text-sm"
             >
-              <span className="icon text-xl">download</span>
+              <Download className="w-5 h-5" />
               Export Logs
             </Button>
             <Button
@@ -193,7 +194,7 @@ export default function Sidebar() {
               title="Reset session logs"
               className="flex-1 p-3 rounded-lg font-medium flex items-center justify-center gap-2 bg-[var(--gray-800)] text-[var(--gray-200)] hover:bg-[var(--gray-700)] text-sm"
             >
-              <span className="icon text-xl">refresh</span>
+              <RefreshCw className="w-5 h-5" />
               Reset Session
             </Button>
           </div>

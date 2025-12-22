@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Chat with Google Maps",
   "description": "A voice-driven conversational interface for exploring locations using Gemini Live API and Photorealistic 3D Maps",
-  "current_phase": 4,
+  "current_phase": 5,
   "current_session": null,
   "phases": {
     "0": {
@@ -34,6 +34,12 @@
       "description": "Modernize the frontend stack with Tailwind CSS 4, shadcn/ui components, Framer Motion animations, Lucide icons, and dark/light theme system",
       "status": "complete",
       "session_count": 6
+    },
+    "5": {
+      "name": "AI Observability (Langfuse)",
+      "description": "Implement comprehensive AI observability for the voice agent using Langfuse, enabling tracing of REST and WebSocket interactions, cost tracking, latency monitoring, and conversation debugging",
+      "status": "in_progress",
+      "session_count": 4
     }
   },
   "completed_sessions": [
@@ -58,7 +64,8 @@
     "phase04-session03-framer-motion",
     "phase04-session04-shadcn-components",
     "phase04-session05-lucide-icons",
-    "phase04-session06-theme-system"
+    "phase04-session06-theme-system",
+    "phase05-session01-langfuse-setup"
   ],
   "next_session_history": [
     {
@@ -174,6 +181,11 @@
     {
       "date": "2025-12-22",
       "session": "phase04-session06-theme-system",
+      "status": "completed"
+    },
+    {
+      "date": "2025-12-22",
+      "session": "phase05-session01-langfuse-setup",
       "status": "completed"
     }
   ]

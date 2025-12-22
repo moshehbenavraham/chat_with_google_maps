@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { PlayCircle, Mic2, Map, Keyboard, Settings } from 'lucide-react';
 
 interface PopUpProps {
   open: boolean;
@@ -60,34 +61,34 @@ const PopUp: React.FC<PopUpProps> = ({ open, onClose }) => {
               <p className="mb-5 text-[var(--text)]">To get started:</p>
               <ol className="pl-5 mb-8 space-y-4">
                 <li className="flex items-start gap-4">
-                  <span className="icon text-2xl text-[var(--accent-blue)]">play_circle</span>
+                  <PlayCircle className="w-6 h-6 text-[var(--accent-blue)] flex-shrink-0 mt-0.5" />
                   <div>
                     Press the <strong>&nbsp; Play &nbsp;</strong> button to start the conversation.
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="icon text-2xl text-[var(--accent-blue)]">record_voice_over</span>
+                  <Mic2 className="w-6 h-6 text-[var(--accent-blue)] flex-shrink-0 mt-0.5" />
                   <div>
                     <strong>Speak naturally &nbsp;</strong>to plan your trip. Try saying,
                     &quot;Let&apos;s plan a trip to Chicago.&quot;
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="icon text-2xl text-[var(--accent-blue)]">map</span>
+                  <Map className="w-6 h-6 text-[var(--accent-blue)] flex-shrink-0 mt-0.5" />
                   <div>
                     Watch as the map <strong>&nbsp; dynamically updates &nbsp;</strong> with
                     locations from your itinerary.
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="icon text-2xl text-[var(--accent-blue)]">keyboard</span>
+                  <Keyboard className="w-6 h-6 text-[var(--accent-blue)] flex-shrink-0 mt-0.5" />
                   <div>
                     Alternatively, <strong>&nbsp; type your requests &nbsp;</strong> into the
                     message box.
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="icon text-2xl text-[var(--accent-blue)]">tune</span>
+                  <Settings className="w-6 h-6 text-[var(--accent-blue)] flex-shrink-0 mt-0.5" />
                   <div>
                     Click the <strong>&nbsp; Settings &nbsp;</strong> icon to customize the
                     AI&apos;s voice and behavior.
