@@ -130,3 +130,4 @@ For more information on the original project and Google's Maps + Gemini integrat
 
 - [Grounding with Google Maps Announcement](https://blog.google/technology/developers/grounding-google-maps-gemini-api/)
 - [Google AI Studio Starter Apps](https://github.com/google-gemini/aistudio-showcase)
+- [Original Code Source](https://aistudio.google.com/apps/bundled/chat_with_maps_live?showPreview=true&showAssistant=true)
