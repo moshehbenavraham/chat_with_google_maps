@@ -2,6 +2,8 @@
 
 A voice-driven conversational interface for exploring locations using Gemini Live API and Photorealistic 3D Maps.
 
+## Built with 'Apex Spec System' - https://github.com/moshehbenavraham/apex-spec-system
+
 > **Note:** This sample app is for illustration only. Review the applicable [Terms of Service](https://cloud.google.com/terms) for your region before use.
 
 ## Features
